@@ -2,6 +2,10 @@ const express = require("express");
 const app = express();
 const config = require("./config");
 const routes = require("./routes/test");
+const connectDb = require("./utils/connectDb");
+
+// Appel de la fonction pour se connecter à la DB
+connectDb();
 
 // Middleware setup
 app.use(express.json());

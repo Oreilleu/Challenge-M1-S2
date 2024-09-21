@@ -1,8 +1,11 @@
+require("dotenv").config();
+
 module.exports = {
   port: process.env.PORT || 3000,
-  //   db: {
-  //     host: "localhost",
-  //     port: 27017,
-  //     name: "mydatabase",
-  //   },
+  db: {
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    name: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+  },
 };
