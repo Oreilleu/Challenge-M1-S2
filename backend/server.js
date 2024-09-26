@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const config = require("./config");
-const routes = require("./routes/test");
+const authRoutes = require("./routes/auth");
 const connectDb = require("./utils/connectDb");
 
 // Appel de la fonction pour se connecter à la DB
@@ -11,7 +11,7 @@ connectDb();
 app.use(express.json());
 
 // Routes setup
-app.use("/test", routes);
+app.use("/", authRoutes);
 
 // Start server
 const PORT = config.port || 3000;
