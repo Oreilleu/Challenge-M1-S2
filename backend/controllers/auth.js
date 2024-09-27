@@ -7,6 +7,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const { REGEX_PASSWORD_VALIDATION, DEFAULT_SALT } = require("../utils/const");
+const { generateJsonWebToken } = require("../utils/jsonWebtoken");
 
 exports.register = async (req, res) => {
   const { email, password } = req.body;
@@ -59,13 +60,20 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      message: "Email et mot de passe sont requis.",
+    });
+  }
+
   try {
     const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(400).json({
         success: false,
-        message: "Cette email n'est pas reconnue",
+        message: "Email ou mot de passe incorrect.",
       });
     }
 
@@ -74,15 +82,18 @@ exports.login = async (req, res) => {
     if (!isPasswordMatch) {
       return res.status(400).json({
         success: false,
-        message: "Mot de passe incorrect.",
+        message: "Email ou mot de passe incorrect.",
       });
     }
+
+    const jwt = await generateJsonWebToken({ email, role: user.role });
+
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
 
     res.status(200).json({
       success: true,
-      data: userWithoutPassword,
+      data: { user: userWithoutPassword, jwt },
       message: "Utilisateur authentifié.",
     });
   } catch (err) {

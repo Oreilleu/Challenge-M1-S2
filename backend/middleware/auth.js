@@ -1,12 +1,27 @@
-// module.exports = (req, res, next) => {
-//   const token = req.header("Authorization");
-//   if (!token) return res.status(401).json({ message: "Access Denied" });
+const { verifyJsonWebToken } = require("../utils/jsonWebtoken");
 
-//   try {
-//     const verified = jwt.verify(token, process.env.JWT_SECRET);
-//     req.user = verified;
-//     next();
-//   } catch (err) {
-//     res.status(400).json({ message: "Invalid Token" });
-//   }
-// };
+module.exports = (req, res, next) => {
+  const token =
+    req.headers.authorization && req.headers.authorization.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: "Accès refusé. Aucun token fourni.",
+    });
+  }
+
+  try {
+    const decoded = verifyJsonWebToken(token);
+
+    req.user = decoded;
+
+    next();
+  } catch (err) {
+    console.error("Erreur de vérification du token", err);
+    return res.status(401).json({
+      success: false,
+      message: "Token invalide ou expiré.",
+    });
+  }
+};
