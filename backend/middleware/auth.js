@@ -1,8 +1,7 @@
 const { verifyJsonWebToken } = require("../utils/jsonWebtoken");
 
-module.exports = (req, res, next) => {
-  const token =
-    req.headers.authorization && req.headers.authorization.split(" ")[1];
+const auth = (req, res, next) => {
+  req.headers.authorization && req.headers.authorization.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({
@@ -18,10 +17,11 @@ module.exports = (req, res, next) => {
 
     next();
   } catch (err) {
-    console.error("Erreur de vérification du token", err);
     return res.status(401).json({
       success: false,
       message: "Token invalide ou expiré.",
     });
   }
 };
+
+module.exports = auth;

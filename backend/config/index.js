@@ -9,4 +9,10 @@ module.exports = {
     name: process.env.DB_NAME || "",
     password: process.env.DB_PASSWORD || "",
   },
+  mailer: {
+    user: process.env.MAILER_USER || "",
+    host: process.env.MAILER_HOST || "",
+    password: process.env.MAILER_PASSWORD,
+    noreply: process.env.NO_REPLY_ADDRESS || "noreply@nessie-fact.com",
+  },
 };

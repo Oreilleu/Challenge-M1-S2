@@ -3,8 +3,9 @@ const app = express();
 const config = require("./config");
 const authRoutes = require("./routes/auth");
 const connectDb = require("./utils/connectDb");
+const errorHandler = require("./middleware/error");
 
-// Appel de la fonction pour se connecter à la DB
+// Function to connect database
 connectDb();
 
 // Middleware setup
@@ -12,6 +13,9 @@ app.use(express.json());
 
 // Routes setup
 app.use("/", authRoutes);
+
+// Error server handler
+app.use(errorHandler);
 
 // Start server
 const PORT = config.port || 3000;

@@ -9,7 +9,7 @@ const bcrypt = require("bcrypt");
 const { REGEX_PASSWORD_VALIDATION, DEFAULT_SALT } = require("../utils/const");
 const { generateJsonWebToken } = require("../utils/jsonWebtoken");
 
-exports.register = async (req, res) => {
+exports.register = async (req, res, next) => {
   const { email, password } = req.body;
 
   const isPasswordSecure = new RegExp(REGEX_PASSWORD_VALIDATION).test(password);
@@ -42,18 +42,7 @@ exports.register = async (req, res) => {
       message: "Utilisateur créer",
     });
   } catch (err) {
-    if (err.code === 11000) {
-      return res.status(400).json({
-        success: false,
-        message: "Un utilisateur avec cet email existe déja.",
-      });
-    }
-
-    res.status(500).json({
-      success: false,
-      message: "Erreur lors de l'enregistrement de l'utilisateur.",
-      error: err.message,
-    });
+    next(err);
   }
 };
 
@@ -97,9 +86,6 @@ exports.login = async (req, res) => {
       message: "Utilisateur authentifié.",
     });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: "Erreur lors de la connexion de l'utilisateur.",
-    });
+    next(err);
   }
 };
