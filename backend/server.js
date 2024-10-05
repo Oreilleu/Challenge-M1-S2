@@ -4,12 +4,19 @@ const config = require("./config");
 const authRoutes = require("./routes/auth");
 const connectDb = require("./utils/connectDb");
 const errorHandler = require("./middleware/error");
+var cors = require("cors");
 
 // Function to connect database
 connectDb();
 
 // Middleware setup
 app.use(express.json());
+
+app.use(
+  cors({
+    origin: process.env.FRONT_URL,
+  })
+);
 
 // Routes setup
 app.use("/", authRoutes);
