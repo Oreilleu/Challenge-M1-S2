@@ -10,7 +10,7 @@ const { REGEX_PASSWORD_VALIDATION, DEFAULT_SALT } = require("../utils/const");
 const { generateJsonWebToken } = require("../utils/jsonWebtoken");
 
 exports.register = async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password, firstname, lastname, civility } = req.body;
 
   const isPasswordSecure = new RegExp(REGEX_PASSWORD_VALIDATION).test(password);
 
@@ -28,6 +28,9 @@ exports.register = async (req, res, next) => {
     const user = new User({
       email: email,
       password: hashedPassword,
+      firstname,
+      lastname,
+      civility,
       role: "ROLE_USER",
     });
 

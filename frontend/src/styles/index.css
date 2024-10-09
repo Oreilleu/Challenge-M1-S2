@@ -1,0 +1,112 @@
+/* Surcharge variable Element Plus theme */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Istok+Web:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+:root {
+  --el-color-primary: var(--primary);
+  --el-color-primary-light-3: var(--primary-hover); /* hover */
+  --el-color-primary-light-5: var(--primary-outline); /* outline, disabled */
+  --el-color-primary-dark-2: var(--primary-active); /* active */
+
+  --primary: #0046be;
+  --primary-hover: #0f67ff;
+  --primary-outline: #9fc2ff;
+  --primary-disabled: #9fc2ff;
+  --primary-active: #003898;
+
+  --secondary: #003da6;
+  --lightgray: #f0f0f0;
+
+  --success: var(--el-color-success);
+  --success-hover: var(--el-color-success-light-3);
+  --success-outline: var(--el-color-success-light-5);
+  --success-disabled: var(--el-color-success-light-5);
+  --success-active: var(--el-color-success-dark-2);
+
+  --danger: var(--el-color-danger);
+  --danger-hover: var(--el-color-danger-light-3);
+  --danger-outline: var(--el-color-danger-light-5);
+  --danger-disabled: var(--el-color-danger-light-5);
+  --danger-active: var(--el-color-danger-dark-2);
+
+  --info: var(--el-color-info);
+  --info-hover: var(--el-color-info-light-3);
+  --info-outline: var(--el-color-info-light-5);
+  --info-disabled: var(--el-color-info-light-5);
+  --info-active: var(--el-color-info-dark-2);
+
+  --warning: var(--el-color-warning);
+  --warning-hover: var(--el-color-warning-light-3);
+  --warning-outline: var(--el-color-warning-light-5);
+  --warning-disabled: var(--el-color-warning-light-5);
+  --warning-active: var(--el-color-warning-dark-2);
+
+  --main-font: 'Istok Web', sans-serif;
+  --main-title-font: 'Open Sans', sans-serif;
+  --sub-title-font: 'Montserrat', sans-serif;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 1em;
+  font-family: var(--main-font);
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ol,
+ul {
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+}
+
+h1 {
+  font-family: var(--main-title-font);
+  font-weight: 600;
+}
+
+h2 {
+  font-family: var(--sub-title-font);
+  font-weight: 600;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Volé dans bootstrap, permet de caché des tags en respectant l'accessibilité du web*/
+.visually-hidden {
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+
+  &:not(caption) {
+    position: absolute !important;
+  }
+}

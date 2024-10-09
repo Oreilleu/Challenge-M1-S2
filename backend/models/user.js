@@ -29,6 +29,30 @@ const userSchema = new mongoose.Schema(
       },
       required: [true, "Le mot de passe est obligatoire."],
     },
+    firstname: {
+      type: String,
+      validate: {
+        validator: function (value) {
+          return value.length < 250;
+        },
+        message: "Le champ prénom doit être inférieur à 250 caractères.",
+      },
+      required: [true, "Le champ prénom est obligatoire."],
+    },
+    lastname: {
+      type: String,
+      validate: {
+        validator: function (value) {
+          return value.length < 250;
+        },
+        message:
+          "Le champ nom de famille doit être inférieur à 250 caractères.",
+      },
+      required: [true, "Le champ nom de famille est obligatoire."],
+    },
+    civility: {
+      type: String,
+    },
     role: {
       type: String,
       require: true,
