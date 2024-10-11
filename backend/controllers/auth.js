@@ -6,23 +6,58 @@
 
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
-const { REGEX_PASSWORD_VALIDATION, DEFAULT_SALT } = require("../utils/const");
+const {
+  REGEX_PASSWORD_VALIDATION,
+  DEFAULT_SALT,
+  REGEX_EMAIL_VALIDATION,
+} = require("../utils/const");
 const { generateJsonWebToken } = require("../utils/jsonWebtoken");
+const sendEmail = require("../utils/senderMail");
+const activationAccountTemplate = require("../utils/template-email/activationAccountTemplate");
+const mailer = require("../config").mailer;
 
 exports.register = async (req, res, next) => {
   const { email, password, firstname, lastname, civility } = req.body;
 
-  const isPasswordSecure = new RegExp(REGEX_PASSWORD_VALIDATION).test(password);
+  const badRequestErrors = [];
 
-  if (!isPasswordSecure) {
-    return res.status(400).json({
-      success: false,
-      message:
-        "Le mot de passe doit contenir au moins un caractère spécial, une majuscule, une minuscule et un chiffre !",
-    });
-  }
+  const testEmailFormat = new RegExp(REGEX_EMAIL_VALIDATION).test(email);
 
   try {
+    if (!email || !password || !firstname || !lastname || !civility) {
+      badRequestErrors.push("Tous les champs sont obligatoires.");
+    }
+
+    if (!testEmailFormat) {
+      badRequestErrors.push(
+        "L'email doit être au format nom-prenom@domain.com ."
+      );
+    }
+
+    const existingUser = await User.findOne({ email: email });
+
+    if (existingUser) {
+      badRequestErrors.push("Cet email est déjà utilisé.");
+    }
+
+    const isPasswordSecure = new RegExp(REGEX_PASSWORD_VALIDATION).test(
+      password
+    );
+
+    if (!isPasswordSecure) {
+      badRequestErrors.push(
+        "Le mot de passe doit contenir au moins un caractère spécial, une majuscule, une minuscule et un chiffre !"
+      );
+    }
+
+    if (badRequestErrors.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "L'enregistrement a échoué. Veuillez réessayer.",
+        errors: badRequestErrors,
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(password, DEFAULT_SALT);
 
     const user = new User({
@@ -38,6 +73,20 @@ exports.register = async (req, res, next) => {
 
     const userWithoutPassword = registeredUser.toObject();
     delete userWithoutPassword.password;
+
+    try {
+      await sendEmail(
+        (form = mailer.noreply),
+        (to = email),
+        (subject = "Activation du compte "),
+        (html = await activationAccountTemplate(
+          userWithoutPassword.email,
+          userWithoutPassword.firstname
+        ))
+      );
+    } catch (error) {
+      console.error("Erreur lors de l'envoie de l'email d'activation", error);
+    }
 
     res.status(201).json({
       success: true,
@@ -78,7 +127,10 @@ exports.login = async (req, res) => {
       });
     }
 
-    const jwt = await generateJsonWebToken({ email, role: user.role });
+    const jwt = await generateJsonWebToken(
+      (data = { email, role: user.role }),
+      (expiresIn = "24h")
+    );
 
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;

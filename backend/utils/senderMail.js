@@ -13,16 +13,13 @@ const transporter = nodemailer.createTransport({
 
 const sendEmail = async (from, to, subject, html) => {
   try {
-    const mail = await transporter.sendMail({
+    await transporter.sendMail({
       from,
       to,
       subject,
       html,
     });
-
-    console.log("Message sent: %s", mail);
   } catch (error) {
-    console.log(error);
     throw new Error("Error lors de l'envoie de l'email.");
   }
 };

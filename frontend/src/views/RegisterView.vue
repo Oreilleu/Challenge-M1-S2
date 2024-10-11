@@ -54,17 +54,20 @@
         hidden-label
       />
 
-      <el-button type="primary" native-type="submit" :disabled="isSubmitting">Valider</el-button>
+      <el-button type="primary" native-type="submit" :disabled="isSubmitting || hasErrors(errors)"
+        >Valider</el-button
+      >
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { RegisterForm } from '@/utils/types'
+import { ToastType, type RegisterErrorsForm, type RegisterForm } from '@/utils/types'
 import { registerFormSchema } from '@/utils/validation/schema'
 import { validateField } from '@/utils/validation/validator'
 import { reactive, ref } from 'vue'
 import FormInput from '@/components/FormInput.vue'
+import toastHandler from '@/utils/toastHandler'
 
 const isSubmitting = ref(false)
 
@@ -76,7 +79,7 @@ const registerForm: RegisterForm = reactive({
   lastname: ''
 })
 
-const errors = reactive({
+const errors: RegisterErrorsForm = reactive({
   email: '',
   password: '',
   civility: '',
@@ -85,14 +88,20 @@ const errors = reactive({
 })
 
 const handleBlur = (field: keyof typeof registerForm) => {
-  console.log('handleBlur')
-  console.log(errors)
   validateField(field, registerFormSchema, registerForm, errors)
 }
 
-const submitForm = async () => {
-  isSubmitting.value = true
+const hasErrors = (errors: RegisterErrorsForm) => {
+  return Object.values(errors).some((error) => error !== '')
+}
 
+const submitForm = async () => {
+  if (hasErrors(errors)) {
+    toastHandler('Le formulaire comporte des erreurs', ToastType.ERROR)
+    return
+  }
+
+  isSubmitting.value = true
   try {
     const registerUser = await fetch('http://localhost:3000/register', {
       method: 'POST',
@@ -102,10 +111,24 @@ const submitForm = async () => {
       body: JSON.stringify(registerForm)
     })
 
-    console.log(registerUser)
+    if (!registerUser.ok) {
+      if (registerUser.status === 500) {
+        throw new Error()
+      }
+      if (registerUser.status === 400) {
+        const { errors } = await registerUser.json()
+        toastHandler(errors[0] || "Une erreur s'est produite, veuillez réessayer.", ToastType.ERROR)
+      }
+      return
+    }
+
+    toastHandler('Votre compte a bien été créer.', ToastType.SUCCESS)
+
+    // Stocké l'utilisateur dans le localstorage
+    // Redirigé l'utilisateur vers la page d'accueil
+    console.log('res', await registerUser.json())
   } catch (error) {
-    console.log('Problème')
-    console.log(error)
+    toastHandler("Une erreur s'est produite, veuillez réessayer.", ToastType.ERROR)
   } finally {
     isSubmitting.value = false
   }
