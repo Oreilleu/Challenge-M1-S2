@@ -5,7 +5,10 @@ const {
   DEFAULT_SALT,
   REGEX_EMAIL_VALIDATION,
 } = require("../utils/const");
-const { generateJsonWebToken } = require("../utils/jsonWebtoken");
+const {
+  generateJsonWebToken,
+  verifyJsonWebToken,
+} = require("../utils/jsonWebtoken");
 const sendEmail = require("../utils/senderMail");
 const activationAccountTemplate = require("../utils/template-email/activationAccountTemplate");
 const mailer = require("../config").mailer;
@@ -141,5 +144,51 @@ exports.login = async (req, res) => {
     });
   } catch (err) {
     next(err);
+  }
+};
+
+exports.verifyAccount = async (req, res) => {
+  const { validateAccountToken } = req.body;
+
+  if (!validateAccountToken) {
+    res.status(400).json({
+      success: false,
+      message:
+        "Une erreur s'est produite, veuillez renvoyer un email d'activation.",
+    });
+  }
+
+  try {
+    const decoded = await verifyJsonWebToken(validateAccountToken);
+
+    const user = await User.findOne({ email: decoded.email });
+
+    if (!user) {
+      res.status(400).json({
+        success: false,
+        message: "Utilisateur non trouvé.",
+      });
+    }
+
+    if (user.isVerified) {
+      res.status(400).json({
+        success: false,
+        message: "Ce compte est déjà activé.",
+      });
+    }
+
+    user.isVerified = true;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Compte activé.",
+    });
+  } catch (err) {
+    res.status(401).json({
+      success: false,
+      message: "Token invalide ou expiré.",
+    });
   }
 };

@@ -25,7 +25,7 @@ export type User = {
 export type ResponseRegisterForm = {
   success: boolean
   message?: string
-  data?: User & { jwt: string }
+  data?: { user: User } & { jwt: string }
   errors?: string[]
 }
 
@@ -39,5 +39,6 @@ export enum ToastType {
 }
 
 export enum LocalStorageKeys {
-  USER = 'user'
+  USER = 'user',
+  AUTH_TOKEN = 'auth-token'
 }

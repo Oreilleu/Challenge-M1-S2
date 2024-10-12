@@ -1,8 +1,15 @@
+import HomePage from '@/views/HomePage.vue'
 import LoginView from '@/views/LoginView.vue'
 import RegisterView from '@/views/RegisterView.vue'
+import VerifyAccount from '@/views/VerifyAccount.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
+  {
+    path: '/',
+    name: 'Home',
+    component: HomePage
+  },
   {
     path: '/register',
     name: 'Register',
@@ -12,6 +19,11 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: LoginView
+  },
+  {
+    path: '/verify-account',
+    name: 'VerifyAccount',
+    component: VerifyAccount
   }
 ]
 

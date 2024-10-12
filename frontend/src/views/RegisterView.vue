@@ -133,7 +133,8 @@ const submitForm = async () => {
       throw new Error()
     }
 
-    localStorageHandler().setItem(LocalStorageKeys.USER, data.jwt)
+    localStorageHandler().set(LocalStorageKeys.AUTH_TOKEN, data.jwt)
+    localStorageHandler().set(LocalStorageKeys.USER, data.user)
 
     toastHandler('Votre compte a bien été créer.', ToastType.SUCCESS)
 
