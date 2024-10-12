@@ -14,6 +14,21 @@ export type RegisterErrorsForm = {
   lastname: string
 }
 
+export type User = {
+  email: string
+  civility: Civility
+  firstname: string
+  lastname: string
+  password: string
+}
+
+export type ResponseRegisterForm = {
+  success: boolean
+  message?: string
+  data?: User & { jwt: string }
+  errors?: string[]
+}
+
 type Civility = 'man' | 'woman'
 
 export enum ToastType {
@@ -21,4 +36,8 @@ export enum ToastType {
   ERROR = 'error',
   INFO = 'info',
   WARNING = 'warning'
+}
+
+export enum LocalStorageKeys {
+  USER = 'user'
 }

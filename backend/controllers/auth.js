@@ -1,9 +1,3 @@
-// Type de réponse :
-// Success  : bool
-// data?    : unknow
-// message? : string
-// error?   : unknow
-
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const {
@@ -74,6 +68,11 @@ exports.register = async (req, res, next) => {
     const userWithoutPassword = registeredUser.toObject();
     delete userWithoutPassword.password;
 
+    const jwt = await generateJsonWebToken(
+      (data = { email, role: user.role }),
+      (expiresIn = "24h")
+    );
+
     try {
       await sendEmail(
         (form = mailer.noreply),
@@ -90,7 +89,7 @@ exports.register = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      data: userWithoutPassword,
+      data: { user: userWithoutPassword, jwt },
       message: "Utilisateur créer",
     });
   } catch (err) {

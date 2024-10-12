@@ -62,14 +62,23 @@
 </template>
 
 <script setup lang="ts">
-import { ToastType, type RegisterErrorsForm, type RegisterForm } from '@/utils/types'
+import {
+  LocalStorageKeys,
+  ToastType,
+  type RegisterErrorsForm,
+  type RegisterForm,
+  type ResponseRegisterForm
+} from '@/utils/types'
 import { registerFormSchema } from '@/utils/validation/schema'
 import { validateField } from '@/utils/validation/validator'
 import { reactive, ref } from 'vue'
 import FormInput from '@/components/FormInput.vue'
 import toastHandler from '@/utils/toastHandler'
+import localStorageHandler from '@/utils/localStorageHandler'
+import { useRouter } from 'vue-router'
 
 const isSubmitting = ref(false)
+const router = useRouter()
 
 const registerForm: RegisterForm = reactive({
   email: '',
@@ -103,7 +112,7 @@ const submitForm = async () => {
 
   isSubmitting.value = true
   try {
-    const registerUser = await fetch('http://localhost:3000/register', {
+    const responseRegisterForm: Response = await fetch('http://localhost:3000/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -111,22 +120,24 @@ const submitForm = async () => {
       body: JSON.stringify(registerForm)
     })
 
-    if (!registerUser.ok) {
-      if (registerUser.status === 500) {
-        throw new Error()
-      }
-      if (registerUser.status === 400) {
-        const { errors } = await registerUser.json()
+    const { errors, data }: ResponseRegisterForm = await responseRegisterForm.json()
+
+    if (!responseRegisterForm.ok) {
+      if (responseRegisterForm.status === 400 && errors) {
         toastHandler(errors[0] || "Une erreur s'est produite, veuillez réessayer.", ToastType.ERROR)
       }
-      return
+      throw new Error()
     }
+
+    if (!data) {
+      throw new Error()
+    }
+
+    localStorageHandler().setItem(LocalStorageKeys.USER, data.jwt)
 
     toastHandler('Votre compte a bien été créer.', ToastType.SUCCESS)
 
-    // Stocké l'utilisateur dans le localstorage
-    // Redirigé l'utilisateur vers la page d'accueil
-    console.log('res', await registerUser.json())
+    router.push('/')
   } catch (error) {
     toastHandler("Une erreur s'est produite, veuillez réessayer.", ToastType.ERROR)
   } finally {
