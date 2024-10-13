@@ -14,3 +14,8 @@ export const registerFormSchema = z.object({
   lastname: lastnameValidation,
   civility: civilityValidation
 })
+
+export const loginFormSchema = z.object({
+  email: emailValidation,
+  password: passwordValidation
+})

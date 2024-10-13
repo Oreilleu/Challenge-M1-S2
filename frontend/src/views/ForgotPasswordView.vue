@@ -6,35 +6,65 @@
         label="Entrez votre email :"
         placeholder="Email"
         v-model="email"
+        :error="errors.email"
+        @blur="handleBlur('email')"
         type="email"
         required
         hidden-label
       />
-      <el-button type="primary" native-type="submit"
-        >Envoyer le lien de réinitialisation</el-button
-      >
+      <el-button type="primary" native-type="submit" :disabled="isSubmitting || hasErrors(errors)">
+        Envoyer le lien de réinitialisation
+      </el-button>
     </form>
     <p v-if="message">{{ message }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { forgotPassword } from "@/services/authService";
-import FormInput from "@/components/FormInput.vue";
+import { ref, reactive } from 'vue'
+import { forgotPassword } from '@/services/authService'
+import FormInput from '@/components/FormInput.vue'
+import { validateField } from '@/utils/validation/validator'
+import { loginFormSchema } from '@/utils/validation/schema'
 
-const email = ref("");
-const message = ref("");
+const email = ref('')
+const message = ref('')
+const isSubmitting = ref(false)
+const errors = reactive({
+  email: ''
+})
+
+// Fonction pour vérifier si un champ a des erreurs
+const hasErrors = (errors) => {
+  return Object.values(errors).some((error) => error !== '')
+}
+
+// Validation à chaque perte de focus
+const handleBlur = (field) => {
+  validateField(field, loginFormSchema, { email: email.value }, errors)
+}
 
 const submitEmail = async () => {
-  try {
-    const response = await forgotPassword(email.value);
-    message.value = response.message;
-  } catch (error) {
-    console.error(error);
-    message.value = "Erreur lors de l'envoi de l'email.";
+  // Validation des champs avant de soumettre
+  validateField('email', loginFormSchema, { email: email.value }, errors)
+
+  if (hasErrors(errors)) {
+    message.value = 'Le formulaire comporte des erreurs.'
+    return
   }
-};
+
+  isSubmitting.value = true
+
+  try {
+    const response = await forgotPassword(email.value)
+    message.value = response.message
+  } catch (error) {
+    console.error(error)
+    message.value = "Erreur lors de l'envoi de l'email."
+  } finally {
+    isSubmitting.value = false
+  }
+}
 </script>
 
 <style scoped>

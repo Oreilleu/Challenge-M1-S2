@@ -5,7 +5,9 @@
       <FormInput
         label="Email"
         placeholder="Email"
-        v-model="email"
+        v-model="loginForm.email"
+        :error="errors.email"
+        @blur="handleBlur('email')"
         type="email"
         required
         hidden-label
@@ -14,32 +16,63 @@
       <FormInput
         label="Mot de passe"
         placeholder="Mot de passe"
-        v-model="password"
+        v-model="loginForm.password"
+        :error="errors.password"
+        @blur="handleBlur('password')"
         type="password"
         required
         hidden-label
       />
 
-      <el-button type="primary" native-type="submit">Se connecter</el-button>
+      <el-button type="primary" native-type="submit" :disabled="isSubmitting || hasErrors(errors)">
+        Se connecter
+      </el-button>
     </form>
 
-    <router-link to="/forgot-password">Mot de passe oublié ?</router-link>
+    <router-link to="/forgot-password" class="forgot-password-link">
+      Mot de passe oublié ?
+    </router-link>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { login } from '@/services/authService'
 import FormInput from '@/components/FormInput.vue'
 import { useRouter } from 'vue-router'
+import { validateField } from '@/utils/validation/validator'
+import { loginFormSchema } from '@/utils/validation/schema'
 
-const email = ref('')
-const password = ref('')
+const isSubmitting = ref(false)
 const router = useRouter()
 
+const loginForm = reactive({
+  email: '',
+  password: ''
+})
+
+const errors = reactive({
+  email: '',
+  password: ''
+})
+
+const handleBlur = (field: keyof typeof loginForm) => {
+  validateField(field, loginFormSchema, loginForm, errors)
+}
+
+const hasErrors = (errors) => {
+  return Object.values(errors).some((error) => error !== '')
+}
+
 const handleLogin = async () => {
+  if (hasErrors(errors)) {
+    console.error('Form contains errors')
+    return
+  }
+
+  isSubmitting.value = true
   try {
-    const response = await login(email.value, password.value)
+    const response = await login(loginForm.email, loginForm.password)
     if (response.ok) {
       console.log('Connexion réussie !')
       router.push('/')
@@ -48,6 +81,8 @@ const handleLogin = async () => {
     }
   } catch (error) {
     console.error('Erreur lors de la connexion : ', error)
+  } finally {
+    isSubmitting.value = false
   }
 }
 </script>
@@ -62,26 +97,36 @@ const handleLogin = async () => {
   transform: translate(-50%, -50%);
   padding: 20px 40px 40px 40px;
   background: var(--lightgray);
+  border-radius: 8px;
 }
 
 h1 {
-  background: var(--lightgray);
   text-align: center;
   text-transform: uppercase;
   margin-bottom: 20px;
 }
 
 form {
-  background: white;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
   gap: 10px;
-  padding: 20px 0;
+  background: white;
+  padding: 20px;
 }
 
 button {
   margin-top: 10px;
+}
+
+.forgot-password-link {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.forgot-password-link:hover {
+  text-decoration: underline;
 }
 </style>
