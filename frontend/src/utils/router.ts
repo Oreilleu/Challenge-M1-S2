@@ -1,5 +1,5 @@
 import HomePage from '@/views/HomePage.vue'
-import LoginView from '@/views/LoginView.vue'
+import LoginView from '@/views/Login.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import VerifyAccount from '@/views/VerifyAccount.vue'
 import ForgotPasswordView from '@/views/ForgotPasswordView.vue'
@@ -30,13 +30,13 @@ const routes = [
   {
     path: '/forgot-password',
     name: 'forgot-password',
-    component: ForgotPasswordView, 
+    component: ForgotPasswordView
   },
   {
     path: '/reset-password/:token',
     name: 'reset-password',
-    component: ResetPasswordView,
-  },
+    component: ResetPasswordView
+  }
 ]
 
 const router = createRouter({
