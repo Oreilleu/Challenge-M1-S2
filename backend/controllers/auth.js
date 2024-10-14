@@ -72,7 +72,7 @@ exports.register = async (req, res, next) => {
     delete userWithoutPassword.password;
 
     const jwt = await generateJsonWebToken(
-      (data = { email, role: user.role }),
+      (data = { ...userWithoutPassword }),
       (expiresIn = "24h")
     );
 
@@ -90,7 +90,7 @@ exports.register = async (req, res, next) => {
       console.error("Erreur lors de l'envoie de l'email d'activation", error);
     }
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       data: { user: userWithoutPassword, jwt },
       message: "Utilisateur créer",
@@ -129,15 +129,15 @@ exports.login = async (req, res) => {
       });
     }
 
-    const jwt = await generateJsonWebToken(
-      (data = { email, role: user.role }),
-      (expiresIn = "24h")
-    );
-
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
 
-    res.status(200).json({
+    const jwt = await generateJsonWebToken(
+      (data = { ...userWithoutPassword }),
+      (expiresIn = "24h")
+    );
+
+    return res.status(200).json({
       success: true,
       data: { user: userWithoutPassword, jwt },
       message: "Utilisateur authentifié.",
@@ -151,7 +151,7 @@ exports.verifyAccount = async (req, res) => {
   const { validateAccountToken } = req.body;
 
   if (!validateAccountToken) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message:
         "Une erreur s'est produite, veuillez renvoyer un email d'activation.",
@@ -164,14 +164,14 @@ exports.verifyAccount = async (req, res) => {
     const user = await User.findOne({ email: decoded.email });
 
     if (!user) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: "Utilisateur non trouvé.",
       });
     }
 
     if (user.isVerified) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: "Ce compte est déjà activé.",
       });
@@ -181,14 +181,42 @@ exports.verifyAccount = async (req, res) => {
 
     await user.save();
 
-    res.status(200).json({
+    const userWithoutPassword = user.toObject();
+    delete userWithoutPassword.password;
+
+    return res.status(200).json({
       success: true,
+      data: { ...userWithoutPassword },
       message: "Compte activé.",
     });
   } catch (err) {
-    res.status(401).json({
+    return res.status(401).json({
       success: false,
       message: "Token invalide ou expiré.",
     });
+  }
+};
+
+exports.sendVerificationEmail = async (req, res, next) => {
+  const { user } = req;
+
+  if (!user) {
+    throw new Error("Utilisateur non trouvé.");
+  }
+
+  try {
+    await sendEmail(
+      (form = mailer.noreply),
+      (to = user.email),
+      (subject = "Activation du compte "),
+      (html = await activationAccountTemplate(user.email, user.firstname))
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Email d'activation envoyé.",
+    });
+  } catch (error) {
+    next(error);
   }
 };
