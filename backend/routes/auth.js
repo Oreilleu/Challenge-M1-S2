@@ -11,5 +11,10 @@ router.get(
   checkToken,
   authController.sendVerificationEmail
 );
+router.get(
+  "/check-integrity-user",
+  checkToken,
+  authController.checkIntegrityUser
+);
 
 module.exports = router;

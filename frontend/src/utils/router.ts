@@ -6,6 +6,7 @@ import VerifyAccount from '@/views/VerifyAccount.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import localStorageHandler from './localStorageHandler'
 import { LocalStorageKeys } from './types'
+import { isAuthenticated } from './isAuthenticatedUser'
 
 const routes = [
   {
@@ -40,27 +41,24 @@ const router = createRouter({
   routes
 })
 
-// const verifyToken = () => {
-
-// }
-
-const isAuthenticated = () => {
-  // ATTENTION : vérifier l'intégrité du token
-  // Si pas de token, supprimer le user du local storage
-  return localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN) !== null
-}
-
-// ATTENTION : Un utilisateur non authentifié a quand même accès à la quasi totalité du site
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const user = localStorageHandler().get(LocalStorageKeys.USER)
-  if (to.name !== 'Login' && to.name !== 'Register' && !isAuthenticated()) {
-    next({ name: 'Login' })
-  } else if ((to.name === 'Login' || to.name === 'Register') && isAuthenticated()) {
+  const isAuthenticatedUser = await isAuthenticated()
+
+  const isUserVerified = user && user.isVerified
+
+  const isUserNotVerified = user && !user.isVerified
+
+  const authenticatedPages = ['AccountUnvalidated', 'VerifyAccount']
+
+  if ((to.name === 'Login' || to.name === 'Register') && isAuthenticatedUser) {
     next({ name: 'Home' })
-  } else if (to.name === 'Home' && !user.isVerified) {
+  } else if (to.name !== 'AccountUnvalidated' && to.name !== 'VerifyAccount' && isUserNotVerified) {
     next({ name: 'AccountUnvalidated' })
-  } else if ((to.name === 'AccountUnvalidated' || to.name === 'VerifyAccount') && user.isVerified) {
+  } else if ((to.name === 'AccountUnvalidated' || to.name === 'VerifyAccount') && isUserVerified) {
     next({ name: 'Home' })
+  } else if (authenticatedPages.includes((to?.name as string) || '') && !isAuthenticatedUser) {
+    next({ name: 'Login' })
   } else {
     next()
   }

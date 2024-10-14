@@ -220,3 +220,20 @@ exports.sendVerificationEmail = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.checkIntegrityUser = async (req, res, next) => {
+  const { user } = req;
+
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: "Utilisateur non trouvé.",
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: { isValid: true },
+    message: "Utilisateur authentifié.",
+  });
+};
