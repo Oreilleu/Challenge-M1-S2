@@ -1,12 +1,9 @@
 const { generateJsonWebToken } = require("../jsonWebtoken");
 
-const activationAccountTemplate = async (email, name) => {
+const activationAccountTemplate = async (email: string, name: string) => {
   const frontUrl = process.env.FRONT_URL || "";
 
-  const jwt = await generateJsonWebToken(
-    (data = { email }),
-    (expiresIn = "15m")
-  );
+  const jwt = await generateJsonWebToken({ email }, "15m");
 
   return `<main>
       <h1>Bonjour ${name} pour activer votre compte cliqué sur le lien : </h1>
@@ -14,4 +11,4 @@ const activationAccountTemplate = async (email, name) => {
     </main>`;
 };
 
-module.exports = activationAccountTemplate;
+export default activationAccountTemplate;

@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
-const config = require("../config");
+import { config } from "../config";
+import mongoose from "mongoose";
 
-const connectDb = async () => {
+export const connectDb = async (): Promise<void> => {
   const { user, password, host, name } = config.db;
   const connexionString = `mongodb+srv://${user}:${password}@${host}/?retryWrites=true&w=majority&appName=${name}`;
 
@@ -12,5 +12,3 @@ const connectDb = async () => {
     console.error("Erreur lors de la connexion à la base de données : ", error);
   }
 };
-
-module.exports = connectDb;

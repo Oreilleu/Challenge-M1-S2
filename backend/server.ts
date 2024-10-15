@@ -1,12 +1,11 @@
-const express = require("express");
+import express from "express";
+import { config } from "./config";
+import cors from "cors";
+import { connectDb } from "./utils/connectDb";
+import authRoutes from "./routes/auth";
+import { errorHandler } from "./middleware/error";
 const app = express();
-const config = require("./config");
-const authRoutes = require("./routes/auth");
-const connectDb = require("./utils/connectDb");
-const errorHandler = require("./middleware/error");
-var cors = require("cors");
 
-// Function to connect database
 connectDb();
 
 // Middleware setup

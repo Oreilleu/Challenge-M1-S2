@@ -1,4 +1,12 @@
-const error = (err, req, res, next) => {
+import { NextFunction, Request, Response } from "express";
+
+// TODO : Custom type error ?
+export const errorHandler = (
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): any => {
   console.error(err.stack);
   const statusCode = err.statusCode || 500;
 
@@ -7,5 +15,3 @@ const error = (err, req, res, next) => {
     message: err.message || "Une erreur est survenue sur le serveur.",
   });
 };
-
-module.exports = error;

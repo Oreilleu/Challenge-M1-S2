@@ -1,24 +1,38 @@
-const User = require("../models/user");
-const bcrypt = require("bcrypt");
-const {
-  REGEX_PASSWORD_VALIDATION,
-  DEFAULT_SALT,
-  REGEX_EMAIL_VALIDATION,
-} = require("../utils/const");
-const {
+import User from "../models/user";
+import bcrypt from "bcrypt";
+import {
   generateJsonWebToken,
   verifyJsonWebToken,
-} = require("../utils/jsonWebtoken");
-const sendEmail = require("../utils/senderMail");
-const activationAccountTemplate = require("../utils/template-email/activationAccountTemplate");
-const mailer = require("../config").mailer;
+} from "../utils/jsonWebtoken";
+import { sendEmail } from "../utils/senderMail";
+import { config } from "../config";
+import {
+  DEFAULT_SALT,
+  REGEX_EMAIL_VALIDATION,
+  REGEX_PASSWORD_VALIDATION,
+} from "../utils/const";
+import { NextFunction, Response, Request } from "express";
 
-exports.register = async (req, res, next) => {
+import activationAccountTemplate from "../utils/template-email/activationAccountTemplate";
+
+// TODO : Faire un type User
+// TODO : Trouver le bon type pour le retour des fonction de controller
+export interface AuthenticatedRequest extends Request {
+  user: any;
+}
+
+export const register = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
   const { email, password, firstname, lastname, civility } = req.body;
 
-  const badRequestErrors = [];
+  const badRequestErrors: string[] = [];
 
   const testEmailFormat = new RegExp(REGEX_EMAIL_VALIDATION).test(email);
+
+  const mailer = config.mailer;
 
   try {
     if (!email || !password || !firstname || !lastname || !civility) {
@@ -71,20 +85,17 @@ exports.register = async (req, res, next) => {
     const userWithoutPassword = registeredUser.toObject();
     delete userWithoutPassword.password;
 
-    const jwt = await generateJsonWebToken(
-      (data = { ...userWithoutPassword }),
-      (expiresIn = "24h")
-    );
+    const jwt = await generateJsonWebToken({ ...userWithoutPassword }, "24h");
 
     try {
       await sendEmail(
-        (form = mailer.noreply),
-        (to = email),
-        (subject = "Activation du compte "),
-        (html = await activationAccountTemplate(
+        mailer.noreply,
+        email,
+        "Activation du compte ",
+        await activationAccountTemplate(
           userWithoutPassword.email,
           userWithoutPassword.firstname
-        ))
+        )
       );
     } catch (error) {
       console.error("Erreur lors de l'envoie de l'email d'activation", error);
@@ -100,7 +111,11 @@ exports.register = async (req, res, next) => {
   }
 };
 
-exports.login = async (req, res) => {
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -132,10 +147,7 @@ exports.login = async (req, res) => {
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
 
-    const jwt = await generateJsonWebToken(
-      (data = { ...userWithoutPassword }),
-      (expiresIn = "24h")
-    );
+    const jwt = await generateJsonWebToken({ ...userWithoutPassword }, "24h");
 
     return res.status(200).json({
       success: true,
@@ -147,7 +159,10 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.verifyAccount = async (req, res) => {
+export const verifyAccount = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   const { validateAccountToken } = req.body;
 
   if (!validateAccountToken) {
@@ -197,8 +212,13 @@ exports.verifyAccount = async (req, res) => {
   }
 };
 
-exports.sendVerificationEmail = async (req, res, next) => {
+export const sendVerificationEmail = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
   const { user } = req;
+  const mailer = config.mailer;
 
   if (!user) {
     throw new Error("Utilisateur non trouvé.");
@@ -206,10 +226,10 @@ exports.sendVerificationEmail = async (req, res, next) => {
 
   try {
     await sendEmail(
-      (form = mailer.noreply),
-      (to = user.email),
-      (subject = "Activation du compte "),
-      (html = await activationAccountTemplate(user.email, user.firstname))
+      mailer.noreply,
+      user.email,
+      "Activation du compte ",
+      await activationAccountTemplate(user.email, user.firstname)
     );
 
     return res.status(200).json({
@@ -221,7 +241,10 @@ exports.sendVerificationEmail = async (req, res, next) => {
   }
 };
 
-exports.checkIntegrityUser = async (req, res, next) => {
+export const checkIntegrityUser = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<any> => {
   const { user } = req;
 
   if (!user) {
