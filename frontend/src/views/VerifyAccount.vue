@@ -1,5 +1,7 @@
 <template>
   <h1>Verifie ton compte</h1>
+
+  <el-button type="primary" @click="verifyAccount">Vérifier mon compte</el-button>
 </template>
 
 <script setup lang="ts">
@@ -12,46 +14,52 @@ import { useRoute, useRouter } from 'vue-router'
 const route = useRoute()
 const router = useRouter()
 
+const authToken: string = localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)
+
+const validateAccountToken = route.query.token as string
+
+const verifyAccount = async () => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/verify-account`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ validateAccountToken })
+    })
+
+    if (!response.ok) {
+      throw new Error()
+    }
+
+    const json = await response.json()
+
+    if (json.success) {
+      toastHandler('Compte validé avec succès', ToastType.SUCCESS)
+      localStorageHandler().set(LocalStorageKeys.USER, json.data)
+      router.push('/')
+    } else {
+      throw new Error()
+    }
+  } catch (error) {
+    toastHandler('Erreur lors de la validation du compte, veuillez réessayer.', ToastType.ERROR)
+    router.push('/account-unvalidated')
+  }
+}
+
 onMounted(() => {
+  if (!validateAccountToken) {
+    toastHandler('Token de validation manquant', ToastType.ERROR)
+    router.push('/account-unvalidated')
+  }
+
   const user = localStorageHandler().get(LocalStorageKeys.USER)
 
   if (user.isVerified) {
+    toastHandler('Votre compte est déja validé', ToastType.INFO)
     router.push('/')
   }
-
-  const authToken: string = localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)
-
-  const validateAccountToken = route.query.token as string
-
-  const verifyAccount = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/verify-account`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`
-        },
-        body: JSON.stringify({ validateAccountToken })
-      })
-
-      if (!response.ok) {
-        throw new Error()
-      }
-
-      const data = await response.json()
-
-      if (data.success) {
-        toastHandler('Compte validé avec succès', ToastType.SUCCESS)
-        router.push('/')
-      } else {
-        throw new Error()
-      }
-    } catch (error) {
-      toastHandler('Erreur lors de la validation du compte, veuillez réessayer.', ToastType.ERROR)
-    }
-  }
-
-  verifyAccount()
 })
 </script>
 

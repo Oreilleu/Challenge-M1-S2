@@ -1,26 +1,31 @@
-const User = require("../models/user");
-const bcrypt = require("bcrypt");
-const {
-  REGEX_PASSWORD_VALIDATION,
-  DEFAULT_SALT,
-  REGEX_EMAIL_VALIDATION,
-} = require("../utils/const");
-const {
+import bcrypt from "bcrypt";
+import {
   generateJsonWebToken,
   verifyJsonWebToken,
-} = require("../utils/jsonWebtoken");
-const sendEmail = require("../utils/senderMail");
-const activationAccountTemplate = require("../utils/template-email/activationAccountTemplate");
-const mailer = require("../config").mailer;
-const crypto = require("crypto");
-const nodemailer = require("nodemailer");
+} from "../utils/jsonWebtoken";
+import { sendEmail } from "../utils/senderMail";
+import {
+  DEFAULT_SALT,
+  REGEX_EMAIL_VALIDATION,
+  REGEX_PASSWORD_VALIDATION,
+} from "../utils/const";
+import { Request, RequestHandler } from "express";
+import activationAccountTemplate from "../utils/template-email/activationAccountTemplate";
+import { config } from "../config";
+import { ExpiresIn, User as UserType } from "../utils/types";
+import User from "../models/user";
 
-exports.register = async (req, res, next) => {
+export interface AuthenticatedRequest extends Request {
+  user: UserType;
+}
+
+export const register: RequestHandler = async (req, res, next) => {
   const { email, password, firstname, lastname, civility } = req.body;
-
-  const badRequestErrors = [];
+  const badRequestErrors: string[] = [];
 
   const testEmailFormat = new RegExp(REGEX_EMAIL_VALIDATION).test(email);
+
+  const mailer = config.mailer;
 
   try {
     if (!email || !password || !firstname || !lastname || !civility) {
@@ -50,11 +55,12 @@ exports.register = async (req, res, next) => {
     }
 
     if (badRequestErrors.length > 0) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "L'enregistrement a échoué. Veuillez réessayer.",
         errors: badRequestErrors,
       });
+      return;
     }
 
     const hashedPassword = await bcrypt.hash(password, DEFAULT_SALT);
@@ -74,19 +80,19 @@ exports.register = async (req, res, next) => {
     delete userWithoutPassword.password;
 
     const jwt = await generateJsonWebToken(
-      (data = { email, role: user.role }),
-      (expiresIn = "24h")
+      { ...userWithoutPassword },
+      ExpiresIn["24_HOUR"]
     );
 
     try {
       await sendEmail(
-        (form = mailer.noreply),
-        (to = email),
-        (subject = "Activation du compte "),
-        (html = await activationAccountTemplate(
+        mailer.noreply,
+        email,
+        "Activation du compte ",
+        await activationAccountTemplate(
           userWithoutPassword.email,
           userWithoutPassword.firstname
-        ))
+        )
       );
     } catch (error) {
       console.error("Erreur lors de l'envoie de l'email d'activation", error);
@@ -97,59 +103,64 @@ exports.register = async (req, res, next) => {
       data: { user: userWithoutPassword, jwt },
       message: "Utilisateur créer",
     });
+    return;
   } catch (err) {
     next(err);
   }
 };
 
-exports.login = async (req, res) => {
+export const login: RequestHandler = async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({
+    res.status(400).json({
       success: false,
       message: "Email et mot de passe sont requis.",
     });
+    return;
   }
 
   try {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "Email ou mot de passe incorrect.",
       });
+      return;
     }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatch) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "Email ou mot de passe incorrect.",
       });
+      return;
     }
-
-    const jwt = await generateJsonWebToken(
-      (data = { email, role: user.role }),
-      (expiresIn = "24h")
-    );
 
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
+
+    const jwt = await generateJsonWebToken(
+      { ...userWithoutPassword },
+      ExpiresIn["24_HOUR"]
+    );
 
     res.status(200).json({
       success: true,
       data: { user: userWithoutPassword, jwt },
       message: "Utilisateur authentifié.",
     });
+    return;
   } catch (err) {
     next(err);
   }
 };
 
-exports.verifyAccount = async (req, res) => {
+export const verifyAccount: RequestHandler = async (req, res) => {
   const { validateAccountToken } = req.body;
 
   if (!validateAccountToken) {
@@ -158,10 +169,13 @@ exports.verifyAccount = async (req, res) => {
       message:
         "Une erreur s'est produite, veuillez renvoyer un email d'activation.",
     });
+    return;
   }
 
   try {
-    const decoded = await verifyJsonWebToken(validateAccountToken);
+    const decoded = (await verifyJsonWebToken(validateAccountToken)) as {
+      email: string;
+    };
 
     const user = await User.findOne({ email: decoded.email });
 
@@ -170,6 +184,7 @@ exports.verifyAccount = async (req, res) => {
         success: false,
         message: "Utilisateur non trouvé.",
       });
+      return;
     }
 
     if (user.isVerified) {
@@ -177,58 +192,62 @@ exports.verifyAccount = async (req, res) => {
         success: false,
         message: "Ce compte est déjà activé.",
       });
+      return;
     }
 
     user.isVerified = true;
 
     await user.save();
 
+    const userWithoutPassword = user.toObject();
+    delete userWithoutPassword.password;
+
     res.status(200).json({
       success: true,
+      data: { ...userWithoutPassword },
       message: "Compte activé.",
     });
+    return;
   } catch (err) {
     res.status(401).json({
       success: false,
       message: "Token invalide ou expiré.",
     });
+    return;
   }
 };
 
-const transporter = nodemailer.createTransport({
-  host: "localhost",
-  port: 1025,
-  secure: false,
-});
-
-exports.forgotPassword = async (req, res) => {
+export const forgotPassword: RequestHandler = async (req, res) => {
   const { email } = req.body;
 
   try {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(200).json({
+      res.status(200).json({
         message:
           "Un lien de réinitialisation a été envoyé si l'email est valide.",
       });
+      return;
     }
 
-    const token = crypto.randomBytes(32).toString("hex");
-    user.resetPasswordToken = token;
-    user.resetPasswordExpires = Date.now() + 3600000;
-    await user.save();
+    const token = generateJsonWebToken(email, ExpiresIn["15_MIN"]);
 
-    const resetUrl = `http://localhost:5173/reset-password/${token}`;
+    const resetUrl = `${process.env.FRONT_URL}/reset-password/${token}`;
 
-    const mailOptions = {
-      to: email,
-      from: "noreply@ecom.com",
-      subject: "Réinitialisation du mot de passe",
-      text: `Cliquez sur ce lien pour réinitialiser votre mot de passe : ${resetUrl}`,
-    };
-
-    await transporter.sendMail(mailOptions);
+    try {
+      await sendEmail(
+        config.mailer.noreply,
+        email,
+        "Reset password",
+        `Cliquez sur ce lien pour réinitialiser votre mot de passe : ${resetUrl}`
+      );
+    } catch (error) {
+      res
+        .status(500)
+        .json({ sucess: false, message: "Erreur interne du serveur." });
+      return;
+    }
 
     res.status(200).json({
       message:
@@ -239,44 +258,45 @@ exports.forgotPassword = async (req, res) => {
     res.status(500).json({ message: "Erreur interne du serveur." });
   }
 };
-
-exports.resetPassword = async (req, res) => {
+export const resetPassword: RequestHandler = async (req, res, next) => {
   const { token } = req.params;
   const { password } = req.body;
 
   if (!password) {
-    return res.status(400).json({
+    res.status(400).json({
       success: false,
       message: "Le mot de passe est requis.",
     });
+    return;
   }
 
   const isPasswordSecure = new RegExp(REGEX_PASSWORD_VALIDATION).test(password);
   if (!isPasswordSecure) {
-    return res.status(400).json({
+    res.status(400).json({
       success: false,
       message:
         "Le mot de passe doit contenir au moins un caractère spécial, une majuscule, une minuscule et un chiffre !",
     });
+    return;
   }
 
   try {
+    const decoded = (await verifyJsonWebToken(token)) as { email: string };
     const user = await User.findOne({
-      resetPasswordToken: token,
-      resetPasswordExpires: { $gt: Date.now() },
+      email: decoded.email,
     });
 
     if (!user) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "Token invalide ou expiré.",
       });
+      return;
     }
 
     const hashedPassword = await bcrypt.hash(password, DEFAULT_SALT);
     user.password = hashedPassword;
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
+
     await user.save();
 
     res.status(200).json({
@@ -285,6 +305,50 @@ exports.resetPassword = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Erreur interne du serveur." });
+    next(err);
   }
+};
+export const sendVerificationEmail: RequestHandler = async (req, res, next) => {
+  const { user } = req as AuthenticatedRequest;
+  const mailer = config.mailer;
+
+  if (!user) {
+    throw new Error("Utilisateur non trouvé.");
+  }
+
+  try {
+    await sendEmail(
+      mailer.noreply,
+      user.email,
+      "Activation du compte ",
+      await activationAccountTemplate(user.email, user.firstname)
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Email d'activation envoyé.",
+    });
+    return;
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const checkIntegrityUser: RequestHandler = async (req, res) => {
+  const { user } = req as AuthenticatedRequest;
+
+  if (!user) {
+    res.status(401).json({
+      success: false,
+      message: "Utilisateur non trouvé.",
+    });
+    return;
+  }
+
+  res.status(200).json({
+    success: true,
+    data: { isValid: true },
+    message: "Utilisateur authentifié.",
+  });
+  return;
 };

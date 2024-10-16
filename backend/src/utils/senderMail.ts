@@ -1,5 +1,7 @@
-const nodemailer = require("nodemailer");
-const mailerconfig = require("../config").mailer;
+import nodemailer from "nodemailer";
+import { config } from "../config";
+
+const mailerconfig = config.mailer;
 
 const transporter = nodemailer.createTransport({
   host: mailerconfig.host,
@@ -11,7 +13,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendEmail = async (from, to, subject, html) => {
+export const sendEmail = async (
+  from: string,
+  to: string,
+  subject: string,
+  html: string
+) => {
   try {
     await transporter.sendMail({
       from,
@@ -23,5 +30,3 @@ const sendEmail = async (from, to, subject, html) => {
     throw new Error("Error lors de l'envoie de l'email.");
   }
 };
-
-module.exports = sendEmail;

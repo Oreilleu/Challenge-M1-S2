@@ -9,10 +9,10 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       validate: {
-        validator: function (value) {
+        validator: function (value: string) {
           return new RegExp(REGEX_EMAIL_VALIDATION).test(value);
         },
-        message: (props) =>
+        message: (props: any) =>
           `${props.value} n'est pas une adresse email valide !`,
       },
       required: [true, "L'email est obligatoire."],
@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       validate: {
-        validator: function (value) {
+        validator: function (value: string) {
           return new RegExp(REGEX_PASSWORD_VALIDATION).test(value);
         },
         message:
@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema(
     firstname: {
       type: String,
       validate: {
-        validator: function (value) {
+        validator: function (value: string) {
           return value.length < 250;
         },
         message: "Le champ prénom doit être inférieur à 250 caractères.",
@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema(
     lastname: {
       type: String,
       validate: {
-        validator: function (value) {
+        validator: function (value: string) {
           return value.length < 250;
         },
         message:
@@ -67,4 +67,5 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
+export default User;
