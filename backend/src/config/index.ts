@@ -1,25 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-// TODO : Utile cette interface ?
-interface Config {
-  port: string;
-  db: {
-    user: string;
-    host: string;
-    port: string;
-    name: string;
-    password: string;
-  };
-  mailer: {
-    user: string;
-    host: string;
-    password: string;
-    noreply: string;
-  };
-}
-
-export const config: Config = {
+export const config = {
   port: process.env.PORT || "3000",
   db: {
     user: process.env.DB_USER || "",

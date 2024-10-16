@@ -1,5 +1,5 @@
-import { config } from "../config";
 import mongoose from "mongoose";
+import { config } from "../config";
 
 export const connectDb = async (): Promise<void> => {
   const { user, password, host, name } = config.db;

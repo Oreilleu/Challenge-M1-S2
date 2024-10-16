@@ -1,33 +1,27 @@
-import User from "../models/user";
 import bcrypt from "bcrypt";
 import {
   generateJsonWebToken,
   verifyJsonWebToken,
 } from "../utils/jsonWebtoken";
 import { sendEmail } from "../utils/senderMail";
-import { config } from "../config";
 import {
   DEFAULT_SALT,
   REGEX_EMAIL_VALIDATION,
   REGEX_PASSWORD_VALIDATION,
 } from "../utils/const";
-import { NextFunction, Response, Request } from "express";
+import { Request, RequestHandler } from "express";
 
 import activationAccountTemplate from "../utils/template-email/activationAccountTemplate";
+import { config } from "../config";
+import { ExpiresIn, User as UserType } from "../utils/types";
+import User from "../models/user";
 
-// TODO : Faire un type User
-// TODO : Trouver le bon type pour le retour des fonction de controller
 export interface AuthenticatedRequest extends Request {
-  user: any;
+  user: UserType;
 }
 
-export const register = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<any> => {
+export const register: RequestHandler = async (req, res, next) => {
   const { email, password, firstname, lastname, civility } = req.body;
-
   const badRequestErrors: string[] = [];
 
   const testEmailFormat = new RegExp(REGEX_EMAIL_VALIDATION).test(email);
@@ -62,7 +56,7 @@ export const register = async (
     }
 
     if (badRequestErrors.length > 0) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "L'enregistrement a échoué. Veuillez réessayer.",
         errors: badRequestErrors,
@@ -85,7 +79,10 @@ export const register = async (
     const userWithoutPassword = registeredUser.toObject();
     delete userWithoutPassword.password;
 
-    const jwt = await generateJsonWebToken({ ...userWithoutPassword }, "24h");
+    const jwt = await generateJsonWebToken(
+      { ...userWithoutPassword },
+      ExpiresIn["24_HOUR"]
+    );
 
     try {
       await sendEmail(
@@ -101,7 +98,7 @@ export const register = async (
       console.error("Erreur lors de l'envoie de l'email d'activation", error);
     }
 
-    return res.status(201).json({
+    res.status(201).json({
       success: true,
       data: { user: userWithoutPassword, jwt },
       message: "Utilisateur créer",
@@ -111,15 +108,11 @@ export const register = async (
   }
 };
 
-export const login = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<any> => {
+export const login: RequestHandler = async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({
+    res.status(400).json({
       success: false,
       message: "Email et mot de passe sont requis.",
     });
@@ -129,7 +122,7 @@ export const login = async (
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "Email ou mot de passe incorrect.",
       });
@@ -138,7 +131,7 @@ export const login = async (
     const isPasswordMatch = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatch) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "Email ou mot de passe incorrect.",
       });
@@ -147,9 +140,12 @@ export const login = async (
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
 
-    const jwt = await generateJsonWebToken({ ...userWithoutPassword }, "24h");
+    const jwt = await generateJsonWebToken(
+      { ...userWithoutPassword },
+      ExpiresIn["24_HOUR"]
+    );
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       data: { user: userWithoutPassword, jwt },
       message: "Utilisateur authentifié.",
@@ -159,14 +155,11 @@ export const login = async (
   }
 };
 
-export const verifyAccount = async (
-  req: Request,
-  res: Response
-): Promise<any> => {
+export const verifyAccount: RequestHandler = async (req, res) => {
   const { validateAccountToken } = req.body;
 
   if (!validateAccountToken) {
-    return res.status(400).json({
+    res.status(400).json({
       success: false,
       message:
         "Une erreur s'est produite, veuillez renvoyer un email d'activation.",
@@ -174,19 +167,21 @@ export const verifyAccount = async (
   }
 
   try {
-    const decoded = await verifyJsonWebToken(validateAccountToken);
+    const decoded = (await verifyJsonWebToken(validateAccountToken)) as {
+      email: string;
+    };
 
     const user = await User.findOne({ email: decoded.email });
 
     if (!user) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "Utilisateur non trouvé.",
       });
     }
 
     if (user.isVerified) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: "Ce compte est déjà activé.",
       });
@@ -199,25 +194,21 @@ export const verifyAccount = async (
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       data: { ...userWithoutPassword },
       message: "Compte activé.",
     });
   } catch (err) {
-    return res.status(401).json({
+    res.status(401).json({
       success: false,
       message: "Token invalide ou expiré.",
     });
   }
 };
 
-export const sendVerificationEmail = async (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-): Promise<any> => {
-  const { user } = req;
+export const sendVerificationEmail: RequestHandler = async (req, res, next) => {
+  const { user } = req as AuthenticatedRequest;
   const mailer = config.mailer;
 
   if (!user) {
@@ -232,7 +223,7 @@ export const sendVerificationEmail = async (
       await activationAccountTemplate(user.email, user.firstname)
     );
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       message: "Email d'activation envoyé.",
     });
@@ -241,20 +232,17 @@ export const sendVerificationEmail = async (
   }
 };
 
-export const checkIntegrityUser = async (
-  req: AuthenticatedRequest,
-  res: Response
-): Promise<any> => {
-  const { user } = req;
+export const checkIntegrityUser: RequestHandler = async (req, res) => {
+  const { user } = req as AuthenticatedRequest;
 
   if (!user) {
-    return res.status(401).json({
+    res.status(401).json({
       success: false,
       message: "Utilisateur non trouvé.",
     });
   }
 
-  return res.status(200).json({
+  res.status(200).json({
     success: true,
     data: { isValid: true },
     message: "Utilisateur authentifié.",
