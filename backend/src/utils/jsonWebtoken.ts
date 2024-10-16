@@ -7,7 +7,7 @@ export const generateJsonWebToken = async (
   expiresIn: ExpiresIn
 ) => {
   const KEY_JWT = process.env.JWT_SECRET_KEY || "";
-  return jwt.sign(data, KEY_JWT, { expiresIn });
+  return jwt.sign({ data }, KEY_JWT, { expiresIn });
 };
 
 export const verifyJsonWebToken = async (token: string) => {

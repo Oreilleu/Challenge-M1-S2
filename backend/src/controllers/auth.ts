@@ -11,6 +11,7 @@ import {
 } from "../utils/const";
 import { Request, RequestHandler } from "express";
 import activationAccountTemplate from "../utils/template-email/activationAccountTemplate";
+import resetPasswordTemplate from "../utils/template-email/resetPasswordTemplate";
 import { config } from "../config";
 import { ExpiresIn, User as UserType } from "../utils/types";
 import User from "../models/user";
@@ -231,7 +232,7 @@ export const forgotPassword: RequestHandler = async (req, res) => {
       return;
     }
 
-    const token = generateJsonWebToken(email, ExpiresIn["15_MIN"]);
+    const token = await generateJsonWebToken(email, ExpiresIn["15_MIN"]);
 
     const resetUrl = `${process.env.FRONT_URL}/reset-password/${token}`;
 
@@ -239,8 +240,8 @@ export const forgotPassword: RequestHandler = async (req, res) => {
       await sendEmail(
         config.mailer.noreply,
         email,
-        "Reset password",
-        `Cliquez sur ce lien pour réinitialiser votre mot de passe : ${resetUrl}`
+        "Réinitialisation du mot de passe",
+        await resetPasswordTemplate(email, resetUrl)
       );
     } catch (error) {
       res
@@ -281,9 +282,9 @@ export const resetPassword: RequestHandler = async (req, res, next) => {
   }
 
   try {
-    const decoded = (await verifyJsonWebToken(token)) as { email: string };
+    const decoded = (await verifyJsonWebToken(token)) as { data: string };
     const user = await User.findOne({
-      email: decoded.email,
+      email: decoded.data,
     });
 
     if (!user) {
