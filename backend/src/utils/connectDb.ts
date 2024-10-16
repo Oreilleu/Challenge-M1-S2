@@ -2,8 +2,7 @@ import mongoose from "mongoose";
 import { config } from "../config";
 
 export const connectDb = async (): Promise<void> => {
-  const { user, password, host, name } = config.db;
-  const connexionString = `mongodb+srv://${user}:${password}@${host}/?retryWrites=true&w=majority&appName=${name}`;
+  const connexionString = config.db.connexionString;
 
   try {
     await mongoose.connect(connexionString);

@@ -4,11 +4,7 @@ dotenv.config();
 export const config = {
   port: process.env.PORT || "3000",
   db: {
-    user: process.env.DB_USER || "",
-    host: process.env.DB_HOST || "",
-    port: process.env.DB_PORT || "",
-    name: process.env.DB_NAME || "",
-    password: process.env.DB_PASSWORD || "",
+    connexionString: process.env.MONGODB_CONNEXION_STRING || "",
   },
   mailer: {
     user: process.env.MAILER_USER || "",
