@@ -9,8 +9,9 @@ export const errorHandler = (
   console.error(err.stack);
   const statusCode = err.statusCode || 500;
 
-  return res.status(statusCode).json({
+  res.status(statusCode).json({
     success: false,
     message: err.message || "Une erreur est survenue sur le serveur.",
   });
+  return;
 };

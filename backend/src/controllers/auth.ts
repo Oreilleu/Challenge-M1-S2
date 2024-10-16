@@ -61,6 +61,7 @@ export const register: RequestHandler = async (req, res, next) => {
         message: "L'enregistrement a échoué. Veuillez réessayer.",
         errors: badRequestErrors,
       });
+      return;
     }
 
     const hashedPassword = await bcrypt.hash(password, DEFAULT_SALT);
@@ -103,6 +104,7 @@ export const register: RequestHandler = async (req, res, next) => {
       data: { user: userWithoutPassword, jwt },
       message: "Utilisateur créer",
     });
+    return;
   } catch (err) {
     next(err);
   }
@@ -116,6 +118,7 @@ export const login: RequestHandler = async (req, res, next) => {
       success: false,
       message: "Email et mot de passe sont requis.",
     });
+    return;
   }
 
   try {
@@ -126,6 +129,7 @@ export const login: RequestHandler = async (req, res, next) => {
         success: false,
         message: "Email ou mot de passe incorrect.",
       });
+      return;
     }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
@@ -135,6 +139,7 @@ export const login: RequestHandler = async (req, res, next) => {
         success: false,
         message: "Email ou mot de passe incorrect.",
       });
+      return;
     }
 
     const userWithoutPassword = user.toObject();
@@ -150,6 +155,7 @@ export const login: RequestHandler = async (req, res, next) => {
       data: { user: userWithoutPassword, jwt },
       message: "Utilisateur authentifié.",
     });
+    return;
   } catch (err) {
     next(err);
   }
@@ -164,6 +170,7 @@ export const verifyAccount: RequestHandler = async (req, res) => {
       message:
         "Une erreur s'est produite, veuillez renvoyer un email d'activation.",
     });
+    return;
   }
 
   try {
@@ -178,6 +185,7 @@ export const verifyAccount: RequestHandler = async (req, res) => {
         success: false,
         message: "Utilisateur non trouvé.",
       });
+      return;
     }
 
     if (user.isVerified) {
@@ -185,6 +193,7 @@ export const verifyAccount: RequestHandler = async (req, res) => {
         success: false,
         message: "Ce compte est déjà activé.",
       });
+      return;
     }
 
     user.isVerified = true;
@@ -199,11 +208,13 @@ export const verifyAccount: RequestHandler = async (req, res) => {
       data: { ...userWithoutPassword },
       message: "Compte activé.",
     });
+    return;
   } catch (err) {
     res.status(401).json({
       success: false,
       message: "Token invalide ou expiré.",
     });
+    return;
   }
 };
 
@@ -227,6 +238,7 @@ export const sendVerificationEmail: RequestHandler = async (req, res, next) => {
       success: true,
       message: "Email d'activation envoyé.",
     });
+    return;
   } catch (error) {
     next(error);
   }
@@ -240,6 +252,7 @@ export const checkIntegrityUser: RequestHandler = async (req, res) => {
       success: false,
       message: "Utilisateur non trouvé.",
     });
+    return;
   }
 
   res.status(200).json({
@@ -247,4 +260,5 @@ export const checkIntegrityUser: RequestHandler = async (req, res) => {
     data: { isValid: true },
     message: "Utilisateur authentifié.",
   });
+  return;
 };

@@ -30,6 +30,7 @@ const checkToken: RequestHandler = async (req, res, next) => {
       success: false,
       message: "Token invalide ou expiré.",
     });
+    return;
   }
 };
 
