@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="page">
     <h1>Création de compte :</h1>
     <form @submit.prevent="submitForm">
       <h2>Vos identifiants :</h2>
@@ -9,7 +9,8 @@
         placeholder="Email"
         v-model="registerForm.email"
         :error="errors.email"
-        @blur="handleBlur('email')"
+        @input="handleInputEvent('email')"
+        @blur="handleInputEvent('email')"
         type="text"
         hidden-label
       />
@@ -19,7 +20,19 @@
         placeholder="Mot de passe"
         v-model="registerForm.password"
         :error="errors.password"
-        @blur="handleBlur('password')"
+        @input="handleInputEvent('password')"
+        @blur="handleInputEvent('password')"
+        type="password"
+        hidden-label
+      />
+
+      <FormInput
+        label="Confirmer le mot de passe"
+        placeholder="Confirmer le mot de passe"
+        v-model="registerForm.confirmPassword"
+        :error="errors.confirmPassword"
+        @input="handleInputEvent('confirmPassword')"
+        @blur="handleInputEvent('confirmPassword')"
         type="password"
         hidden-label
       />
@@ -28,7 +41,7 @@
 
       <h2>Vos informations personnelles :</h2>
 
-      <el-radio-group v-model="registerForm.civility" @blur="handleBlur('civility')">
+      <el-radio-group v-model="registerForm.civility" @blur="handleInputEvent('civility')">
         <el-radio :value="'man'">M.</el-radio>
         <el-radio :value="'woman'">Mme</el-radio>
       </el-radio-group>
@@ -39,7 +52,8 @@
         placeholder="Prénom"
         v-model="registerForm.firstname"
         :error="errors.firstname"
-        @blur="handleBlur('firstname')"
+        @input="handleInputEvent('firstname')"
+        @blur="handleInputEvent('firstname')"
         type="text"
         hidden-label
       />
@@ -49,13 +63,29 @@
         placeholder="Nom de famille"
         v-model="registerForm.lastname"
         :error="errors.lastname"
-        @blur="handleBlur('lastname')"
+        @input="handleInputEvent('lastname')"
+        @blur="handleInputEvent('lastname')"
         type="text"
         hidden-label
       />
 
-      <el-button type="primary" native-type="submit" :disabled="isSubmitting || hasErrors(errors)"
-        >Valider</el-button
+      <FormInput
+        label="Téléphone"
+        placeholder="Téléphone"
+        v-model="registerForm.phone"
+        :error="errors.phone"
+        @input="handleInputEvent('phone')"
+        @blur="handleInputEvent('phone')"
+        type="text"
+        hidden-label
+      />
+
+      <el-button
+        type="primary"
+        size="large"
+        native-type="submit"
+        :disabled="isSubmitting || hasErrors(errors)"
+        >S'inscrire</el-button
       >
     </form>
   </div>
@@ -65,7 +95,7 @@
 import {
   LocalStorageKeys,
   ToastType,
-  type RegisterErrorsForm,
+  type RegisterFormErrors,
   type RegisterForm,
   type ResponseRegisterForm
 } from '@/utils/types'
@@ -83,25 +113,33 @@ const router = useRouter()
 const registerForm: RegisterForm = reactive({
   email: '',
   password: '',
+  confirmPassword: '',
   civility: 'man',
   firstname: '',
-  lastname: ''
+  lastname: '',
+  phone: ''
 })
 
-const errors: RegisterErrorsForm = reactive({
+const errors: RegisterFormErrors = reactive({
   email: '',
   password: '',
+  confirmPassword: '',
   civility: '',
   firstname: '',
-  lastname: ''
+  lastname: '',
+  phone: ''
 })
 
-const handleBlur = (field: keyof typeof registerForm) => {
-  validateField(field, registerFormSchema, registerForm, errors)
+const handleInputEvent = (field: keyof typeof registerForm) => {
+  validateField(field, registerFormSchema(registerForm), registerForm, errors)
 }
 
-const hasErrors = (errors: RegisterErrorsForm) => {
-  return Object.values(errors).some((error) => error !== '')
+const hasErrors = (errors: RegisterFormErrors) => {
+  const isFormEmpty = Object.entries(registerForm)
+    .filter(([key]) => key !== 'civility')
+    .every(([, value]) => value === '')
+
+  return Object.values(errors).some((error) => error !== '') || isFormEmpty
 }
 
 const submitForm = async () => {
@@ -112,19 +150,23 @@ const submitForm = async () => {
 
   isSubmitting.value = true
   try {
-    const responseRegisterForm: Response = await fetch('http://localhost:3000/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(registerForm)
-    })
+    const responseRegisterForm: Response = await fetch(
+      `${import.meta.env.VITE_BASE_API_URL}/register`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(registerForm)
+      }
+    )
 
     const { errors, data }: ResponseRegisterForm = await responseRegisterForm.json()
 
     if (!responseRegisterForm.ok) {
       if (responseRegisterForm.status === 400 && errors) {
         toastHandler(errors[0] || "Une erreur s'est produite, veuillez réessayer.", ToastType.ERROR)
+        return
       }
       throw new Error()
     }
@@ -148,38 +190,33 @@ const submitForm = async () => {
 </script>
 
 <style scoped>
-.container {
-  max-width: 600px;
-  width: 80%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 20px 40px 40px 40px;
+.page {
   background: var(--lightgray);
-}
-
-h1,
-h2 {
-  margin: 0;
-  text-transform: uppercase;
-  text-align: center;
-}
-
-h1 {
-  background: var(--lightgray);
-  text-align: center;
-  text-transform: uppercase;
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
 }
 
 form {
+  max-width: 600px;
+  width: 80%;
+  padding: 20px 40px 40px 40px;
   background: white;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 10px;
-  padding: 20px 0;
+  gap: 15px;
+  margin: 20px 0;
+  border-radius: 10px;
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.el-button {
+  width: 70%;
+  margin-top: 15px;
 }
 </style>

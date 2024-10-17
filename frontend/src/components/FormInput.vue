@@ -6,6 +6,7 @@
       :type="type"
       :show-password="type === 'password'"
       :placeholder="placeholder"
+      @input="emits('input')"
       @blur="emits('blur')"
     />
     <p v-if="error" class="error">{{ error }}</p>
@@ -24,7 +25,7 @@ defineProps<Props>()
 
 const model = defineModel()
 
-const emits = defineEmits(['blur'])
+const emits = defineEmits(['input', 'blur'])
 </script>
 
 <style scoped>
@@ -33,12 +34,45 @@ const emits = defineEmits(['blur'])
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 100%;
 }
+
 .el-input {
-  width: 250px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid hsla(0, 0%, 7%, 0.43);
 }
+
+.el-input:focus {
+  border-color: red;
+}
+
+.el-input:hover {
+  border-color: var(--primary-hover);
+  outline: 1px solid var(--primary-outline);
+}
+
+.el-input:focus-within {
+  border-color: var(--primary-hover);
+  outline: 1px solid var(--primary-outline);
+}
+
+.el-input :deep(.el-input__wrapper) {
+  background-color: unset !important;
+  box-shadow: unset !important;
+}
+
+.el-input :deep(.el-input__inner) {
+  border: none;
+  color: black;
+}
+
 .error {
   color: var(--danger);
-  text-align: center;
+  align-self: start;
+}
+
+.el-input__wrapper {
+  box-shadow: unset;
 }
 </style>
