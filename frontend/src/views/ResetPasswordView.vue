@@ -1,89 +1,108 @@
 <template>
   <div class="container">
     <h1>Réinitialisation du mot de passe</h1>
-    <form @submit.prevent="resetPassword">
+    <form @submit.prevent="submitForm">
       <FormInput
-        label="Nouveau mot de passe"
+        label="Nouveau mot de passe :"
         placeholder="Nouveau mot de passe"
-        v-model="password"
-        type="password"
+        v-model="resetPasswordForm.password"
         :error="errors.password"
+        @blur="handleBlur('password')"
+        type="password"
+        required
+        hidden-label
       />
 
       <FormInput
-        label="Confirmer le mot de passe"
+        label="Confirmer le mot de passe :"
         placeholder="Confirmer le mot de passe"
-        v-model="confirmPassword"
-        type="password"
+        v-model="resetPasswordForm.confirmPassword"
         :error="errors.confirmPassword"
+        @blur="handleBlur('confirmPassword')"
+        type="password"
+        required
+        hidden-label
       />
 
-      <el-button
-        type="primary"
-        native-type="submit"
-        :disabled="isSubmitting || hasErrors(errors)"
-      >
+      <el-button type="primary" native-type="submit" :disabled="isSubmitting || hasErrors(errors)">
         Réinitialiser le mot de passe
       </el-button>
     </form>
-
-    <div v-if="errorMessage" class="error">
-      {{ errorMessage }}
-    </div>
-
-    <div v-if="successMessage" class="success">
-      {{ successMessage }}
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { useRoute } from "vue-router";
-import { resetPasswordService } from "@/services/authService";
-import FormInput from "@/components/FormInput.vue";
+import {
+  ToastType,
+  type ResetPasswordForm,
+  type ResetPasswordErrorsForm,
+  type ResponseResetPasswordForm
+} from '@/utils/types'
+import { resetPasswordFormSchema } from '@/utils/validation/schema'
+import { validateField } from '@/utils/validation/validator'
+import { reactive, ref } from 'vue'
+import FormInput from '@/components/FormInput.vue'
+import toastHandler from '@/utils/toastHandler'
+import { useRoute } from 'vue-router'
 
-const route = useRoute();
+const isSubmitting = ref(false)
+const route = useRoute()
 
-const password = ref("");
-const confirmPassword = ref("");
-const errorMessage = ref("");
-const successMessage = ref("");
+const resetPasswordForm: ResetPasswordForm = reactive({
+  password: '',
+  confirmPassword: ''
+})
 
-const errors = {
-  password: "",
-  confirmPassword: "",
-};
+const errors: ResetPasswordErrorsForm = reactive({
+  password: '',
+  confirmPassword: ''
+})
 
-const resetPassword = async () => {
-  if (password.value !== confirmPassword.value) {
-    errors.confirmPassword = "Les mots de passe ne correspondent pas.";
-    return;
+const handleBlur = (field: keyof typeof resetPasswordForm) => {
+  validateField(field, resetPasswordFormSchema._def.schema, resetPasswordForm, errors)
+}
+
+const hasErrors = (errors: ResetPasswordErrorsForm) => {
+  return Object.values(errors).some((error) => error !== '')
+}
+
+const submitForm = async () => {
+  if (hasErrors(errors)) {
+    toastHandler('Le formulaire comporte des erreurs', ToastType.ERROR)
+    return
   }
 
+  if (resetPasswordForm.password !== resetPasswordForm.confirmPassword) {
+    errors.confirmPassword = 'Les mots de passe ne correspondent pas.'
+    return
+  }
+
+  isSubmitting.value = true
   try {
-    const response = await resetPasswordService(
-      route.params.token,
-      password.value
-    );
+    const response: ResponseResetPasswordForm = await fetch(
+      `http://localhost:3000/reset-password/${route.params.token}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          password: resetPasswordForm.password
+        })
+      }
+    ).then((res) => res.json())
+
     if (response.success) {
-      successMessage.value = response.message;
-      errorMessage.value = "";
+      toastHandler(response.message, ToastType.SUCCESS)
     } else {
-      errorMessage.value =
-        response.message ||
-        "Erreur lors de la réinitialisation du mot de passe.";
-      successMessage.value = "";
+      toastHandler(response.message, ToastType.ERROR)
     }
   } catch (error) {
-    errorMessage.value = "Erreur interne du serveur.";
-    successMessage.value = "";
+    toastHandler('Erreur interne du serveur', ToastType.ERROR)
+  } finally {
+    isSubmitting.value = false
   }
-};
-
-const hasErrors = (errors) => {
-  return Object.values(errors).some((error) => error !== "");
-};
+}
 </script>
 
 <style scoped>

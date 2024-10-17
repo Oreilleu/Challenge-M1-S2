@@ -17,3 +17,15 @@ export const lastnameValidation = z
   .min(2, { message: 'Le nom de famille doit avoir au moins deux caractères.' })
   .max(250, { message: 'Le nom de famille doit avoir maximun 250 caractères' })
 export const civilityValidation = z.enum(['man', 'woman'])
+
+export const confirmPasswordValidation = z.string()
+
+export const passwordSchema = z
+  .object({
+    password: passwordValidation,
+    confirmPassword: confirmPasswordValidation
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Les mots de passe ne correspondent pas',
+    path: ['confirmPassword']
+  })

@@ -225,9 +225,9 @@ export const forgotPassword: RequestHandler = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      res.status(200).json({
+      res.status(400).json({
         message:
-          "Un lien de réinitialisation a été envoyé si l'email est valide.",
+          "Email non trouvé. Veuillez vérifier votre adresse email et réessayer.",
       });
       return;
     }

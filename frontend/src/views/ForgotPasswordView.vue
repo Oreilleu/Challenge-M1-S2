@@ -1,11 +1,11 @@
 <template>
   <div class="container">
     <h2>Réinitialiser le mot de passe</h2>
-    <form @submit.prevent="submitEmail">
+    <form @submit.prevent="submitForm">
       <FormInput
         label="Entrez votre email :"
         placeholder="Email"
-        v-model="email"
+        v-model="forgotPasswordForm.email"
         :error="errors.email"
         @blur="handleBlur('email')"
         type="email"
@@ -16,51 +16,68 @@
         Envoyer le lien de réinitialisation
       </el-button>
     </form>
-    <p v-if="message">{{ message }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import { forgotPassword } from '@/services/authService'
-import FormInput from '@/components/FormInput.vue'
+import {
+  type ForgotPasswordErrorsForm,
+  type ForgotPasswordForm,
+  type ResponseForgotPasswordForm,
+  ToastType
+} from '@/utils/types'
+import { forgotPasswordFormSchema } from '@/utils/validation/schema'
 import { validateField } from '@/utils/validation/validator'
-import { loginFormSchema } from '@/utils/validation/schema'
+import { reactive, ref } from 'vue'
+import FormInput from '@/components/FormInput.vue'
+import toastHandler from '@/utils/toastHandler'
 
-const email = ref('')
-const message = ref('')
 const isSubmitting = ref(false)
-const errors = reactive({
+
+const forgotPasswordForm: ForgotPasswordForm = reactive({
   email: ''
 })
 
-// Fonction pour vérifier si un champ a des erreurs
-const hasErrors = (errors) => {
+const errors: ForgotPasswordErrorsForm = reactive({
+  email: ''
+})
+
+const handleBlur = (field: keyof typeof forgotPasswordForm) => {
+  validateField(field, forgotPasswordFormSchema, forgotPasswordForm, errors)
+}
+
+const hasErrors = (errors: ForgotPasswordErrorsForm) => {
   return Object.values(errors).some((error) => error !== '')
 }
 
-// Validation à chaque perte de focus
-const handleBlur = (field) => {
-  validateField(field, loginFormSchema, { email: email.value }, errors)
-}
-
-const submitEmail = async () => {
-  // Validation des champs avant de soumettre
-  validateField('email', loginFormSchema, { email: email.value }, errors)
-
+const submitForm = async () => {
   if (hasErrors(errors)) {
-    message.value = 'Le formulaire comporte des erreurs.'
+    toastHandler('Le formulaire comporte des erreurs', ToastType.ERROR)
     return
   }
 
   isSubmitting.value = true
-
   try {
-    const response = await forgotPassword(email.value)
-    message.value = response.message
+    const ResponseForgotPasswordForm = await fetch('http://localhost:3000/forgot-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(forgotPasswordForm)
+    })
+    console.log(ResponseForgotPasswordForm)
+    const { errors }: ResponseForgotPasswordForm = await ResponseForgotPasswordForm.json()
+
+    if (!ResponseForgotPasswordForm.ok) {
+      if (ResponseForgotPasswordForm.status === 400 && errors) {
+        toastHandler(errors[0] || "Une erreur s'est produite, veuillez réessayer.", ToastType.ERROR)
+      }
+      throw new Error()
+    }
+
+    toastHandler('Un email de réinitialisation vous a été envoyé.', ToastType.SUCCESS)
   } catch (error) {
-    console.error(error)
-    message.value = "Erreur lors de l'envoi de l'email."
+    toastHandler("Une erreur s'est produite, veuillez réessayer.", ToastType.ERROR)
   } finally {
     isSubmitting.value = false
   }
