@@ -1,7 +1,8 @@
 <template>
   <div class="page">
-    <h1>Création de compte :</h1>
     <form @submit.prevent="submitForm">
+      <h1>Création de compte :</h1>
+      <el-divider />
       <h2>Vos identifiants :</h2>
 
       <FormInput
@@ -85,8 +86,16 @@
         size="large"
         native-type="submit"
         :disabled="isSubmitting || hasErrors(errors)"
-        >S'inscrire</el-button
-      >
+        >S'inscrire
+      </el-button>
+
+      <div class="custom-divider">
+        <el-divider />
+        <span>OU</span>
+        <el-divider />
+      </div>
+
+      <RouterLink to="/login" class="link-login">Se connecter</RouterLink>
     </form>
   </div>
 </template>
@@ -218,5 +227,20 @@ form {
 .el-button {
   width: 70%;
   margin-top: 15px;
+}
+
+.custom-divider {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.link-login {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
 }
 </style>

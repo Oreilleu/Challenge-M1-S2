@@ -29,6 +29,14 @@
         :disabled="isSubmitting || hasErrors(errors)"
         >Se connecter</el-button
       >
+
+      <div class="custom-divider">
+        <el-divider />
+        <span>OU</span>
+        <el-divider />
+      </div>
+
+      <RouterLink to="/register" class="link-register">S'inscrire</RouterLink>
     </form>
   </div>
 </template>
@@ -142,5 +150,20 @@ form {
 .el-button {
   width: 70%;
   margin-top: 15px;
+}
+
+.custom-divider {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.link-register {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
 }
 </style>
