@@ -109,6 +109,8 @@ export const register: RequestHandler = async (req, res, next) => {
 
     const userWithoutPassword = registeredUser.toObject();
     delete userWithoutPassword.password;
+    delete userWithoutPassword.isAdmin;
+    delete userWithoutPassword.isVerified;
 
     const jwt = await generateJsonWebToken(
       { ...userWithoutPassword },
@@ -184,6 +186,8 @@ export const login: RequestHandler = async (req, res, next) => {
 
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
+    delete userWithoutPassword.isAdmin;
+    delete userWithoutPassword.isVerified;
 
     const jwt = await generateJsonWebToken(
       { ...userWithoutPassword },
@@ -242,6 +246,8 @@ export const verifyAccount: RequestHandler = async (req, res) => {
 
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
+    delete userWithoutPassword.isAdmin;
+    delete userWithoutPassword.isVerified;
 
     res.status(200).json({
       success: true,

@@ -4,8 +4,8 @@ import { isAuthenticated } from '@/utils/isAuthenticatedUser'
 import localStorageHandler from './utils/localStorageHandler'
 import { LocalStorageKeys } from './utils/types'
 import { onMounted, ref } from 'vue'
-const route = useRoute()
 const router = useRouter()
+const route = useRoute()
 
 const isAuthenticatedUser = ref(false)
 

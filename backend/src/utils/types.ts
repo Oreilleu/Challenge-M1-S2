@@ -4,6 +4,8 @@ export type User = {
   firstname: string;
   lastname: string;
   civility: string;
+  isVerified: boolean;
+  isAdmin: boolean;
 };
 
 export enum ExpiresIn {

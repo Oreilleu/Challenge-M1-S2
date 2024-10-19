@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import { verifyJsonWebToken } from "../utils/jsonWebtoken";
+import { User } from "../utils/types";
 
 export interface AuthenticatedRequest extends Request {
-  user?: any;
+  user?: User;
 }
 
 const checkToken: RequestHandler = async (req, res, next) => {
@@ -22,7 +23,7 @@ const checkToken: RequestHandler = async (req, res, next) => {
   try {
     const decoded = await verifyJsonWebToken(token);
 
-    request.user = decoded;
+    request.user = decoded as User;
 
     next();
   } catch (err) {

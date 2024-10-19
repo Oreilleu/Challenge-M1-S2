@@ -4,9 +4,43 @@ import LoginView from '@/views/LoginView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import VerifyAccount from '@/views/VerifyAccount.vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import localStorageHandler from './localStorageHandler'
-import { LocalStorageKeys } from './types'
 import { isAuthenticated } from './isAuthenticatedUser'
+import AdminProducts from '@/views/AdminProducts.vue'
+import AdminUsers from '@/views/AdminUsers.vue'
+// TODO : trouver l'erreur d'import non bloquante
+import AdminCategories from '@/views/AdminCategories.vue'
+import { fetchIsAdminUser, fetchIsVerifiedUser } from './api/user'
+
+const redirectToHomeIfUserAuthenticated = async () => {
+  const isAuthenticatedUser = await isAuthenticated()
+  if (isAuthenticatedUser) {
+    return { name: 'Home' }
+  }
+}
+
+const redirectToHomeIfUserVerified = async () => {
+  const isVerifiedUser = await fetchIsVerifiedUser()
+
+  if (isVerifiedUser.data) {
+    return { name: 'Home' }
+  }
+}
+
+const redirectToLoginIfUserUnauthenticated = async () => {
+  const isAuthenticatedUser = await isAuthenticated()
+
+  if (!isAuthenticatedUser) {
+    return { name: 'Login' }
+  }
+}
+
+const isAdminPage = async () => {
+  const isAdminUser = await fetchIsAdminUser()
+
+  if (!isAdminUser) {
+    return { name: 'Home' }
+  }
+}
 
 const routes = [
   {
@@ -17,22 +51,44 @@ const routes = [
   {
     path: '/register',
     name: 'Register',
-    component: RegisterView
+    component: RegisterView,
+    beforeEnter: redirectToHomeIfUserAuthenticated
   },
   {
     path: '/login',
     name: 'Login',
-    component: LoginView
+    component: LoginView,
+    beforeEnter: redirectToHomeIfUserAuthenticated
   },
   {
     path: '/verify-account',
     name: 'VerifyAccount',
-    component: VerifyAccount
+    component: VerifyAccount,
+    beforeEnter: [redirectToLoginIfUserUnauthenticated, redirectToHomeIfUserVerified]
   },
   {
     path: '/account-unvalidated',
     name: 'AccountUnvalidated',
-    component: AccountUnvalidated
+    component: AccountUnvalidated,
+    beforeEnter: [redirectToLoginIfUserUnauthenticated, redirectToHomeIfUserVerified]
+  },
+  {
+    path: '/admin/products',
+    name: 'AdminProducts',
+    component: AdminProducts,
+    beforeEnter: isAdminPage
+  },
+  {
+    path: '/admin/categories',
+    name: 'AdminCategories',
+    component: AdminCategories,
+    beforeEnter: isAdminPage
+  },
+  {
+    path: '/admin/users',
+    name: 'AdminUsers',
+    component: AdminUsers,
+    beforeEnter: isAdminPage
   }
 ]
 
@@ -42,23 +98,15 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const user = localStorageHandler().get(LocalStorageKeys.USER)
-  const isAuthenticatedUser = await isAuthenticated()
+  const isUserAuthenticated = await isAuthenticated()
+  const isUserVerified = await fetchIsVerifiedUser()
 
-  const isUserVerified = user && user.isVerified
+  const isUserAuthenticatedAndNotVerified = isUserAuthenticated && !isUserVerified.data
 
-  const isUserNotVerified = user && !user.isVerified
+  const onValidateAccountPages = ['AccountUnvalidated', 'VerifyAccount'].includes(to.name as string)
 
-  const authenticatedPages = ['AccountUnvalidated', 'VerifyAccount']
-
-  if ((to.name === 'Login' || to.name === 'Register') && isAuthenticatedUser) {
-    next({ name: 'Home' })
-  } else if (to.name !== 'AccountUnvalidated' && to.name !== 'VerifyAccount' && isUserNotVerified) {
+  if (!onValidateAccountPages && isUserAuthenticatedAndNotVerified) {
     next({ name: 'AccountUnvalidated' })
-  } else if ((to.name === 'AccountUnvalidated' || to.name === 'VerifyAccount') && isUserVerified) {
-    next({ name: 'Home' })
-  } else if (authenticatedPages.includes((to?.name as string) || '') && !isAuthenticatedUser) {
-    next({ name: 'Login' })
   } else {
     next()
   }
