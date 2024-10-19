@@ -65,7 +65,6 @@ const submitForm = async () => {
       },
       body: JSON.stringify(forgotPasswordForm)
     })
-    console.log(ResponseForgotPasswordForm)
     const { errors }: ResponseForgotPasswordForm = await ResponseForgotPasswordForm.json()
 
     if (!ResponseForgotPasswordForm.ok) {

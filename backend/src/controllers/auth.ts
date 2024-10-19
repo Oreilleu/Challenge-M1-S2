@@ -218,7 +218,7 @@ export const verifyAccount: RequestHandler = async (req, res) => {
   }
 };
 
-export const forgotPassword: RequestHandler = async (req, res) => {
+export const forgotPassword: RequestHandler = async (req, res, next) => {
   const { email } = req.body;
 
   try {
@@ -227,7 +227,7 @@ export const forgotPassword: RequestHandler = async (req, res) => {
     if (!user) {
       res.status(400).json({
         message:
-          "Email non trouvé. Veuillez vérifier votre adresse email et réessayer.",
+          "Erreur lors de la réinitialisation du mot de passe. Veuillez réessayer.",
       });
       return;
     }
@@ -246,7 +246,10 @@ export const forgotPassword: RequestHandler = async (req, res) => {
     } catch (error) {
       res
         .status(500)
-        .json({ sucess: false, message: "Erreur interne du serveur." });
+        .json({
+          sucess: false,
+          message: "Erreur interne du serveur. Veuillez réessayer plus tard",
+        });
       return;
     }
 
@@ -256,7 +259,7 @@ export const forgotPassword: RequestHandler = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Erreur interne du serveur." });
+    next(err);
   }
 };
 export const resetPassword: RequestHandler = async (req, res, next) => {
