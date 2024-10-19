@@ -1,10 +1,6 @@
-import { Request, Response, NextFunction, RequestHandler } from "express";
+import { RequestHandler } from "express";
 import { verifyJsonWebToken } from "../utils/jsonWebtoken";
-import { User } from "../utils/types";
-
-export interface AuthenticatedRequest extends Request {
-  user?: User;
-}
+import { AuthenticatedRequest, User } from "../utils/types";
 
 const checkToken: RequestHandler = async (req, res, next) => {
   const request = req as AuthenticatedRequest;

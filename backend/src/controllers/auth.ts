@@ -14,12 +14,8 @@ import { Request, RequestHandler } from "express";
 
 import activationAccountTemplate from "../utils/template-email/activationAccountTemplate";
 import { config } from "../config";
-import { ExpiresIn, User as UserType } from "../utils/types";
+import { AuthenticatedRequest, ExpiresIn } from "../utils/types";
 import User from "../models/user";
-
-export interface AuthenticatedRequest extends Request {
-  user: UserType;
-}
 
 export const register: RequestHandler = async (req, res, next) => {
   const {

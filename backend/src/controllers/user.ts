@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
-import { AuthenticatedRequest } from "../middleware/auth";
 import User from "../models/user";
+import { AuthenticatedRequest } from "../utils/types";
 
 export const getOne: RequestHandler = (req, res, next) => {
   const { user } = req as AuthenticatedRequest;

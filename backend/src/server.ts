@@ -4,6 +4,7 @@ import cors from "cors";
 import { connectDb } from "./utils/connectDb";
 import authRouter from "./routes/auth";
 import userRouter from "./routes/user";
+import productRouter from "./routes/product";
 import { errorHandler } from "./middleware/error";
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(
 // Routes setup
 app.use("/", authRouter);
 app.use("/user", userRouter);
+app.use("/product", productRouter);
 
 // Error server handler
 app.use(errorHandler);

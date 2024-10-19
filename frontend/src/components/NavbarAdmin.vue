@@ -11,7 +11,7 @@
         <el-menu-item>
           <RouterLink to="/admin/products">Liste des produits</RouterLink>
         </el-menu-item>
-        <el-menu-item>Créer un produit</el-menu-item>
+        <el-menu-item @click="createProduct">Créer un produit</el-menu-item>
       </el-sub-menu>
       <el-sub-menu index="2">
         <template #title>
@@ -47,6 +47,30 @@ const logout = () => {
   localStorageHandler().remove(LocalStorageKeys.USER)
   // isAuthenticatedUser.value = false
   router.push('/')
+}
+
+const createProduct = async () => {
+  try {
+    const resCreate = await fetch(`http://localhost:3000/product/add/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+      },
+      body: JSON.stringify({
+        name: 'Product name',
+        description: 'Product description',
+        price: 100,
+        stock: 10
+      })
+    })
+    if (resCreate.ok) {
+      router.push('/admin/products')
+    }
+    console.log(resCreate)
+  } catch (error) {
+    console.log(error)
+  }
 }
 </script>
 
