@@ -43,10 +43,11 @@ import { validateField } from '@/utils/validation/validator'
 import { reactive, ref } from 'vue'
 import FormInput from '@/components/FormInput.vue'
 import toastHandler from '@/utils/toastHandler'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const isSubmitting = ref(false)
 const route = useRoute()
+const router = useRouter()
 
 const resetPasswordForm: ResetPasswordForm = reactive({
   password: '',
@@ -59,7 +60,7 @@ const errors: ResetPasswordErrorsForm = reactive({
 })
 
 const handleBlur = (field: keyof typeof resetPasswordForm) => {
-  validateField(field, resetPasswordFormSchema._def.schema, resetPasswordForm, errors)
+  validateField(field, resetPasswordFormSchema(resetPasswordForm), resetPasswordForm, errors)
 }
 
 const hasErrors = (errors: ResetPasswordErrorsForm) => {
@@ -94,6 +95,7 @@ const submitForm = async () => {
 
     if (response.success) {
       toastHandler(response.message, ToastType.SUCCESS)
+      router.push('/login')
     } else {
       toastHandler(response.message, ToastType.ERROR)
     }

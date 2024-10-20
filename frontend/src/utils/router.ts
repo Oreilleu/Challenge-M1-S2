@@ -1,6 +1,5 @@
 import AccountUnvalidated from '@/views/AccountUnvalidated.vue'
 import HomePage from '@/views/HomePage.vue'
-import LoginView from '@/views/Login.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import VerifyAccount from '@/views/VerifyAccount.vue'
 import ForgotPasswordView from '@/views/ForgotPasswordView.vue'
@@ -12,6 +11,7 @@ import AdminUsers from '@/views/AdminUsers.vue'
 // TODO : trouver l'erreur d'import non bloquante
 import AdminCategories from '@/views/AdminCategories.vue'
 import { fetchIsAdminUser, fetchIsVerifiedUser } from './api/user'
+import LoginView from '@/views/LoginView.vue'
 
 const redirectToHomeIfUserAuthenticated = async () => {
   const isAuthenticatedUser = await isAuthenticated()

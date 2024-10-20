@@ -265,7 +265,7 @@ export const forgotPassword: RequestHandler = async (req, res, next) => {
   const { email } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    const user = await UserModel.findOne({ email });
 
     if (!user) {
       res.status(400).json({
@@ -275,24 +275,18 @@ export const forgotPassword: RequestHandler = async (req, res, next) => {
       return;
     }
 
-    const token = await generateJsonWebToken(email, ExpiresIn["15_MIN"]);
-
-    const resetUrl = `${process.env.FRONT_URL}/reset-password/${token}`;
-
     try {
       await sendEmail(
         config.mailer.noreply,
         email,
         "Réinitialisation du mot de passe",
-        await resetPasswordTemplate(email, resetUrl)
+        await resetPasswordTemplate(email)
       );
     } catch (error) {
-      res
-        .status(500)
-        .json({
-          sucess: false,
-          message: "Erreur interne du serveur. Veuillez réessayer plus tard",
-        });
+      res.status(500).json({
+        sucess: false,
+        message: "Erreur interne du serveur. Veuillez réessayer plus tard",
+      });
       return;
     }
 
@@ -328,9 +322,12 @@ export const resetPassword: RequestHandler = async (req, res, next) => {
   }
 
   try {
-    const decoded = (await verifyJsonWebToken(token)) as { data: string };
-    const user = await User.findOne({
-      email: decoded.data,
+    const decoded = (await verifyJsonWebToken(token)) as {
+      data: { email: string };
+    };
+
+    const user = await UserModel.findOne({
+      email: decoded.data.email,
     });
 
     if (!user) {

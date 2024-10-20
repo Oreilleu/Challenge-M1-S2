@@ -29,6 +29,7 @@
         :disabled="isSubmitting || hasErrors(errors)"
         >Se connecter</el-button
       >
+      <RouterLink to="/forgot-password" class="link"> Mot de passe oublié ? </RouterLink>
 
       <div class="custom-divider">
         <el-divider />
@@ -36,7 +37,7 @@
         <el-divider />
       </div>
 
-      <RouterLink to="/register" class="link-register">S'inscrire</RouterLink>
+      <RouterLink to="/register" class="link">S'inscrire</RouterLink>
     </form>
   </div>
 </template>
@@ -160,7 +161,7 @@ form {
   gap: 20px;
 }
 
-.link-register {
+.link {
   color: var(--primary);
   text-decoration: none;
   font-weight: bold;
