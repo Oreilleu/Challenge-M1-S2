@@ -1,17 +1,31 @@
 export type RegisterForm = {
   email: string
   password: string
+  confirmPassword: string
   civility: Civility
   firstname: string
   lastname: string
+  phone: string
 }
 
-export type RegisterErrorsForm = {
+export type RegisterFormErrors = {
   email: string
   password: string
+  confirmPassword: string
   civility: string
   firstname: string
   lastname: string
+  phone: string
+}
+
+export type LoginForm = {
+  email: string
+  password: string
+}
+
+export type LoginFormErrors = {
+  email: string
+  password: string
 }
 
 export type User = {

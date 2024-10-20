@@ -8,20 +8,26 @@ import {
   DEFAULT_SALT,
   REGEX_EMAIL_VALIDATION,
   REGEX_PASSWORD_VALIDATION,
+  REGEX_PHONE_VALIDATION,
 } from "../utils/const";
 import { Request, RequestHandler } from "express";
 import activationAccountTemplate from "../utils/template-email/activationAccountTemplate";
 import resetPasswordTemplate from "../utils/template-email/resetPasswordTemplate";
 import { config } from "../config";
-import { ExpiresIn, User as UserType } from "../utils/types";
-import User from "../models/user";
-
-export interface AuthenticatedRequest extends Request {
-  user: UserType;
-}
+import { ExpiresIn } from "../models/expires-in.enum";
+import { AuthenticatedRequest } from "../models/authenticated-request.interface";
+import UserModel from "../models/user.mongoose";
 
 export const register: RequestHandler = async (req, res, next) => {
-  const { email, password, firstname, lastname, civility } = req.body;
+  const {
+    email,
+    password,
+    confirmPassword,
+    firstname,
+    lastname,
+    civility,
+    phone,
+  } = req.body;
   const badRequestErrors: string[] = [];
 
   const testEmailFormat = new RegExp(REGEX_EMAIL_VALIDATION).test(email);
@@ -29,7 +35,15 @@ export const register: RequestHandler = async (req, res, next) => {
   const mailer = config.mailer;
 
   try {
-    if (!email || !password || !firstname || !lastname || !civility) {
+    if (
+      !email ||
+      !password ||
+      !confirmPassword ||
+      !firstname ||
+      !lastname ||
+      !civility ||
+      !phone
+    ) {
       badRequestErrors.push("Tous les champs sont obligatoires.");
     }
 
@@ -39,7 +53,7 @@ export const register: RequestHandler = async (req, res, next) => {
       );
     }
 
-    const existingUser = await User.findOne({ email: email });
+    const existingUser = await UserModel.findOne({ email: email });
 
     if (existingUser) {
       badRequestErrors.push("Cet email est déjà utilisé.");
@@ -55,6 +69,18 @@ export const register: RequestHandler = async (req, res, next) => {
       );
     }
 
+    const isPasswordMatch = password === confirmPassword;
+
+    if (!isPasswordMatch) {
+      badRequestErrors.push("Les mots de passe ne correspondent pas.");
+    }
+
+    const isPhoneValid = new RegExp(REGEX_PHONE_VALIDATION).test(phone);
+
+    if (!isPhoneValid) {
+      badRequestErrors.push("Le numéro de téléphone n'est pas valide.");
+    }
+
     if (badRequestErrors.length > 0) {
       res.status(400).json({
         success: false,
@@ -66,19 +92,22 @@ export const register: RequestHandler = async (req, res, next) => {
 
     const hashedPassword = await bcrypt.hash(password, DEFAULT_SALT);
 
-    const user = new User({
+    const user = new UserModel({
       email: email,
       password: hashedPassword,
       firstname,
       lastname,
       civility,
-      role: "ROLE_USER",
+      phone,
+      isAdmin: false,
     });
 
     const registeredUser = await user.save();
 
     const userWithoutPassword = registeredUser.toObject();
     delete userWithoutPassword.password;
+    delete userWithoutPassword.isAdmin;
+    delete userWithoutPassword.isVerified;
 
     const jwt = await generateJsonWebToken(
       { ...userWithoutPassword },
@@ -113,21 +142,21 @@ export const register: RequestHandler = async (req, res, next) => {
 export const login: RequestHandler = async (req, res, next) => {
   const { email, password } = req.body;
 
+  const badRequestErrors: string[] = [];
+
   if (!email || !password) {
-    res.status(400).json({
-      success: false,
-      message: "Email et mot de passe sont requis.",
-    });
-    return;
+    badRequestErrors.push("Tous les champs sont obligatoires.");
   }
 
   try {
-    const user = await User.findOne({ email });
+    const user = await UserModel.findOne({ email });
 
     if (!user) {
+      console.error("Utilisateur non trouvé.");
       res.status(400).json({
         success: false,
         message: "Email ou mot de passe incorrect.",
+        errors: ["Email ou mot de passe incorrect."],
       });
       return;
     }
@@ -135,15 +164,27 @@ export const login: RequestHandler = async (req, res, next) => {
     const isPasswordMatch = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatch) {
+      badRequestErrors.push("Email ou mot de passe incorrect.");
+      console.error("Le mot de passe ne correspond pas au compte.");
+    }
+
+    if (badRequestErrors.length > 0) {
       res.status(400).json({
         success: false,
-        message: "Email ou mot de passe incorrect.",
+        message: "La connexion a échoué. Veuillez réessayer.",
+        errors: badRequestErrors.reduce(
+          (acc: string[], current: string) =>
+            acc.includes(current) ? acc : [...acc, current],
+          []
+        ),
       });
       return;
     }
 
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
+    delete userWithoutPassword.isAdmin;
+    delete userWithoutPassword.isVerified;
 
     const jwt = await generateJsonWebToken(
       { ...userWithoutPassword },
@@ -178,7 +219,7 @@ export const verifyAccount: RequestHandler = async (req, res) => {
       email: string;
     };
 
-    const user = await User.findOne({ email: decoded.email });
+    const user = await UserModel.findOne({ email: decoded.email });
 
     if (!user) {
       res.status(400).json({
@@ -202,6 +243,8 @@ export const verifyAccount: RequestHandler = async (req, res) => {
 
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
+    delete userWithoutPassword.isAdmin;
+    delete userWithoutPassword.isVerified;
 
     res.status(200).json({
       success: true,

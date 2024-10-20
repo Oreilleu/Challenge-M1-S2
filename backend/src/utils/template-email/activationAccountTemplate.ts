@@ -1,5 +1,5 @@
+import { ExpiresIn } from "../../models/expires-in.enum";
 import { generateJsonWebToken } from "../jsonWebtoken";
-import { ExpiresIn } from "../types";
 
 const activationAccountTemplate = async (email: string, name: string) => {
   const frontUrl = process.env.FRONT_URL || "";

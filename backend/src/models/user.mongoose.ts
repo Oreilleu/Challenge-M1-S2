@@ -1,3 +1,5 @@
+import { REGEX_PHONE_VALIDATION } from "../utils/const";
+
 const mongoose = require("mongoose");
 const {
   REGEX_EMAIL_VALIDATION,
@@ -53,17 +55,26 @@ const userSchema = new mongoose.Schema(
     civility: {
       type: String,
     },
-    role: {
-      type: String,
+    isAdmin: {
+      type: Boolean,
       require: true,
     },
     isVerified: {
       type: Boolean,
       default: false,
     },
+    phone: {
+      type: String,
+      validate: {
+        validator: function (value: string) {
+          return new RegExp(REGEX_PHONE_VALIDATION).test(value);
+        },
+        message: "Le champ téléphone n'est pas valide.",
+      },
+    },
   },
   { timestamps: true }
 );
 
-const User = mongoose.model("User", userSchema);
-export default User;
+const UserModel = mongoose.model("User", userSchema);
+export default UserModel;

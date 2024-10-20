@@ -1,4 +1,4 @@
-import express, { RequestHandler } from "express";
+import express from "express";
 import checkToken from "../middleware/auth";
 import {
   checkIntegrityUser,
@@ -10,14 +10,12 @@ import {
   resetPassword,
 } from "../controllers/auth";
 
-const authRoutes = express.Router();
+const authRouter = express.Router();
 
-authRoutes.post("/register", register);
-authRoutes.post("/login", login);
-authRoutes.post("/verify-account", checkToken, verifyAccount);
-authRoutes.get("/send-verification-email", checkToken, sendVerificationEmail);
-authRoutes.get("/check-integrity-user", checkToken, checkIntegrityUser);
-authRoutes.post("/forgot-password", forgotPassword);
-authRoutes.post("/reset-password/:token", resetPassword);
+authRouter.post("/register", register);
+authRouter.post("/login", login);
+authRouter.post("/verify-account", checkToken, verifyAccount);
+authRouter.get("/send-verification-email", checkToken, sendVerificationEmail);
+authRouter.get("/check-integrity-user", checkToken, checkIntegrityUser);
 
-export default authRoutes;
+export default authRouter;
