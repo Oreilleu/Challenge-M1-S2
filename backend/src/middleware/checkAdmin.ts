@@ -1,7 +1,6 @@
 import { RequestHandler } from "express";
-import { verifyJsonWebToken } from "../utils/jsonWebtoken";
-import { AuthenticatedRequest } from "../utils/types";
-import User from "../models/user";
+import User from "../models/user.mongoose";
+import { AuthenticatedRequest } from "../models/authenticated-request.interface";
 
 const checkAdmin: RequestHandler = async (req, res, next) => {
   const { user } = req as AuthenticatedRequest;

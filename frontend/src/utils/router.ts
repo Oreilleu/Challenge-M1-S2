@@ -37,7 +37,7 @@ const redirectToLoginIfUserUnauthenticated = async () => {
 const isAdminPage = async () => {
   const isAdminUser = await fetchIsAdminUser()
 
-  if (!isAdminUser) {
+  if (!isAdminUser.data) {
     return { name: 'Home' }
   }
 }

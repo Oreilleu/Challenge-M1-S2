@@ -14,8 +14,9 @@ import { Request, RequestHandler } from "express";
 
 import activationAccountTemplate from "../utils/template-email/activationAccountTemplate";
 import { config } from "../config";
-import { AuthenticatedRequest, ExpiresIn } from "../utils/types";
-import User from "../models/user";
+import { ExpiresIn } from "../models/expires-in.enum";
+import { AuthenticatedRequest } from "../models/authenticated-request.interface";
+import UserModel from "../models/user.mongoose";
 
 export const register: RequestHandler = async (req, res, next) => {
   const {
@@ -52,7 +53,7 @@ export const register: RequestHandler = async (req, res, next) => {
       );
     }
 
-    const existingUser = await User.findOne({ email: email });
+    const existingUser = await UserModel.findOne({ email: email });
 
     if (existingUser) {
       badRequestErrors.push("Cet email est déjà utilisé.");
@@ -91,7 +92,7 @@ export const register: RequestHandler = async (req, res, next) => {
 
     const hashedPassword = await bcrypt.hash(password, DEFAULT_SALT);
 
-    const user = new User({
+    const user = new UserModel({
       email: email,
       password: hashedPassword,
       firstname,
@@ -148,7 +149,7 @@ export const login: RequestHandler = async (req, res, next) => {
   }
 
   try {
-    const user = await User.findOne({ email });
+    const user = await UserModel.findOne({ email });
 
     if (!user) {
       console.error("Utilisateur non trouvé.");
@@ -218,7 +219,7 @@ export const verifyAccount: RequestHandler = async (req, res) => {
       email: string;
     };
 
-    const user = await User.findOne({ email: decoded.email });
+    const user = await UserModel.findOne({ email: decoded.email });
 
     if (!user) {
       res.status(400).json({

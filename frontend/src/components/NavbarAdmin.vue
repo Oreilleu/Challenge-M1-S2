@@ -51,7 +51,7 @@ const logout = () => {
 
 const createProduct = async () => {
   try {
-    const resCreate = await fetch(`http://localhost:3000/product/add/`, {
+    const resCreate = await fetch(`http://localhost:3000/product/create/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

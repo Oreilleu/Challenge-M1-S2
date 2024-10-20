@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
-import User from "../models/user";
-import { AuthenticatedRequest } from "../utils/types";
+import { AuthenticatedRequest } from "../models/authenticated-request.interface";
+import UserModel from "../models/user.mongoose";
 
 export const getOne: RequestHandler = (req, res, next) => {
   const { user } = req as AuthenticatedRequest;
@@ -30,7 +30,7 @@ export const isVerified: RequestHandler = async (req, res, next) => {
     return;
   }
 
-  const userDatabase = await User.findOne({ email: user.email });
+  const userDatabase = await UserModel.findOne({ email: user.email });
 
   if (!userDatabase) {
     res.status(400).json({
@@ -59,7 +59,7 @@ export const isAdmin: RequestHandler = async (req, res, next) => {
     return;
   }
 
-  const userDatabase = await User.findOne({ email: user.email });
+  const userDatabase = await UserModel.findOne({ email: user.email });
 
   if (!userDatabase) {
     res.status(400).json({
