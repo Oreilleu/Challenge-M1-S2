@@ -56,3 +56,33 @@ export enum LocalStorageKeys {
   USER = 'user',
   AUTH_TOKEN = 'auth-token'
 }
+
+export type ForgotPasswordForm = {
+  email: string
+}
+
+export type ForgotPasswordErrorsForm = {
+  email: string
+}
+
+export type ResponseForgotPasswordForm = {
+  success: boolean
+  message?: string
+  errors?: string[]
+}
+
+export type ResetPasswordForm = {
+  password: string
+  confirmPassword: string
+}
+
+export type ResetPasswordErrorsForm = {
+  password: string
+  confirmPassword: string
+}
+
+export type ResponseResetPasswordForm = {
+  success: boolean
+  message: string
+  errors?: string[]
+}

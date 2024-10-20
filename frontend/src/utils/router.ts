@@ -1,8 +1,9 @@
 import AccountUnvalidated from '@/views/AccountUnvalidated.vue'
 import HomePage from '@/views/HomePage.vue'
-import LoginView from '@/views/LoginView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import VerifyAccount from '@/views/VerifyAccount.vue'
+import ForgotPasswordView from '@/views/ForgotPasswordView.vue'
+import ResetPasswordView from '@/views/ResetPasswordView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { isAuthenticated } from './isAuthenticatedUser'
 import AdminProducts from '@/views/AdminProducts.vue'
@@ -10,6 +11,7 @@ import AdminUsers from '@/views/AdminUsers.vue'
 // TODO : trouver l'erreur d'import non bloquante
 import AdminCategories from '@/views/AdminCategories.vue'
 import { fetchIsAdminUser, fetchIsVerifiedUser } from './api/user'
+import LoginView from '@/views/LoginView.vue'
 
 const redirectToHomeIfUserAuthenticated = async () => {
   const isAuthenticatedUser = await isAuthenticated()
@@ -65,6 +67,16 @@ const routes = [
     name: 'VerifyAccount',
     component: VerifyAccount,
     beforeEnter: [redirectToLoginIfUserUnauthenticated, redirectToHomeIfUserVerified]
+  },
+  {
+    path: '/forgot-password',
+    name: 'forgot-password',
+    component: ForgotPasswordView
+  },
+  {
+    path: '/reset-password/:token',
+    name: 'reset-password',
+    component: ResetPasswordView
   },
   {
     path: '/account-unvalidated',

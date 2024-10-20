@@ -25,6 +25,7 @@ export const lastnameValidation = z
   .min(2, { message: 'Le nom de famille doit avoir au moins deux caractères.' })
   .max(250, { message: 'Le nom de famille doit avoir maximun 250 caractères' })
 export const civilityValidation = z.enum(['man', 'woman'])
+
 export const phoneValidation = z.string().regex(REGEX_PHONE_VALIDATION, {
   message:
     'Le numéro de téléphone doit respecter le standard, exemple : 06 00 00 00 00 OU +33 6 00 00 00 00'

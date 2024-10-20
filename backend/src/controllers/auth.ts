@@ -11,8 +11,8 @@ import {
   REGEX_PHONE_VALIDATION,
 } from "../utils/const";
 import { Request, RequestHandler } from "express";
-
 import activationAccountTemplate from "../utils/template-email/activationAccountTemplate";
+import resetPasswordTemplate from "../utils/template-email/resetPasswordTemplate";
 import { config } from "../config";
 import { ExpiresIn } from "../models/expires-in.enum";
 import { AuthenticatedRequest } from "../models/authenticated-request.interface";
@@ -261,6 +261,97 @@ export const verifyAccount: RequestHandler = async (req, res) => {
   }
 };
 
+export const forgotPassword: RequestHandler = async (req, res, next) => {
+  const { email } = req.body;
+
+  try {
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      res.status(400).json({
+        message:
+          "Erreur lors de la réinitialisation du mot de passe. Veuillez réessayer.",
+      });
+      return;
+    }
+
+    try {
+      await sendEmail(
+        config.mailer.noreply,
+        email,
+        "Réinitialisation du mot de passe",
+        await resetPasswordTemplate(email)
+      );
+    } catch (error) {
+      res.status(500).json({
+        sucess: false,
+        message: "Erreur interne du serveur. Veuillez réessayer plus tard",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message:
+        "Un lien de réinitialisation a été envoyé à votre adresse email.",
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+export const resetPassword: RequestHandler = async (req, res, next) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  if (!password) {
+    res.status(400).json({
+      success: false,
+      message: "Le mot de passe est requis.",
+    });
+    return;
+  }
+
+  const isPasswordSecure = new RegExp(REGEX_PASSWORD_VALIDATION).test(password);
+  if (!isPasswordSecure) {
+    res.status(400).json({
+      success: false,
+      message:
+        "Le mot de passe doit contenir au moins un caractère spécial, une majuscule, une minuscule et un chiffre !",
+    });
+    return;
+  }
+
+  try {
+    const decoded = (await verifyJsonWebToken(token)) as {
+      data: { email: string };
+    };
+
+    const user = await UserModel.findOne({
+      email: decoded.data.email,
+    });
+
+    if (!user) {
+      res.status(400).json({
+        success: false,
+        message: "Token invalide ou expiré.",
+      });
+      return;
+    }
+
+    const hashedPassword = await bcrypt.hash(password, DEFAULT_SALT);
+    user.password = hashedPassword;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Mot de passe réinitialisé avec succès.",
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
 export const sendVerificationEmail: RequestHandler = async (req, res, next) => {
   const { user } = req as AuthenticatedRequest;
   const mailer = config.mailer;
