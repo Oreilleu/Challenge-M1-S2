@@ -57,7 +57,6 @@ import FormInput from '@/components/FormInput.vue'
 import toastHandler from '@/utils/toastHandler'
 import localStorageHandler from '@/utils/localStorageHandler'
 import { useRouter } from 'vue-router'
-import { error } from 'console'
 
 const isSubmitting = ref(false)
 const router = useRouter()

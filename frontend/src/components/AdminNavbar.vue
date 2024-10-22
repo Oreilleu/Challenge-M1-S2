@@ -3,7 +3,8 @@
     <img src="/public/logo.png" width="80px" height="80px" alt="logo" aria-hidden="true" />
     <button @click="logout">Logout</button>
     <el-divider class="divider" />
-    <el-menu default-active="2" class="menu">
+
+    <el-menu class="menu">
       <el-sub-menu index="1">
         <template #title>
           <span>Produit</span>
@@ -11,7 +12,7 @@
         <el-menu-item>
           <RouterLink to="/admin/products">Liste des produits</RouterLink>
         </el-menu-item>
-        <el-menu-item @click="createProduct">Créer un produit</el-menu-item>
+        <el-menu-item @click="openDrawer(DrawerType.CREATE_PRODUCT)">Créer un produit</el-menu-item>
       </el-sub-menu>
       <el-sub-menu index="2">
         <template #title>
@@ -20,7 +21,9 @@
         <el-menu-item>
           <RouterLink to="/admin/categories">Liste des catégories</RouterLink>
         </el-menu-item>
-        <el-menu-item>Créer une catégorie</el-menu-item>
+        <el-menu-item @click="openDrawer(DrawerType.CREATE_CATEGORY)"
+          >Créer une catégorie</el-menu-item
+        >
       </el-sub-menu>
       <el-sub-menu index="3">
         <template #title>
@@ -29,17 +32,25 @@
         <el-menu-item>
           <RouterLink to="/admin/users">Liste des utilisateurs</RouterLink>
         </el-menu-item>
-        <el-menu-item>Créer un utilisateurs</el-menu-item>
+        <el-menu-item @click="openDrawer(DrawerType.CREATE_USER)"
+          >Créer un utilisateurs</el-menu-item
+        >
       </el-sub-menu>
     </el-menu>
   </div>
+  <Drawer v-model="isOpen" :drawerContent="opennedDrawer" direction="ltr" size="50%" />
 </template>
 
 <script setup lang="ts">
 import localStorageHandler from '@/utils/localStorageHandler'
 import { useRouter, RouterLink } from 'vue-router'
-import { LocalStorageKeys } from '@/utils/types'
+import { DrawerType, LocalStorageKeys } from '@/utils/types'
+import Drawer from './Drawer.vue'
+import { ref } from 'vue'
 const router = useRouter()
+
+const isOpen = ref(false)
+const opennedDrawer = ref<DrawerType>(DrawerType.CREATE_PRODUCT)
 
 // TODO : trouver comment stocker des donnéees globalement avec vue js (equivalent useContext react)
 const logout = () => {
@@ -49,29 +60,35 @@ const logout = () => {
   router.push('/')
 }
 
-const createProduct = async () => {
-  try {
-    const resCreate = await fetch(`http://localhost:3000/product/create/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
-      },
-      body: JSON.stringify({
-        name: 'Product name',
-        description: 'Product description',
-        price: 100,
-        stock: 10
-      })
-    })
-    if (resCreate.ok) {
-      router.push('/admin/products')
-    }
-    console.log(resCreate)
-  } catch (error) {
-    console.log(error)
-  }
+const openDrawer = (drawerType: DrawerType) => {
+  opennedDrawer.value = drawerType
+
+  isOpen.value = true
 }
+
+// const createProduct = async () => {
+//   try {
+//     const resCreate = await fetch(`${import.meta.env.VITE_BASE_API_URL}/product/create/`, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//         Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+//       },
+//       body: JSON.stringify({
+//         name: 'Product name',
+//         description: 'Product description',
+//         price: 100,
+//         stock: 10
+//       })
+//     })
+//     if (resCreate.ok) {
+//       router.push('/admin/products')
+//     }
+//     console.log(resCreate)
+//   } catch (error) {
+//     console.log(error)
+//   }
+// }
 </script>
 
 <style scoped>

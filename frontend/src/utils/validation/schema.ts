@@ -1,12 +1,21 @@
 import { z } from 'zod'
 import {
+  brandProductValidation,
   civilityValidation,
   confirmPasswordValidation,
+  descriptionProductValidation,
   emailValidation,
+  filterNameValidation,
+  filterValueValidation,
   firstnameValidation,
   lastnameValidation,
+  modelProductValidation,
+  nameProductValidation,
   passwordValidation,
-  phoneValidation
+  phoneValidation,
+  variationImagesValidation,
+  variationPriceValidation,
+  variationQuantiteValidation
 } from './validation'
 import type { RegisterForm } from '../types'
 
@@ -38,12 +47,23 @@ export const resetPasswordFormSchema = (data: { password: string; confirmPasswor
   })
 }
 
-// export const resetPasswordFormSchema = z
-//   .object({
-//     password: passwordValidation,
-//     confirmPassword: confirmPasswordValidation
-//   })
-//   .refine((data) => data.password === data.confirmPassword, {
-//     message: 'Les mots de passe ne correspondent pas',
-//     path: ['confirmPassword']
-//   })
+export const createProductSchema = z.object({
+  name: nameProductValidation,
+  description: descriptionProductValidation,
+  brand: brandProductValidation,
+  model: modelProductValidation,
+  category: z.string().optional(),
+  variation: z
+    .array(
+      z.object({
+        images: variationImagesValidation,
+        price: variationPriceValidation,
+        quantite: variationQuantiteValidation,
+        filter: z.object({
+          name: filterNameValidation,
+          value: filterValueValidation
+        })
+      })
+    )
+    .min(1, { message: 'Au moins  une variation est requise.' })
+})

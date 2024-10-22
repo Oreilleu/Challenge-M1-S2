@@ -6,10 +6,10 @@ import { getOne } from "../controllers/user";
 
 const productRouter = express.Router();
 
-productRouter.post("/get-one", checkToken, checkAdmin, getOne);
-productRouter.post("/get-all", checkToken, checkAdmin, getAll);
+productRouter.get("/get-one", checkToken, getOne);
+productRouter.get("/get-all", checkToken, getAll);
 productRouter.post("/create", checkToken, checkAdmin, create);
-productRouter.post("/edit", checkToken, checkAdmin, edit);
-productRouter.post("/delete", checkToken, checkAdmin, remove);
+productRouter.put("/edit", checkToken, checkAdmin, edit);
+productRouter.delete("/delete", checkToken, checkAdmin, remove);
 
 export default productRouter;

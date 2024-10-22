@@ -1,19 +1,18 @@
 import mongoose, { Schema } from "mongoose";
 
+const filterSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, "Le nom du filtre est obligatoire."],
+  },
+  value: {
+    type: String,
+    required: [true, "La valeur du filtre est obligatoire."],
+  },
+});
+
 const variationSchema = new mongoose.Schema({
   images: { type: [String], required: true },
-  width: {
-    type: String,
-    required: [true, "La largeur du produit est obligatoire."],
-  },
-  height: {
-    type: String,
-    required: [true, "La hauteur du produit est obligatoire."],
-  },
-  depth: {
-    type: String,
-    required: [true, "La profondeur du produit est obligatoire."],
-  },
   price: {
     type: Number,
     required: [true, "Le prix du produit est obligatoire."],
@@ -23,11 +22,7 @@ const variationSchema = new mongoose.Schema({
     required: [true, "La quantité en stock du produit est obligatoire."],
     default: 0,
   },
-  filters: {
-    type: Schema.Types.ObjectId,
-    ref: "FilterProduct",
-    required: [true, "Le filtre du produit est obligatoire."],
-  },
+  filters: [filterSchema],
 });
 
 const productSchema = new mongoose.Schema(

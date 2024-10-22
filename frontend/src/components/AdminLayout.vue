@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import NavbarAdmin from './NavbarAdmin.vue'
+import NavbarAdmin from './AdminNavbar.vue'
 </script>
 
 <style scoped>

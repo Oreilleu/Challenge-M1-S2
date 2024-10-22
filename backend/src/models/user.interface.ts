@@ -1,4 +1,4 @@
-export type User = {
+export interface User {
   email: string;
   password: string;
   firstname: string;
@@ -6,4 +6,4 @@ export type User = {
   civility: string;
   isVerified: boolean;
   isAdmin: boolean;
-};
+}

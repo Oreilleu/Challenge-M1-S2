@@ -1,4 +1,4 @@
-export type RegisterForm = {
+export interface RegisterForm {
   email: string
   password: string
   confirmPassword: string
@@ -8,7 +8,27 @@ export type RegisterForm = {
   phone: string
 }
 
-export type RegisterFormErrors = {
+export interface Product {
+  _id?: string
+  category?: string
+  name: string
+  description: string
+  brand: string
+  model: string
+  variation: Array<{
+    images: string[]
+    price: number
+    quantite: number
+    filter: {
+      name: string
+      value: string
+    }
+  }>
+}
+
+export type CreateProductForm = Omit<Product, '_id'>
+
+export interface RegisterFormErrors {
   email: string
   password: string
   confirmPassword: string
@@ -18,17 +38,17 @@ export type RegisterFormErrors = {
   phone: string
 }
 
-export type LoginForm = {
+export interface LoginForm {
   email: string
   password: string
 }
 
-export type LoginFormErrors = {
+export interface LoginFormErrors {
   email: string
   password: string
 }
 
-export type User = {
+export interface User {
   email: string
   civility: Civility
   firstname: string
@@ -36,7 +56,7 @@ export type User = {
   password: string
 }
 
-export type ResponseRegisterForm = {
+export interface ResponseRegisterForm {
   success: boolean
   message?: string
   data?: { user: User } & { jwt: string }
@@ -57,31 +77,37 @@ export enum LocalStorageKeys {
   AUTH_TOKEN = 'auth-token'
 }
 
-export type ForgotPasswordForm = {
+export enum DrawerType {
+  CREATE_PRODUCT = 'create-product',
+  CREATE_CATEGORY = 'create-category',
+  CREATE_USER = 'create-user'
+}
+
+export interface ForgotPasswordForm {
   email: string
 }
 
-export type ForgotPasswordErrorsForm = {
+export interface ForgotPasswordErrorsForm {
   email: string
 }
 
-export type ResponseForgotPasswordForm = {
+export interface ResponseForgotPasswordForm {
   success: boolean
   message?: string
   errors?: string[]
 }
 
-export type ResetPasswordForm = {
+export interface ResetPasswordForm {
   password: string
   confirmPassword: string
 }
 
-export type ResetPasswordErrorsForm = {
+export interface ResetPasswordErrorsForm {
   password: string
   confirmPassword: string
 }
 
-export type ResponseResetPasswordForm = {
+export interface ResponseResetPasswordForm {
   success: boolean
   message: string
   errors?: string[]

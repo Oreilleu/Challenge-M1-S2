@@ -1,17 +1,17 @@
 import AccountUnvalidated from '@/views/AccountUnvalidated.vue'
-import HomePage from '@/views/HomePage.vue'
-import RegisterView from '@/views/RegisterView.vue'
 import VerifyAccount from '@/views/VerifyAccount.vue'
-import ForgotPasswordView from '@/views/ForgotPasswordView.vue'
-import ResetPasswordView from '@/views/ResetPasswordView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { isAuthenticated } from './isAuthenticatedUser'
 import AdminProducts from '@/views/AdminProducts.vue'
 import AdminUsers from '@/views/AdminUsers.vue'
 // TODO : trouver l'erreur d'import non bloquante
-import AdminCategories from '@/views/AdminCategories.vue'
 import { fetchIsAdminUser, fetchIsVerifiedUser } from './api/user'
-import LoginView from '@/views/LoginView.vue'
+import Register from '@/views/Register.vue'
+import Home from '@/views/Home.vue'
+import Login from '@/views/Login.vue'
+import ForgotPassword from '@/views/ForgotPassword.vue'
+import ResetPassword from '@/views/ResetPassword.vue'
+import AdminCategories from '@/views/AdminCategories.vue'
 
 const redirectToHomeIfUserAuthenticated = async () => {
   const isAuthenticatedUser = await isAuthenticated()
@@ -48,18 +48,18 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: HomePage
+    component: Home
   },
   {
     path: '/register',
     name: 'Register',
-    component: RegisterView,
+    component: Register,
     beforeEnter: redirectToHomeIfUserAuthenticated
   },
   {
     path: '/login',
     name: 'Login',
-    component: LoginView,
+    component: Login,
     beforeEnter: redirectToHomeIfUserAuthenticated
   },
   {
@@ -70,13 +70,13 @@ const routes = [
   },
   {
     path: '/forgot-password',
-    name: 'forgot-password',
-    component: ForgotPasswordView
+    name: 'ForgotPassword',
+    component: ForgotPassword
   },
   {
     path: '/reset-password/:token',
-    name: 'reset-password',
-    component: ResetPasswordView
+    name: 'ResetPassword',
+    component: ResetPassword
   },
   {
     path: '/account-unvalidated',

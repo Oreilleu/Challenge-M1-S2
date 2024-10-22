@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import { verifyJsonWebToken } from "../utils/jsonWebtoken";
 import { AuthenticatedRequest } from "../models/authenticated-request.interface";
-import { User } from "../models/user.type";
+import { JwtPayload } from "jsonwebtoken";
 
 const checkToken: RequestHandler = async (req, res, next) => {
   const request = req as AuthenticatedRequest;
@@ -20,7 +20,7 @@ const checkToken: RequestHandler = async (req, res, next) => {
   try {
     const decoded = await verifyJsonWebToken(token);
 
-    request.user = decoded as User;
+    request.user = (decoded as JwtPayload).data;
 
     next();
   } catch (err) {
