@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { verifyJsonWebToken } from "../utils/jsonWebtoken";
-import { AuthenticatedRequest } from "../models/authenticated-request.interface";
+import { AuthenticatedRequest } from "../types/authenticated-request.interface";
 import { JwtPayload } from "jsonwebtoken";
 
 const checkToken: RequestHandler = async (req, res, next) => {

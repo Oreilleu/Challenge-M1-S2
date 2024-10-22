@@ -1,4 +1,4 @@
-import { ExpiresIn } from "../../models/expires-in.enum";
+import { ExpiresIn } from "../../types/expires-in.enum";
 import { generateJsonWebToken } from "../jsonWebtoken";
 
 const activationAccountTemplate = async (email: string, name: string) => {
