@@ -17,7 +17,6 @@ import { config } from "../config";
 import { ExpiresIn } from "../types/expires-in.enum";
 import { AuthenticatedRequest } from "../types/authenticated-request.interface";
 import UserModel from "../models/user.model";
-import DeliveryAddressModel from "../models/delivery-address.model";
 
 export const register: RequestHandler = async (req, res, next) => {
   const {
