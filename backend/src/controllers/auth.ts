@@ -14,9 +14,9 @@ import { Request, RequestHandler } from "express";
 import activationAccountTemplate from "../utils/template-email/activationAccountTemplate";
 import resetPasswordTemplate from "../utils/template-email/resetPasswordTemplate";
 import { config } from "../config";
-import { ExpiresIn } from "../models/expires-in.enum";
-import { AuthenticatedRequest } from "../models/authenticated-request.interface";
-import UserModel from "../models/user.mongoose";
+import { ExpiresIn } from "../types/expires-in.enum";
+import { AuthenticatedRequest } from "../types/authenticated-request.interface";
+import UserModel from "../models/user.model";
 
 export const register: RequestHandler = async (req, res, next) => {
   const {

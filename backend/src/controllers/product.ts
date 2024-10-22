@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
-import ProductModel from "../models/product.mongoose";
-import { Product } from "../models/product.interface";
+import ProductModel from "../models/product.model";
+import { Product } from "../types/product.interface";
 
 export const getOne: RequestHandler = async (req, res, next) => {
   const { id } = req.body;
