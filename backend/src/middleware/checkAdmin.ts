@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
-import User from "../models/user.mongoose";
-import { AuthenticatedRequest } from "../models/authenticated-request.interface";
+import User from "../models/user.model";
+import { AuthenticatedRequest } from "../types/authenticated-request.interface";
 
 const checkAdmin: RequestHandler = async (req, res, next) => {
   const { user } = req as AuthenticatedRequest;

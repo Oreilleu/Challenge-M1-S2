@@ -1,5 +1,5 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { ExpiresIn } from "../models/expires-in.enum";
+import { ExpiresIn } from "../types/expires-in.enum";
 
 export const generateJsonWebToken = async (
   data: JwtPayload,

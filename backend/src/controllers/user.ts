@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
-import { AuthenticatedRequest } from "../models/authenticated-request.interface";
-import UserModel from "../models/user.mongoose";
+import { AuthenticatedRequest } from "../types/authenticated-request.interface";
+import UserModel from "../models/user.model";
 
 export const getOne: RequestHandler = (req, res, next) => {
   const { user } = req as AuthenticatedRequest;

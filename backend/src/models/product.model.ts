@@ -46,7 +46,7 @@ const productSchema = new mongoose.Schema(
     },
     idCategory: {
       type: Schema.Types.ObjectId,
-      ref: "CategoryProduct",
+      ref: "Category",
     },
     variation: [variationSchema],
   },
