@@ -15,18 +15,43 @@ export interface Product {
   description: string
   brand: string
   model: string
-  variation: Array<{
-    images: string[]
+  variations: Array<{
+    name: string
+    value: string
+    // images: string[]
+    images: string
     price: number
     quantite: number
-    filter: {
-      name: string
-      value: string
-    }
   }>
 }
 
-export type CreateProductForm = Omit<Product, '_id'>
+export type CreateProductForm = Omit<Product, '_id' | 'variations'>
+
+export interface Variation {
+  images: string[]
+  price: number
+  quantite: number
+  filter: {
+    name: string
+    value: string
+  }
+}
+
+export interface VariationErrors {
+  name: string
+  value: string
+  images: string
+  price: string
+  quantite: string
+}
+
+export interface CreateProductErrors {
+  name: string
+  description: string
+  brand: string
+  model: string
+  category: string
+}
 
 export interface RegisterFormErrors {
   email: string

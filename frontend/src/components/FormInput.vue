@@ -1,6 +1,6 @@
 <template>
   <div class="container-input">
-    <label :class="hiddenLabel && 'visually-hidden'">{{ label }}</label>
+    <label :class="hiddenLabel ? 'visually-hidden' : 'label'">{{ label }}</label>
     <el-input
       v-model="model"
       :type="type"
@@ -16,7 +16,7 @@
 <script setup lang="ts">
 type Props = {
   label: string
-  hiddenLabel: boolean
+  hiddenLabel?: boolean
   placeholder: string
   type: string
   error: string
@@ -35,6 +35,10 @@ const emits = defineEmits(['input', 'blur'])
   justify-content: center;
   align-items: center;
   width: 100%;
+}
+
+.label {
+  align-self: start;
 }
 
 .el-input {

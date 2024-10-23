@@ -55,13 +55,17 @@ export const variationValidation = z
   .array(z.object({}))
   .min(1, { message: 'Il faut au moins une variation' })
 
-export const variationImagesValidation = z
-  .array(z.string())
-  .min(1, { message: 'Il faut au moins une image' })
+// export const variationImagesValidation = z
+//   .array(z.string())
+//   .min(1, { message: 'Il faut au moins une image' })
+
+export const variationImagesValidation = z.string().min(1, {
+  message: 'Il faut au moins une image'
+})
 
 export const variationPriceValidation = z
   .number()
-  .min(0.01, { message: 'Le prix est requis' })
+  .min(1, { message: 'Le prix doit être supérieur à 1 euros' })
   .max(100000, { message: 'Le prix doit être inférieur à 100 000 €' })
 
 export const variationQuantiteValidation = z

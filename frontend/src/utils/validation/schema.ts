@@ -52,18 +52,13 @@ export const createProductSchema = z.object({
   description: descriptionProductValidation,
   brand: brandProductValidation,
   model: modelProductValidation,
-  category: z.string().optional(),
-  variation: z
-    .array(
-      z.object({
-        images: variationImagesValidation,
-        price: variationPriceValidation,
-        quantite: variationQuantiteValidation,
-        filter: z.object({
-          name: filterNameValidation,
-          value: filterValueValidation
-        })
-      })
-    )
-    .min(1, { message: 'Au moins  une variation est requise.' })
+  category: z.string().optional()
+})
+
+export const variationSchema = z.object({
+  name: filterNameValidation,
+  value: filterValueValidation,
+  images: variationImagesValidation,
+  price: variationPriceValidation,
+  quantite: variationQuantiteValidation
 })

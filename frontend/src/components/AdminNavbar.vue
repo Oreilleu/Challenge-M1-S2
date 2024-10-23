@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <img src="/public/logo.png" width="80px" height="80px" alt="logo" aria-hidden="true" />
+    <img src="/logo.png" width="80px" height="80px" alt="logo" aria-hidden="true" />
     <button @click="logout">Logout</button>
     <el-divider class="divider" />
 
@@ -65,30 +65,6 @@ const openDrawer = (drawerType: DrawerType) => {
 
   isOpen.value = true
 }
-
-// const createProduct = async () => {
-//   try {
-//     const resCreate = await fetch(`${import.meta.env.VITE_BASE_API_URL}/product/create/`, {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
-//       },
-//       body: JSON.stringify({
-//         name: 'Product name',
-//         description: 'Product description',
-//         price: 100,
-//         stock: 10
-//       })
-//     })
-//     if (resCreate.ok) {
-//       router.push('/admin/products')
-//     }
-//     console.log(resCreate)
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
 </script>
 
 <style scoped>
