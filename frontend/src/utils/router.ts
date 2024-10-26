@@ -4,13 +4,13 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { isAuthenticated } from './isAuthenticatedUser'
 import AdminProducts from '@/views/AdminProducts.vue'
 import AdminUsers from '@/views/AdminUsers.vue'
-// TODO : trouver l'erreur d'import non bloquante
 import { fetchIsAdminUser, fetchIsVerifiedUser } from './api/user'
 import Register from '@/views/Register.vue'
 import Home from '@/views/Home.vue'
 import Login from '@/views/Login.vue'
 import ForgotPassword from '@/views/ForgotPassword.vue'
 import ResetPassword from '@/views/ResetPassword.vue'
+// TODO : trouver l'erreur d'import non bloquante
 import AdminCategories from '@/views/AdminCategories.vue'
 
 const redirectToHomeIfUserAuthenticated = async () => {

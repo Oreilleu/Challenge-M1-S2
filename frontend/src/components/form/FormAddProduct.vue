@@ -1,5 +1,5 @@
 <template>
-  <Form :validation-schema="validationSchema" class="form-product">
+  <form @submit="onSubmit" class="form-product">
     <FormInput
       id="name"
       name="name"
@@ -147,13 +147,15 @@
         <el-divider class="divider" />
       </li>
     </ul>
-  </Form>
+
+    <el-button type="primary" native-type="submit">Ajouter le produit</el-button>
+  </form>
 </template>
 
 <script setup lang="ts">
 import { reactive } from 'vue'
 import FormInput from '../FormInput.vue'
-import { Form } from 'vee-validate'
+import { useForm, useFormErrors } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { productschema } from '@/utils/validation/schema'
 import type { Product } from '@/utils/types/product.interface'
@@ -212,6 +214,14 @@ const removeVariation = (index: number) => {
 }
 
 const validationSchema = toTypedSchema(productschema)
+
+const { handleSubmit, errors } = useForm({
+  validationSchema
+})
+
+const onSubmit = handleSubmit((values) => {
+  console.log('values', values)
+})
 </script>
 
 <style scoped>
@@ -219,7 +229,6 @@ const validationSchema = toTypedSchema(productschema)
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  /* margin: 1rem; */
 }
 
 .form-product {
