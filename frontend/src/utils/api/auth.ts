@@ -1,5 +1,5 @@
 import localStorageHandler from '../localStorageHandler'
-import { LocalStorageKeys } from '../types'
+import { LocalStorageKeys } from '../types/local-storage-keys.enum'
 
 export const checkIntegrityUser = async () => {
   const authToken = localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)

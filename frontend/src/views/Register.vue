@@ -1,92 +1,83 @@
 <template>
   <div class="page">
-    <form @submit.prevent="submitForm">
+    <Form :validation-schema="validationSchema" @submit="submitForm">
       <h1>Création de compte :</h1>
       <el-divider />
       <h2>Vos identifiants :</h2>
 
       <FormInput
+        id="email"
+        name="email"
         label="Email"
         placeholder="Email"
+        type="email"
         v-model="registerForm.email"
-        :error="errors.email"
-        @input="handleInputEvent('email')"
-        @blur="handleInputEvent('email')"
-        type="text"
-        hidden-label
       />
 
       <FormInput
+        id="password"
+        name="password"
         label="Mot de passe"
         placeholder="Mot de passe"
-        v-model="registerForm.password"
-        :error="errors.password"
-        @input="handleInputEvent('password')"
-        @blur="handleInputEvent('password')"
         type="password"
-        hidden-label
+        v-model="registerForm.password"
       />
 
       <FormInput
+        id="confirmPassword"
+        name="confirmPassword"
         label="Confirmer le mot de passe"
         placeholder="Confirmer le mot de passe"
-        v-model="registerForm.confirmPassword"
-        :error="errors.confirmPassword"
-        @input="handleInputEvent('confirmPassword')"
-        @blur="handleInputEvent('confirmPassword')"
         type="password"
-        hidden-label
+        v-model="registerForm.confirmPassword"
       />
 
       <el-divider />
 
       <h2>Vos informations personnelles :</h2>
 
-      <el-radio-group v-model="registerForm.civility" @blur="handleInputEvent('civility')">
-        <el-radio :value="'man'">M.</el-radio>
-        <el-radio :value="'woman'">Mme</el-radio>
-      </el-radio-group>
-      <p v-if="errors.civility" class="error">{{ errors.civility }}</p>
+      <Field name="civility" v-model="registerForm.civility" v-slot="{ field }">
+        <el-radio-group v-model="registerForm.civility" v-bind="field">
+          <el-radio :value="'man'">M.</el-radio>
+          <el-radio :value="'woman'">Mme</el-radio>
+        </el-radio-group>
+        <ErrorMessage name="civility" />
+      </Field>
 
       <FormInput
+        id="firstname"
+        name="firstname"
         label="Prénom"
         placeholder="Prénom"
-        v-model="registerForm.firstname"
-        :error="errors.firstname"
-        @input="handleInputEvent('firstname')"
-        @blur="handleInputEvent('firstname')"
         type="text"
-        hidden-label
+        v-model="registerForm.firstname"
       />
 
       <FormInput
+        id="lastname"
+        name="lastname"
         label="Nom de famille"
         placeholder="Nom de famille"
-        v-model="registerForm.lastname"
-        :error="errors.lastname"
-        @input="handleInputEvent('lastname')"
-        @blur="handleInputEvent('lastname')"
         type="text"
-        hidden-label
+        v-model="registerForm.lastname"
       />
 
       <FormInput
+        id="phone"
+        name="phone"
         label="Téléphone"
         placeholder="Téléphone"
-        v-model="registerForm.phone"
-        :error="errors.phone"
-        @input="handleInputEvent('phone')"
-        @blur="handleInputEvent('phone')"
         type="text"
-        hidden-label
+        v-model="registerForm.phone"
       />
 
       <el-button
         type="primary"
         size="large"
         native-type="submit"
-        :disabled="isSubmitting || hasErrors(errors)"
-        >S'inscrire
+        :disabled="isSubmitting || hasEmptyFields()"
+      >
+        S'inscrire
       </el-button>
 
       <div class="custom-divider">
@@ -96,25 +87,24 @@
       </div>
 
       <RouterLink to="/login" class="link-login">Se connecter</RouterLink>
-    </form>
+    </Form>
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  LocalStorageKeys,
-  ToastType,
-  type RegisterFormErrors,
-  type RegisterForm,
-  type ResponseRegisterForm
-} from '@/utils/types'
-import { registerFormSchema } from '@/utils/validation/schema'
-import { validateField } from '@/utils/validation/validator'
 import { reactive, ref } from 'vue'
 import FormInput from '@/components/FormInput.vue'
 import toastHandler from '@/utils/toastHandler'
 import localStorageHandler from '@/utils/localStorageHandler'
 import { useRouter } from 'vue-router'
+import { ToastType } from '@/utils/types/toast-type.enum'
+import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
+import { Field, Form } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import { registerFormSchema } from '@/utils/validation/schema'
+import type { RegisterForm } from '@/utils/types/register-form.interface'
+import type { ResponseApi } from '@/utils/types/response-api.interface'
+import type { ResultAuth } from '@/utils/types/result-auth.interface'
 
 const isSubmitting = ref(false)
 const router = useRouter()
@@ -124,39 +114,18 @@ const registerForm: RegisterForm = reactive({
   password: '',
   confirmPassword: '',
   civility: 'man',
-  firstname: '',
+  firstname: 'first',
   lastname: '',
   phone: ''
 })
 
-const errors: RegisterFormErrors = reactive({
-  email: '',
-  password: '',
-  confirmPassword: '',
-  civility: '',
-  firstname: '',
-  lastname: '',
-  phone: ''
-})
+const validationSchema = toTypedSchema(registerFormSchema)
 
-const handleInputEvent = (field: keyof typeof registerForm) => {
-  validateField(field, registerFormSchema(registerForm), registerForm, errors)
-}
-
-const hasErrors = (errors: RegisterFormErrors) => {
-  const isFormEmpty = Object.entries(registerForm)
-    .filter(([key]) => key !== 'civility')
-    .every(([, value]) => value === '')
-
-  return Object.values(errors).some((error) => error !== '') || isFormEmpty
+const hasEmptyFields = () => {
+  return Object.values(registerForm).some((value) => value === '')
 }
 
 const submitForm = async () => {
-  if (hasErrors(errors)) {
-    toastHandler('Le formulaire comporte des erreurs', ToastType.ERROR)
-    return
-  }
-
   isSubmitting.value = true
   try {
     const responseRegisterForm: Response = await fetch(
@@ -170,7 +139,7 @@ const submitForm = async () => {
       }
     )
 
-    const { errors, data }: ResponseRegisterForm = await responseRegisterForm.json()
+    const { errors, data }: ResponseApi<ResultAuth> = await responseRegisterForm.json()
 
     if (!responseRegisterForm.ok) {
       if (responseRegisterForm.status === 400 && errors) {

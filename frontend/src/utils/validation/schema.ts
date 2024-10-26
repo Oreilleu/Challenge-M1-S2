@@ -17,19 +17,21 @@ import {
   variationPriceValidation,
   variationQuantiteValidation
 } from './validation'
-import type { RegisterForm } from '../types'
 
-export const registerFormSchema = (data: RegisterForm) => {
-  return z.object({
+export const registerFormSchema = z
+  .object({
     email: emailValidation,
     password: passwordValidation,
-    confirmPassword: confirmPasswordValidation(data.password),
+    confirmPassword: confirmPasswordValidation,
     firstname: firstnameValidation,
     lastname: lastnameValidation,
     civility: civilityValidation,
     phone: phoneValidation
   })
-}
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Les mots de passe ne correspondent pas',
+    path: ['confirmPassword']
+  })
 
 export const loginFormSchema = z.object({
   email: emailValidation,
@@ -40,25 +42,35 @@ export const forgotPasswordFormSchema = z.object({
   email: emailValidation
 })
 
-export const resetPasswordFormSchema = (data: { password: string; confirmPassword: string }) => {
-  return z.object({
+export const resetPasswordFormSchema = z
+  .object({
     password: passwordValidation,
-    confirmPassword: confirmPasswordValidation(data.password)
+    confirmPassword: confirmPasswordValidation
   })
-}
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Les mots de passe ne correspondent pas',
+    path: ['confirmPassword']
+  })
 
-export const createProductSchema = z.object({
+export const variationSchema = z.object({
+  images: variationImagesValidation,
+  price: variationPriceValidation,
+  quantite: variationQuantiteValidation,
+  filters: z
+    .array(
+      z.object({
+        name: filterNameValidation,
+        value: filterValueValidation
+      })
+    )
+    .min(1, { message: 'Il faut au moins un filtre' })
+})
+
+export const productschema = z.object({
   name: nameProductValidation,
   description: descriptionProductValidation,
   brand: brandProductValidation,
   model: modelProductValidation,
-  category: z.string().optional()
-})
-
-export const variationSchema = z.object({
-  name: filterNameValidation,
-  value: filterValueValidation,
-  images: variationImagesValidation,
-  price: variationPriceValidation,
-  quantite: variationQuantiteValidation
+  category: z.string().optional(),
+  variations: z.array(variationSchema).min(1, { message: 'Il faut au moins une variation' })
 })

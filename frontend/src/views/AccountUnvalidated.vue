@@ -8,7 +8,8 @@
 <script setup lang="ts">
 import localStorageHandler from '@/utils/localStorageHandler'
 import toastHandler from '@/utils/toastHandler'
-import { LocalStorageKeys, ToastType } from '@/utils/types'
+import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
+import { ToastType } from '@/utils/types/toast-type.enum'
 
 const sendEmail = async () => {
   const token = localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)

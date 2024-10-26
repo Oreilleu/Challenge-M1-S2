@@ -1,34 +1,35 @@
 <template>
   <div class="page">
-    <form @submit.prevent="submitForm">
+    <Form :validation-schema="validationSchema" @submit="submitForm">
       <h1>Connexion :</h1>
+
       <FormInput
+        id="email"
+        name="email"
         label="Email"
         placeholder="Email"
+        type="email"
         v-model="loginForm.email"
-        :error="errors.email"
-        @blur="handleInputEvent('email')"
-        type="text"
-        hidden-label
       />
 
       <FormInput
-        label="Mot de passe"
-        placeholder="Mot de passe"
-        v-model="loginForm.password"
-        :error="errors.password"
-        @blur="handleInputEvent('password')"
+        id="password"
+        name="password"
+        label="Password"
+        placeholder="Password"
         type="password"
-        hidden-label
+        v-model="loginForm.password"
       />
 
       <el-button
         type="primary"
         size="large"
         native-type="submit"
-        :disabled="isSubmitting || hasErrors(errors)"
-        >Se connecter</el-button
+        :disabled="isSubmitting || hasEmptyFields()"
       >
+        Se connecter
+      </el-button>
+
       <RouterLink to="/forgot-password" class="link"> Mot de passe oublié ? </RouterLink>
 
       <div class="custom-divider">
@@ -38,25 +39,24 @@
       </div>
 
       <RouterLink to="/register" class="link">S'inscrire</RouterLink>
-    </form>
+    </Form>
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  LocalStorageKeys,
-  ToastType,
-  type LoginForm,
-  type LoginFormErrors,
-  type ResponseRegisterForm
-} from '@/utils/types'
 import { loginFormSchema } from '@/utils/validation/schema'
-import { validateField } from '@/utils/validation/validator'
 import { reactive, ref } from 'vue'
 import FormInput from '@/components/FormInput.vue'
 import toastHandler from '@/utils/toastHandler'
 import localStorageHandler from '@/utils/localStorageHandler'
 import { useRouter } from 'vue-router'
+import { ToastType } from '@/utils/types/toast-type.enum'
+import { Form } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
+import type { LoginForm } from '@/utils/types/login-form.interface'
+import type { ResponseApi } from '@/utils/types/response-api.interface'
+import type { ResultAuth } from '@/utils/types/result-auth.interface'
 
 const isSubmitting = ref(false)
 const router = useRouter()
@@ -66,25 +66,13 @@ const loginForm: LoginForm = reactive({
   password: ''
 })
 
-const errors: LoginFormErrors = reactive({
-  email: '',
-  password: ''
-})
+const validationSchema = toTypedSchema(loginFormSchema)
 
-const handleInputEvent = (field: keyof typeof loginForm) => {
-  validateField(field, loginFormSchema, loginForm, errors)
-}
-
-const hasErrors = (errors: LoginFormErrors) => {
-  return Object.values(errors).some((error) => error !== '')
+const hasEmptyFields = () => {
+  return Object.values(loginForm).some((field) => field === '')
 }
 
 const submitForm = async () => {
-  if (hasErrors(errors)) {
-    toastHandler('Le formulaire comporte des erreurs', ToastType.ERROR)
-    return
-  }
-
   isSubmitting.value = true
   try {
     const responseLogin: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/login`, {
@@ -95,7 +83,7 @@ const submitForm = async () => {
       body: JSON.stringify(loginForm)
     })
 
-    const { errors, data }: ResponseRegisterForm = await responseLogin.json()
+    const { errors, data }: ResponseApi<ResultAuth> = await responseLogin.json()
 
     if (!responseLogin.ok) {
       if (responseLogin.status === 400 && errors) {

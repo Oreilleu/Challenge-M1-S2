@@ -1,4 +1,4 @@
-import type { LocalStorageKeys } from './types'
+import type { LocalStorageKeys } from './types/local-storage-keys.enum'
 
 const localStorageHandler = () => {
   const set = (key: LocalStorageKeys, value: any) => {

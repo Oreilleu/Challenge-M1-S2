@@ -1,71 +1,60 @@
 <template>
   <div class="container">
     <h2>Réinitialiser le mot de passe</h2>
-    <form @submit.prevent="submitForm">
+    <Form :validation-schema="validationSchema" @submit="submitForm">
       <FormInput
+        id="email"
+        name="email"
         label="Entrez votre email :"
         placeholder="Email"
         v-model="forgotPasswordForm.email"
-        :error="errors.email"
-        @blur="handleBlur('email')"
         type="email"
-        required
-        hidden-label
       />
-      <el-button type="primary" native-type="submit" :disabled="isSubmitting || hasErrors(errors)">
+
+      <el-button
+        type="primary"
+        native-type="submit"
+        :disabled="isSubmitting || !forgotPasswordForm.email"
+      >
         Envoyer le lien de réinitialisation
       </el-button>
-    </form>
+    </Form>
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  type ForgotPasswordErrorsForm,
-  type ForgotPasswordForm,
-  type ResponseForgotPasswordForm,
-  ToastType
-} from '@/utils/types'
 import { forgotPasswordFormSchema } from '@/utils/validation/schema'
-import { validateField } from '@/utils/validation/validator'
 import { reactive, ref } from 'vue'
-import FormInput from '@/components/FormInput.vue'
 import toastHandler from '@/utils/toastHandler'
+import { ToastType } from '@/utils/types/toast-type.enum'
+import FormInput from '@/components/FormInput.vue'
+import { Form } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import type { ResponseApi } from '@/utils/types/response-api.interface'
 
 const isSubmitting = ref(false)
 
-const forgotPasswordForm: ForgotPasswordForm = reactive({
+const forgotPasswordForm = reactive({
   email: ''
 })
 
-const errors: ForgotPasswordErrorsForm = reactive({
-  email: ''
-})
-
-const handleBlur = (field: keyof typeof forgotPasswordForm) => {
-  validateField(field, forgotPasswordFormSchema, forgotPasswordForm, errors)
-}
-
-const hasErrors = (errors: ForgotPasswordErrorsForm) => {
-  return Object.values(errors).some((error) => error !== '')
-}
+const validationSchema = toTypedSchema(forgotPasswordFormSchema)
 
 const submitForm = async () => {
-  if (hasErrors(errors)) {
-    toastHandler('Le formulaire comporte des erreurs', ToastType.ERROR)
-    return
-  }
-
   isSubmitting.value = true
   try {
-    const ResponseForgotPasswordForm = await fetch('http://localhost:3000/forgot-password', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(forgotPasswordForm)
-    })
-    const { errors }: ResponseForgotPasswordForm = await ResponseForgotPasswordForm.json()
+    const ResponseForgotPasswordForm = await fetch(
+      `${import.meta.env.VITE_BASE_API_URL}/forgot-password`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(forgotPasswordForm)
+      }
+    )
+
+    const { errors }: ResponseApi<null> = await ResponseForgotPasswordForm.json()
 
     if (!ResponseForgotPasswordForm.ok) {
       if (ResponseForgotPasswordForm.status === 400 && errors) {

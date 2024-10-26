@@ -1,31 +1,33 @@
 <template>
   <div class="container-input">
-    <label :class="hiddenLabel ? 'visually-hidden' : 'label'">{{ label }}</label>
-    <el-input
-      v-model="model"
+    <label :for="id" :class="hiddenLabel ? 'visually-hidden' : ''">{{ label }}</label>
+    <Field
+      :id="id"
+      :name="name"
       :type="type"
-      :show-password="type === 'password'"
+      v-model:model-value="model"
       :placeholder="placeholder"
-      @input="emits('input')"
-      @blur="emits('blur')"
+      validate-on-input
     />
-    <p v-if="error" class="error">{{ error }}</p>
+    <ErrorMessage :name="name" class="error" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { ErrorMessage, Field } from 'vee-validate'
+
 type Props = {
+  id: string
+  name: string
   label: string
-  hiddenLabel?: boolean
-  placeholder: string
   type: string
-  error: string
+  placeholder?: string
+  hiddenLabel?: boolean
 }
+
 defineProps<Props>()
 
 const model = defineModel()
-
-const emits = defineEmits(['input', 'blur'])
 </script>
 
 <style scoped>
@@ -33,50 +35,30 @@ const emits = defineEmits(['input', 'blur'])
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: start;
   width: 100%;
 }
 
-.label {
-  align-self: start;
-}
-
-.el-input {
+input {
   height: 40px;
+  width: 100%;
   border-radius: 10px;
   border: 1px solid hsla(0, 0%, 7%, 0.43);
+  padding-left: 10px;
 }
 
-.el-input:focus {
-  border-color: red;
-}
-
-.el-input:hover {
+input:hover {
   border-color: var(--primary-hover);
   outline: 1px solid var(--primary-outline);
 }
 
-.el-input:focus-within {
+input:focus-within {
   border-color: var(--primary-hover);
   outline: 1px solid var(--primary-outline);
-}
-
-.el-input :deep(.el-input__wrapper) {
-  background-color: unset !important;
-  box-shadow: unset !important;
-}
-
-.el-input :deep(.el-input__inner) {
-  border: none;
-  color: black;
 }
 
 .error {
   color: var(--danger);
   align-self: start;
-}
-
-.el-input__wrapper {
-  box-shadow: unset;
 }
 </style>
