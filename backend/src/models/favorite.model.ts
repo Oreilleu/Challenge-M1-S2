@@ -15,4 +15,5 @@ const favoriteSchema = new Schema({
     }
 });
 
-export default mongoose.model('Favorite', favoriteSchema);
+const FavoriteModel = mongoose.model('Favorite', favoriteSchema);
+export default FavoriteModel;
