@@ -3,19 +3,18 @@ import { REGEX_PASSWORD_VALIDATION, REGEX_PHONE_VALIDATION } from '../const'
 
 export const emailValidation = z
   .string()
+  .min(1, { message: "L'email est obligatoire." })
   .email({ message: "L'email doit être sous la forme : nom@domain.com" })
+
 export const passwordValidation = z.string().regex(REGEX_PASSWORD_VALIDATION, {
   message:
     'Le mot de passe doit contenir au moins un caractère spécial, une majuscule, une minuscule et un chiffre !'
 })
-export const confirmPasswordValidation = (password: string) => {
-  return z
-    .string()
-    .min(1, 'La confirmation du mot de passe est obligatoire')
-    .refine((confirmPassword) => confirmPassword === password, {
-      message: 'Les mots de passe ne correspondent pas'
-    })
-}
+
+export const confirmPasswordValidation = z.string().min(1, {
+  message: 'La confirmation du mot de passe est obligatoire'
+})
+
 export const firstnameValidation = z
   .string()
   .min(2, { message: 'Le prénom doit avoir au moins deux caractères.' })

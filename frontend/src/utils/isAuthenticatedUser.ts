@@ -1,6 +1,6 @@
 import { checkIntegrityUser } from './api/auth'
 import localStorageHandler from './localStorageHandler'
-import { LocalStorageKeys } from './types'
+import { LocalStorageKeys } from './types/local-storage-keys.enum'
 
 const removeAuthStorage = () => {
   localStorageHandler().remove(LocalStorageKeys.AUTH_TOKEN)

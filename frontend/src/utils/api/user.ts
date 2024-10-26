@@ -1,5 +1,5 @@
 import localStorageHandler from '../localStorageHandler'
-import { LocalStorageKeys } from '../types'
+import { LocalStorageKeys } from '../types/local-storage-keys.enum'
 // TODO : faire un fetcher
 export const fetchIsVerifiedUser = async () => {
   const token = localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)

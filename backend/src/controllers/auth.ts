@@ -216,10 +216,12 @@ export const verifyAccount: RequestHandler = async (req, res) => {
 
   try {
     const decoded = (await verifyJsonWebToken(validateAccountToken)) as {
-      email: string;
+      data: {
+        email: string;
+      };
     };
 
-    const user = await UserModel.findOne({ email: decoded.email });
+    const user = await UserModel.findOne({ email: decoded.data.email });
 
     if (!user) {
       res.status(400).json({

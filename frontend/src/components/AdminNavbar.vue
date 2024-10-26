@@ -44,9 +44,10 @@
 <script setup lang="ts">
 import localStorageHandler from '@/utils/localStorageHandler'
 import { useRouter, RouterLink } from 'vue-router'
-import { DrawerType, LocalStorageKeys } from '@/utils/types'
 import Drawer from './Drawer.vue'
 import { ref } from 'vue'
+import { DrawerType } from '@/utils/types/drawer-type.enum'
+import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
 const router = useRouter()
 
 const isOpen = ref(false)

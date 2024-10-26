@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import AdminLayout from '@/components/AdminLayout.vue'
 import localStorageHandler from '@/utils/localStorageHandler'
-import { LocalStorageKeys } from '@/utils/types'
+import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
 import { onMounted, ref } from 'vue'
 
 const generateColumns = (length = 10, prefix = 'column-', props?: any) =>
