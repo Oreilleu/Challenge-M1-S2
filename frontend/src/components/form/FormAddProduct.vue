@@ -12,6 +12,7 @@
     <FormInput
       id="description"
       name="description"
+      as="textarea"
       label="Description"
       placeholder="Description du produit"
       type="text"
@@ -55,12 +56,10 @@
         :key="indexVariation"
         class="item-variation"
       >
-        <FormInput
+        <FormInputFile
           :id="`variations[${indexVariation}].images`"
           :name="`variations[${indexVariation}].images`"
           label="Images"
-          placeholder="Images"
-          type="file"
           v-model="variation.images"
         />
 
@@ -155,13 +154,12 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import FormInput from '../FormInput.vue'
-import { useForm, useFormErrors } from 'vee-validate'
+import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { productschema } from '@/utils/validation/schema'
 import type { Product } from '@/utils/types/product.interface'
 import type { Variation } from '@/utils/types/variation.interface'
-
-// TODO : Vérif les erreurs pour disabled le button
+import FormInputFile from '../FormInputFile.vue'
 
 const product: Product = reactive({
   name: '',
@@ -215,7 +213,7 @@ const removeVariation = (index: number) => {
 
 const validationSchema = toTypedSchema(productschema)
 
-const { handleSubmit, errors } = useForm({
+const { handleSubmit, errors } = useForm<Product>({
   validationSchema
 })
 

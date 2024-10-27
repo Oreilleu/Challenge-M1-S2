@@ -53,7 +53,7 @@ export const resetPasswordFormSchema = z
   })
 
 export const variationSchema = z.object({
-  images: z.any(), // TODO iamges implémentation
+  images: variationImagesValidation,
   price: variationPriceValidation,
   quantite: variationQuantiteValidation,
   filters: z
