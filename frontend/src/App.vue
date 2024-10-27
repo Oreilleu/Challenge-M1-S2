@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import HeaderComponent from '@/components/HeaderComponent.vue';
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import { isAuthenticated } from '@/utils/isAuthenticatedUser'
 import localStorageHandler from './utils/localStorageHandler'
@@ -27,6 +28,7 @@ const logout = () => {
 
 <template>
   <header>
+    <HeaderComponent />
     LOGO
     <RouterLink v-if="route.path !== '/register' && !isAuthenticatedUser" to="/register"
       >Inscription</RouterLink
