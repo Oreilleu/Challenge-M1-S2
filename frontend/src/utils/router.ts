@@ -2,7 +2,7 @@ import AccountUnvalidated from '@/views/AccountUnvalidated.vue'
 import VerifyAccount from '@/views/VerifyAccount.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { isAuthenticated } from './isAuthenticatedUser'
-import AdminProducts from '@/views/AdminProducts.vue'
+import AdminProducts from '@/views/backOffice/product/AdminProducts.vue'
 import AdminUsers from '@/views/AdminUsers.vue'
 // TODO : trouver l'erreur d'import non bloquante
 import { fetchIsAdminUser, fetchIsVerifiedUser } from './api/user'
@@ -11,7 +11,7 @@ import Home from '@/views/Home.vue'
 import Login from '@/views/Login.vue'
 import ForgotPassword from '@/views/ForgotPassword.vue'
 import ResetPassword from '@/views/ResetPassword.vue'
-import AdminCategories from '@/views/AdminCategories.vue'
+import AdminCategories from '@/views/backOffice/category/AdminCategories.vue'
 
 const redirectToHomeIfUserAuthenticated = async () => {
   const isAuthenticatedUser = await isAuthenticated()
@@ -84,6 +84,8 @@ const routes = [
     component: AccountUnvalidated,
     beforeEnter: [redirectToLoginIfUserUnauthenticated, redirectToHomeIfUserVerified]
   },
+
+  //backoffice routes prefix /admin
   {
     path: '/admin/products',
     name: 'AdminProducts',
@@ -100,6 +102,12 @@ const routes = [
     path: '/admin/users',
     name: 'AdminUsers',
     component: AdminUsers,
+    beforeEnter: isAdminPage
+  },
+  {
+    path: '/admin/categories',
+    name: 'AdminCategories',
+    component: AdminCategories,
     beforeEnter: isAdminPage
   }
 ]
