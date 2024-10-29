@@ -60,7 +60,7 @@ export const variationValidation = z
 
 export const variationImagesValidation = z.object({
   files: z
-    .instanceof(FileList, { message: 'Doit être une FileList' })
+    .instanceof(FileList, { message: 'Ne doit pas être vide' })
     .refine(
       (files) => {
         return Array.from(files).every((file) => AVAILABLE_FILE_IMAGE_TYPES.includes(file.type))

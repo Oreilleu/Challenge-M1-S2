@@ -43,7 +43,7 @@
       label="Catégorie"
       placeholder="Categorie du produit"
       type="text"
-      v-model="product.model"
+      v-model="product.category"
     />
 
     <el-divider class="divider" />
@@ -147,7 +147,9 @@
       </li>
     </ul>
 
-    <el-button type="primary" native-type="submit">Ajouter le produit</el-button>
+    <el-button type="primary" native-type="submit" :disabled="Object.keys(errors).length > 0"
+      >Ajouter le produit</el-button
+    >
   </form>
 </template>
 
@@ -160,6 +162,14 @@ import { productschema } from '@/utils/validation/schema'
 import type { Product } from '@/utils/types/product.interface'
 import type { Variation } from '@/utils/types/variation.interface'
 import FormInputFile from '../FormInputFile.vue'
+import type { Filter } from '@/utils/types/filter.interface'
+import toastHandler from '@/utils/toastHandler'
+import { ToastType } from '@/utils/types/toast-type.enum'
+import type { ResponseApi } from '@/utils/types/response-api.interface'
+import localStorageHandler from '@/utils/localStorageHandler'
+import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
+import { v4 as uuidv4 } from 'uuid'
+import { de } from 'element-plus/es/locales.mjs'
 
 const product: Product = reactive({
   name: '',
@@ -169,7 +179,8 @@ const product: Product = reactive({
   category: undefined,
   variations: [
     {
-      images: '',
+      images: { files: {} as FileList },
+      nameImages: [] as string[],
       price: 1,
       quantite: 1,
       filters: [
@@ -184,7 +195,7 @@ const product: Product = reactive({
 
 const addVariation = () => {
   product.variations.push({
-    images: '',
+    images: { files: {} as FileList },
     price: 1,
     quantite: 1,
     filters: [
@@ -217,8 +228,48 @@ const { handleSubmit, errors } = useForm<Product>({
   validationSchema
 })
 
-const onSubmit = handleSubmit((values) => {
-  console.log('values', values)
+const onSubmit = handleSubmit(async (values) => {
+  const formData = new FormData()
+
+  values.variations.forEach((variation: Variation, indexVariation: number) => {
+    const files = variation.images?.files || ({} as FileList)
+    const nameFiles: string[] = []
+
+    Object.values(files).forEach((value) => {
+      const uniqueNameImage = `${uuidv4()}${Date.now()}`
+      nameFiles.push(uniqueNameImage)
+      formData.append('images', new File([value], uniqueNameImage, { type: value.type }))
+    })
+
+    variation.nameImages = nameFiles
+    delete variation.images
+  })
+
+  formData.append('product', JSON.stringify(values))
+
+  try {
+    const postProduct = async () => {
+      const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/product/create`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+        },
+        body: formData
+      })
+
+      const json: ResponseApi<null> = await response.json()
+
+      if (json.success) {
+        toastHandler('Produit ajouté avec succès', ToastType.SUCCESS)
+      } else {
+        toastHandler(json.message || "Erreur lors de l'ajout du produit", ToastType.ERROR)
+      }
+    }
+    await postProduct()
+  } catch (error) {
+    console.error(error)
+    toastHandler("Erreur lors de l'ajout du produit", ToastType.ERROR)
+  }
 })
 </script>
 

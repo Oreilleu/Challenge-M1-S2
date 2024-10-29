@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="custom-input-file">
-      <button class="button-choose-file" @click="clickOnInput">Choisir une image</button>
+      <button class="button-choose-file" @click.prevent="clickOnInput">Choisir une image</button>
       <span>{{ labelInputFile }}</span>
     </div>
 

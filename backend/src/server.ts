@@ -6,18 +6,20 @@ import authRouter from "./routes/auth";
 import userRouter from "./routes/user";
 import productRouter from "./routes/product";
 import { errorHandler } from "./middleware/error";
+
 const app = express();
 
 connectDb();
-
-// Middleware setup
-app.use(express.json());
 
 app.use(
   cors({
     origin: process.env.FRONT_URL || "",
   })
 );
+
+// Middleware setup
+app.use(express.json());
+app.use(express.static("public"));
 
 // Routes setup
 app.use("/", authRouter);

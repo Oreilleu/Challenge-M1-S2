@@ -1,8 +1,10 @@
 import { Filter } from "./filter.interface";
+import { Image } from "./image.interface";
 
 export interface Variation {
-  images: string[];
   price: number;
   quantite: number;
-  filter: Filter;
+  nameImages: Array<string>;
+  images: Array<Image>;
+  filters: Array<Filter>;
 }

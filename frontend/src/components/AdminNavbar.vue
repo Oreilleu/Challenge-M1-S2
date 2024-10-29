@@ -38,7 +38,12 @@
       </el-sub-menu>
     </el-menu>
   </div>
-  <Drawer v-model="isOpen" :drawerContent="opennedDrawer" direction="ltr" size="50%" />
+  <Drawer
+    v-model="isOpen"
+    :drawerContent="opennedDrawer"
+    direction="ltr"
+    :size="isMobile ? '100%' : '50%'"
+  />
 </template>
 
 <script setup lang="ts">
@@ -60,6 +65,12 @@ const logout = () => {
   // isAuthenticatedUser.value = false
   router.push('/')
 }
+
+// TODO : trouver comment stocker des donnéees globalement avec vue js (equivalent useContext react)
+// OU : si possible Géré le responsive en css
+// DANS TOUT LES CAS : Ajouter des breakpoint value dans le css
+
+const isMobile = window.innerWidth < 890
 
 const openDrawer = (drawerType: DrawerType) => {
   opennedDrawer.value = drawerType
