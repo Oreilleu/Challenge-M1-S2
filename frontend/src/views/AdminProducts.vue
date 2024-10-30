@@ -2,7 +2,12 @@
   <AdminLayout>
     <section>
       <h1>Liste des produits</h1>
-      <el-table-v2 :columns="columns" :data="data" :width="700" :height="400" fixed />
+
+      <ul>
+        <li v-for="product in products" :key="product._id">
+          <el-button @click="openDrawerUpdate">Modifier : {{ product._id }}</el-button>
+        </li>
+      </ul>
     </section>
   </AdminLayout>
 </template>
@@ -10,57 +15,49 @@
 <script setup lang="ts">
 import AdminLayout from '@/components/AdminLayout.vue'
 import localStorageHandler from '@/utils/localStorageHandler'
+import toastHandler from '@/utils/toastHandler'
 import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
-import { onMounted, ref } from 'vue'
+import type { Product } from '@/utils/types/product.interface'
+import type { ResponseApi } from '@/utils/types/response-api.interface'
+import { ToastType } from '@/utils/types/toast-type.enum'
+import { ref } from 'vue'
+import { onMounted } from 'vue'
 
-const generateColumns = (length = 10, prefix = 'column-', props?: any) =>
-  Array.from({ length }).map((_, columnIndex) => ({
-    ...props,
-    key: `${prefix}${columnIndex}`,
-    dataKey: `${prefix}${columnIndex}`,
-    title: `Column ${columnIndex}`,
-    width: 150
-  }))
-
-const generateData = (columns: ReturnType<typeof generateColumns>, length = 200, prefix = 'row-') =>
-  Array.from({ length }).map((_, rowIndex) => {
-    return columns.reduce(
-      (rowData, column, columnIndex) => {
-        rowData[column.dataKey] = `Row ${rowIndex} - Col ${columnIndex}`
-        return rowData
-      },
-      {
-        id: `${prefix}${rowIndex}`,
-        parentId: null
-      }
-    )
-  })
+const products = ref<Array<Product>>([])
 
 const fetchProducts = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/product/get-all`, {
+    const response: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/product/get-all`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
       }
     })
-    const data = await response.json()
-    return data
-  } catch (error) {
-    console.error(error)
+    const json: ResponseApi<Array<Product>> = await response.json()
+
+    if (!json.success) {
+      throw new Error(json.message)
+    }
+
+    products.value = json.data || []
+  } catch (error: any) {
+    toastHandler(
+      error.message || 'Une erreur est survenue lors de la récupération des produits',
+      ToastType.ERROR
+    )
     return
   }
 }
 
-const products = ref([])
+const openDrawerUpdate = () => {
+  console.log('openDrawerUpdate')
+}
 
 onMounted(async () => {
-  const resProducts = await fetchProducts()
-  products.value = await resProducts.data
-})
+  await fetchProducts()
 
-const columns = generateColumns(10)
-const data = generateData(columns, 1000)
+  console.log(products)
+})
 </script>
 
 <style scoped></style>

@@ -48,18 +48,16 @@ import { loginFormSchema } from '@/utils/validation/schema'
 import { reactive, ref } from 'vue'
 import FormInput from '@/components/FormInput.vue'
 import toastHandler from '@/utils/toastHandler'
-import localStorageHandler from '@/utils/localStorageHandler'
-import { useRouter } from 'vue-router'
 import { ToastType } from '@/utils/types/toast-type.enum'
 import { Form } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
-import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
 import type { LoginForm } from '@/utils/types/login-form.interface'
 import type { ResponseApi } from '@/utils/types/response-api.interface'
 import type { ResultAuth } from '@/utils/types/result-auth.interface'
+import useAuthStore from '@/utils/store/useAuthStore'
 
 const isSubmitting = ref(false)
-const router = useRouter()
+const authStore = useAuthStore()
 
 const loginForm: LoginForm = reactive({
   email: '',
@@ -97,10 +95,7 @@ const submitForm = async () => {
       throw new Error()
     }
 
-    localStorageHandler().set(LocalStorageKeys.AUTH_TOKEN, data.jwt)
-    localStorageHandler().set(LocalStorageKeys.USER, data.user)
-
-    router.push('/')
+    authStore.signIn(data.jwt, data.user)
   } catch (error) {
     toastHandler("Une erreur s'est produite, veuillez réessayer.", ToastType.ERROR)
   } finally {

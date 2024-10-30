@@ -50,6 +50,13 @@ export const getAll: RequestHandler = async (req, res, next) => {
 export const create: RequestHandler = async (req, res, next) => {
   const body: Product = JSON.parse(req.body.product);
 
+  if (!body) {
+    res.status(400).json({
+      success: false,
+      message: "Les informations du produit sont requises",
+    });
+    return;
+  }
   const variations = body.variations;
 
   const imagesFiles = req.files as Express.Multer.File[];

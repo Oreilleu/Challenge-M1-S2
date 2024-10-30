@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <img src="/logo.png" width="80px" height="80px" alt="logo" aria-hidden="true" />
-    <button @click="logout">Logout</button>
+    <button @click="authStore.logout">Logout</button>
     <el-divider class="divider" />
 
     <el-menu class="menu">
@@ -12,7 +12,9 @@
         <el-menu-item>
           <RouterLink to="/admin/products">Liste des produits</RouterLink>
         </el-menu-item>
-        <el-menu-item @click="openDrawer(DrawerType.CREATE_PRODUCT)">Créer un produit</el-menu-item>
+        <el-menu-item @click="drawerStore.openDrawer(DrawerType.CREATE_PRODUCT)"
+          >Créer un produit</el-menu-item
+        >
       </el-sub-menu>
       <el-sub-menu index="2">
         <template #title>
@@ -21,7 +23,7 @@
         <el-menu-item>
           <RouterLink to="/admin/categories">Liste des catégories</RouterLink>
         </el-menu-item>
-        <el-menu-item @click="openDrawer(DrawerType.CREATE_CATEGORY)"
+        <el-menu-item @click="drawerStore.openDrawer(DrawerType.CREATE_CATEGORY)"
           >Créer une catégorie</el-menu-item
         >
       </el-sub-menu>
@@ -32,51 +34,34 @@
         <el-menu-item>
           <RouterLink to="/admin/users">Liste des utilisateurs</RouterLink>
         </el-menu-item>
-        <el-menu-item @click="openDrawer(DrawerType.CREATE_USER)"
+        <el-menu-item @click="drawerStore.openDrawer(DrawerType.CREATE_USER)"
           >Créer un utilisateurs</el-menu-item
         >
       </el-sub-menu>
     </el-menu>
   </div>
   <Drawer
-    v-model="isOpen"
-    :drawerContent="opennedDrawer"
+    v-model="drawerStore.isOpen"
     direction="ltr"
     :size="isMobile ? '100%' : '50%'"
+    :drawerContent="drawerStore.opennedDrawer || DrawerType.CREATE_PRODUCT"
   />
 </template>
 
 <script setup lang="ts">
-import localStorageHandler from '@/utils/localStorageHandler'
-import { useRouter, RouterLink } from 'vue-router'
+import { RouterLink } from 'vue-router'
 import Drawer from './Drawer.vue'
-import { ref } from 'vue'
 import { DrawerType } from '@/utils/types/drawer-type.enum'
-import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
-const router = useRouter()
+import useDrawerStore from '@/utils/store/useDrawerStore'
+import useAuthStore from '@/utils/store/useAuthStore'
 
-const isOpen = ref(false)
-const opennedDrawer = ref<DrawerType>(DrawerType.CREATE_PRODUCT)
-
-// TODO : trouver comment stocker des donnéees globalement avec vue js (equivalent useContext react)
-const logout = () => {
-  localStorageHandler().remove(LocalStorageKeys.AUTH_TOKEN)
-  localStorageHandler().remove(LocalStorageKeys.USER)
-  // isAuthenticatedUser.value = false
-  router.push('/')
-}
+const authStore = useAuthStore()
+const drawerStore = useDrawerStore()
 
 // TODO : trouver comment stocker des donnéees globalement avec vue js (equivalent useContext react)
 // OU : si possible Géré le responsive en css
 // DANS TOUT LES CAS : Ajouter des breakpoint value dans le css
-
 const isMobile = window.innerWidth < 890
-
-const openDrawer = (drawerType: DrawerType) => {
-  opennedDrawer.value = drawerType
-
-  isOpen.value = true
-}
 </script>
 
 <style scoped>

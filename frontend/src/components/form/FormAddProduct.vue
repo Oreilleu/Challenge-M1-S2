@@ -162,14 +162,41 @@ import { productschema } from '@/utils/validation/schema'
 import type { Product } from '@/utils/types/product.interface'
 import type { Variation } from '@/utils/types/variation.interface'
 import FormInputFile from '../FormInputFile.vue'
-import type { Filter } from '@/utils/types/filter.interface'
 import toastHandler from '@/utils/toastHandler'
 import { ToastType } from '@/utils/types/toast-type.enum'
 import type { ResponseApi } from '@/utils/types/response-api.interface'
 import localStorageHandler from '@/utils/localStorageHandler'
 import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
 import { v4 as uuidv4 } from 'uuid'
-import { de } from 'element-plus/es/locales.mjs'
+
+// onMounted(() => {
+//   const getCategories = async () => {
+//     try {
+//       const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/category`, {
+//         method: 'GET',
+//         headers: {
+//           Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+//         }
+//       })
+
+//       const json: ResponseApi<string[]> = await response.json()
+
+//       if (json.success) {
+//         // categories.push(...json.data)
+//       } else {
+//         toastHandler(
+//           json.message || 'Erreur lors de la récupération des catégories',
+//           ToastType.ERROR
+//         )
+//       }
+//     } catch (error) {
+//       console.error(error)
+//       toastHandler('Erreur lors de la récupération des catégories', ToastType.ERROR)
+//     }
+//   }
+// })
+
+// const categories = reactive([])
 
 const product: Product = reactive({
   name: '',
@@ -231,7 +258,7 @@ const { handleSubmit, errors } = useForm<Product>({
 const onSubmit = handleSubmit(async (values) => {
   const formData = new FormData()
 
-  values.variations.forEach((variation: Variation, indexVariation: number) => {
+  values.variations.forEach((variation: Variation) => {
     const files = variation.images?.files || ({} as FileList)
     const nameFiles: string[] = []
 
