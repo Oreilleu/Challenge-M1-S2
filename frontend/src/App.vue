@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import HeaderComponent from '@/components/HeaderComponent.vue';
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import { isAuthenticated } from '@/utils/isAuthenticatedUser'
 import localStorageHandler from './utils/localStorageHandler'
 import { onMounted, ref } from 'vue'
 import { LocalStorageKeys } from './utils/types/local-storage-keys.enum'
+import HeaderComponent from './components/HeaderComponent.vue'
 const router = useRouter()
 const route = useRoute()
 
 const isAuthenticatedUser = ref(false)
-
 const checkAuthentication = async () => {
   isAuthenticatedUser.value = await isAuthenticated()
 }
