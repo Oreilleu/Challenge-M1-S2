@@ -51,9 +51,9 @@ import toastHandler from '@/utils/toastHandler'
 import { ToastType } from '@/utils/types/toast-type.enum'
 import { Form } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
-import type { LoginForm } from '@/utils/types/login-form.interface'
-import type { ResponseApi } from '@/utils/types/response-api.interface'
-import type { ResultAuth } from '@/utils/types/result-auth.interface'
+import type { LoginForm } from '@/utils/types/interfaces/login-form.interface'
+import type { ResponseApi } from '@/utils/types/interfaces/response-api.interface'
+import type { ResultAuth } from '@/utils/types/interfaces/result-auth.interface'
 import useAuthStore from '@/utils/store/useAuthStore'
 
 const isSubmitting = ref(false)
