@@ -14,7 +14,6 @@ import { DrawerType } from '@/utils/types/drawer-type.enum'
 // TODO : Errreur d'import non bloquante ??dd
 import FormAddUser from './form/FormAddUser.vue'
 import FormUpdateProduct from './form/FormUpdateProduct.vue'
-import useDrawerStore from '@/utils/store/useDrawerStore'
 
 type Props = {
   drawerContent: DrawerType
