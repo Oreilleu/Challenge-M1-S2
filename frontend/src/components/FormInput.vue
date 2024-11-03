@@ -3,11 +3,14 @@
     <label :for="id" :class="hiddenLabel ? 'visually-hidden' : ''">{{ label }}</label>
     <Field
       :id="id"
+      :as="as"
       :name="name"
       :type="type"
       v-model:model-value="model"
       :placeholder="placeholder"
       validate-on-input
+      :class="as === 'textarea' ? 'textarea' : hiddenInput ? 'visually-hidden' : ''"
+      :multiple="multiple"
     />
     <ErrorMessage :name="name" class="error" />
   </div>
@@ -21,8 +24,11 @@ type Props = {
   name: string
   label: string
   type: string
+  as?: string
   placeholder?: string
   hiddenLabel?: boolean
+  hiddenInput?: boolean
+  multiple?: boolean
 }
 
 defineProps<Props>()
@@ -60,5 +66,18 @@ input:focus-within {
 .error {
   color: var(--danger);
   align-self: start;
+}
+
+.textarea {
+  height: 100px;
+  min-width: 100%;
+  max-width: 100%;
+  min-height: 100px;
+  max-height: 400px;
+  border-radius: 10px;
+  border: 1px solid hsla(0, 0%, 7%, 0.43);
+  padding-left: 10px;
+  font-family: var(--main-font);
+  font-size: 13px;
 }
 </style>

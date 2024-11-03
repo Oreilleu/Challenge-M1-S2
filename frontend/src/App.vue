@@ -4,37 +4,29 @@ import { isAuthenticated } from '@/utils/isAuthenticatedUser'
 import localStorageHandler from './utils/localStorageHandler'
 import { onMounted, ref } from 'vue'
 import { LocalStorageKeys } from './utils/types/local-storage-keys.enum'
-const router = useRouter()
-const route = useRoute()
+import useAuthStore from './utils/store/useAuthStore'
 
-const isAuthenticatedUser = ref(false)
-
-const checkAuthentication = async () => {
-  isAuthenticatedUser.value = await isAuthenticated()
-}
+const authStore = useAuthStore()
 
 onMounted(() => {
-  checkAuthentication()
+  authStore.checkAuthentication()
 })
 
-const logout = () => {
-  localStorageHandler().remove(LocalStorageKeys.AUTH_TOKEN)
-  localStorageHandler().remove(LocalStorageKeys.USER)
-  isAuthenticatedUser.value = false
-  router.push('/login')
-}
+const route = useRoute()
 </script>
 
 <template>
   <header>
     LOGO
-    <RouterLink v-if="route.path !== '/register' && !isAuthenticatedUser" to="/register"
-      >Inscription</RouterLink
-    >
-    <RouterLink v-if="route.path !== '/login' && !isAuthenticatedUser" to="/login"
-      >Connexion</RouterLink
-    >
-    <el-button v-if="isAuthenticatedUser" type="primary" @click="logout">Se déconnecter</el-button>
+    <RouterLink v-if="route.path !== '/register' && !authStore.isAuthenticatedUser" to="/register"
+      >Inscription
+    </RouterLink>
+    <RouterLink v-if="route.path !== '/login' && !authStore.isAuthenticatedUser" to="/login">
+      Connexion
+    </RouterLink>
+    <el-button v-if="authStore.isAuthenticatedUser" type="primary" @click="authStore.logout">
+      Se déconnecter
+    </el-button>
   </header>
   <main>
     <RouterView />

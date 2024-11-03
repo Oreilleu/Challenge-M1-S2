@@ -14,14 +14,15 @@ const app = express();
 
 connectDb();
 
-// Middleware setup
-app.use(express.json());
-
 app.use(
   cors({
     origin: process.env.FRONT_URL || "",
   })
 );
+
+// Middleware setup
+app.use(express.json());
+app.use(express.static("public"));
 
 // Routes setup
 app.use("/", authRouter);

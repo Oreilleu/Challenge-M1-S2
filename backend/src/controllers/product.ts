@@ -1,9 +1,10 @@
 import { RequestHandler } from "express";
 import ProductModel from "../models/product.model";
 import { Product } from "../types/product.interface";
+import { matchImageByName } from "../utils/matchImageByName";
 
 export const getOne: RequestHandler = async (req, res, next) => {
-  const { id } = req.body;
+  const { id } = req.params;
 
   if (!id) {
     res.status(400).json({
@@ -47,7 +48,52 @@ export const getAll: RequestHandler = async (req, res, next) => {
 };
 
 export const create: RequestHandler = async (req, res, next) => {
-  const body: Product = req.body;
+  const body: Product = JSON.parse(req.body.product);
+
+  if (!body) {
+    res.status(400).json({
+      success: false,
+      message: "Les informations du produit sont requises",
+    });
+    return;
+  }
+  const variations = body.variations;
+
+  const imagesFiles = req.files as Express.Multer.File[];
+
+  if (!variations || !variations.length) {
+    res.status(400).json({
+      success: false,
+      message: "Au moins une variation est requise",
+    });
+    return;
+  }
+
+  if (!imagesFiles) {
+    res.status(400).json({
+      success: false,
+      message: "Une image est requise",
+    });
+    return;
+  }
+
+  variations.forEach((variation) => {
+    if (!variation.nameImages) {
+      return;
+    }
+
+    variation.imagesApi = [];
+
+    variation.nameImages.forEach((nameImage) => {
+      const images = matchImageByName(imagesFiles, nameImage);
+
+      variation.imagesApi.push(images);
+
+      variation.nameImages = variation.nameImages.filter(
+        (name) => name !== nameImage
+      );
+    });
+  });
 
   try {
     const product = new ProductModel(body);
@@ -58,20 +104,73 @@ export const create: RequestHandler = async (req, res, next) => {
       data: product,
       message: "Produit créé avec succès",
     });
-  } catch (error) {
-    console.error("Erreur pour créer un produit", error);
-    res.status(500).json({
-      success: false,
-      message: "Erreur lors de la création du produit",
-    });
+  } catch (error: any) {
+    if (error.code === 11000) {
+      res.status(400).json({
+        success: false,
+        message: "Un produit avec ce nom existe déja.",
+      });
+      return;
+    }
+
+    next(error);
   }
 };
 
 export const edit: RequestHandler = async (req, res, next) => {
-  const body: Product = req.body;
+  const body: Product = JSON.parse(req.body.product);
+  const { id } = req.params;
+
+  if (!id) {
+    res.status(400).json({
+      success: false,
+      message: "Produit non trouvé",
+    });
+    return;
+  }
+
+  if (!body) {
+    res.status(400).json({
+      success: false,
+      message: "Les informations du produit sont requises",
+    });
+    return;
+  }
+
+  const variations = body.variations;
+
+  const imagesFiles = req.files as Express.Multer.File[];
+
+  if (!variations || !variations.length) {
+    res.status(400).json({
+      success: false,
+      message: "Au moins une variation est requise",
+    });
+    return;
+  }
+
+  variations.forEach((variation) => {
+    if (variation.imagesApi) {
+      return;
+    }
+
+    variation.imagesApi = [];
+
+    variation.nameImages?.forEach((nameImage) => {
+      const images = matchImageByName(imagesFiles, nameImage);
+
+      variation.imagesApi?.push(images);
+
+      variation.nameImages = variation.nameImages?.filter(
+        (name) => name !== nameImage
+      );
+    });
+  });
 
   try {
-    const product = await ProductModel.findByIdAndUpdate(body._id, body);
+    const product = await ProductModel.findByIdAndUpdate(id, body, {
+      new: true,
+    });
 
     if (!product) {
       res.status(400).json({
@@ -98,7 +197,7 @@ export const edit: RequestHandler = async (req, res, next) => {
 };
 
 export const remove: RequestHandler = async (req, res, next) => {
-  const { id } = req.body;
+  const { id } = req.params;
 
   try {
     const product = await ProductModel.findByIdAndDelete(id);

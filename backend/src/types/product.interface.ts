@@ -1,20 +1,11 @@
+import { Variation } from "./variation.interface";
+
 export interface Product {
-  _id: number;
-  category?: string;
+  id?: string;
   name: string;
   description: string;
   brand: string;
   model: string;
-  variation: Array<{
-    images: string[];
-    width: string;
-    height: string;
-    depth: string;
-    price: number;
-    quantite: number;
-    filter: {
-      name: string;
-      value: string;
-    };
-  }>;
+  category: string;
+  variations: Array<Variation>;
 }

@@ -1,0 +1,72 @@
+import localStorageHandler from '../localStorageHandler'
+import toastHandler from '../toastHandler'
+import { LocalStorageKeys } from '../types/local-storage-keys.enum'
+import type { Product } from '../types/product.interface'
+import type { ResponseApi } from '../types/response-api.interface'
+import { ToastType } from '../types/toast-type.enum'
+
+export const fetchProducts = async () => {
+  try {
+    const response: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/product/get-all`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+      }
+    })
+
+    const json: ResponseApi<Array<Product>> = await response.json()
+
+    if (!json.success) {
+      toastHandler(
+        json.message || 'Une erreur est survenue lors de la récupération des produits',
+        ToastType.ERROR
+      )
+      return []
+    }
+
+    return json.data || []
+  } catch (error: any) {
+    toastHandler(
+      error.message || 'Une erreur est survenue lors de la récupération des produits',
+      ToastType.ERROR
+    )
+    return []
+  }
+}
+
+export const fetchProductById = async (id: string | null) => {
+  if (!id) {
+    toastHandler("Erreur lors de la récupération de l'identifiant du produit", ToastType.ERROR)
+    return {} as Product
+  }
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_BASE_API_URL}/product/get-one/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+      }
+    })
+
+    if (!res.ok) {
+      toastHandler('Erreur lors de la récupération du produit', ToastType.ERROR)
+      return {} as Product
+    }
+
+    const json: ResponseApi<Product> = await res.json()
+
+    if (!json.success) {
+      toastHandler(json.message || 'Erreur lors de la récupération du produit', ToastType.ERROR)
+      return {} as Product
+    }
+
+    if (!json.data) {
+      toastHandler('Erreur lors de la récupération du produit', ToastType.ERROR)
+      return {} as Product
+    }
+
+    return json.data
+  } catch (error) {
+    toastHandler('Erreur lors de la récupération du produit', ToastType.ERROR)
+    return {} as Product
+  }
+}

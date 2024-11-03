@@ -4,7 +4,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { isAuthenticated } from './isAuthenticatedUser'
 import AdminProducts from '@/views/backOffice/product/AdminProducts.vue'
 import AdminUsers from '@/views/AdminUsers.vue'
-// TODO : trouver l'erreur d'import non bloquante
 import { fetchIsAdminUser, fetchIsVerifiedUser } from './api/user'
 import Register from '@/views/Register.vue'
 import Home from '@/views/Home.vue'
