@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import AdminLayout from '@/components/AdminLayout.vue'
-import type { Category } from '@/utils/types/category.interface';
+import type { Category } from '@/utils/types/interfaces/category.interface';
 //ajouter category interface
 
 const categories = ref<Category[]>([]);

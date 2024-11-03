@@ -36,7 +36,7 @@ import { ToastType } from '@/utils/types/toast-type.enum'
 import { Form } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { resetPasswordFormSchema } from '@/utils/validation/schema'
-import type { ResponseApi } from '@/utils/types/response-api.interface'
+import type { ResponseApi } from '@/utils/types/interfaces/response-api.interface'
 
 const isSubmitting = ref(false)
 const route = useRoute()

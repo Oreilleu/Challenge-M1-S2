@@ -1,4 +1,4 @@
-import type { Civility } from './civility.type'
+import type { Civility } from '../civility.type'
 
 export interface User {
   email: string

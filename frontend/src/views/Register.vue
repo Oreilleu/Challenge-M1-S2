@@ -102,9 +102,9 @@ import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
 import { Field, Form } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { registerFormSchema } from '@/utils/validation/schema'
-import type { RegisterForm } from '@/utils/types/register-form.interface'
-import type { ResponseApi } from '@/utils/types/response-api.interface'
-import type { ResultAuth } from '@/utils/types/result-auth.interface'
+import type { RegisterForm } from '@/utils/types/interfaces/register-form.interface'
+import type { ResponseApi } from '@/utils/types/interfaces/response-api.interface'
+import type { ResultAuth } from '@/utils/types/interfaces/result-auth.interface'
 
 const isSubmitting = ref(false)
 const router = useRouter()

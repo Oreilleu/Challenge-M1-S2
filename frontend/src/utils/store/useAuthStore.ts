@@ -4,7 +4,7 @@ import { isAuthenticated } from '@/utils/isAuthenticatedUser'
 import localStorageHandler from '../localStorageHandler'
 import { LocalStorageKeys } from '../types/local-storage-keys.enum'
 import { useRouter } from 'vue-router'
-import type { User } from '../types/user.interface'
+import type { User } from '../types/interfaces/user.interface'
 
 const useAuthStore = defineStore('auth', () => {
   const router = useRouter()
