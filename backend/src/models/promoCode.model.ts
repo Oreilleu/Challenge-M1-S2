@@ -16,3 +16,7 @@ const promoCodeSchema = new Schema({
         required: true,
     },
 });
+
+const PromoCodeModel = mongoose.model('PromoCode', promoCodeSchema);
+
+export default PromoCodeModel;
