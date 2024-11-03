@@ -197,7 +197,7 @@ export const edit: RequestHandler = async (req, res, next) => {
 };
 
 export const remove: RequestHandler = async (req, res, next) => {
-  const { id } = req.body;
+  const { id } = req.params;
 
   try {
     const product = await ProductModel.findByIdAndDelete(id);

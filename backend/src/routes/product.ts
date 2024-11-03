@@ -25,6 +25,6 @@ productRouter.put(
   upload.array("images", 200),
   edit
 );
-productRouter.delete("/delete", checkToken, checkAdmin, remove);
+productRouter.delete("/delete/:id", checkToken, checkAdmin, remove);
 
 export default productRouter;
