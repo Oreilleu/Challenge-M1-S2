@@ -5,7 +5,7 @@
 
       <ul>
         <li v-for="product in products" :key="product._id">
-          <el-button @click="openDrawerUpdate">Modifier : {{ product._id }}</el-button>
+          <el-button @click="openDrawerUpdate(product._id)">Modifier : {{ product._id }}</el-button>
         </li>
       </ul>
     </section>
@@ -14,49 +14,28 @@
 
 <script setup lang="ts">
 import AdminLayout from '@/components/AdminLayout.vue'
-import localStorageHandler from '@/utils/localStorageHandler'
+import { fetchProducts } from '@/utils/api/product'
+import useDrawerStore from '@/utils/store/useDrawerStore'
 import toastHandler from '@/utils/toastHandler'
-import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
+import { DrawerType } from '@/utils/types/drawer-type.enum'
 import type { Product } from '@/utils/types/product.interface'
-import type { ResponseApi } from '@/utils/types/response-api.interface'
 import { ToastType } from '@/utils/types/toast-type.enum'
 import { ref } from 'vue'
 import { onMounted } from 'vue'
 
 const products = ref<Array<Product>>([])
+const drawerStore = useDrawerStore()
 
-const fetchProducts = async () => {
-  try {
-    const response: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/product/get-all`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
-      }
-    })
-    const json: ResponseApi<Array<Product>> = await response.json()
-
-    if (!json.success) {
-      throw new Error(json.message)
-    }
-
-    products.value = json.data || []
-  } catch (error: any) {
-    toastHandler(
-      error.message || 'Une erreur est survenue lors de la récupération des produits',
-      ToastType.ERROR
-    )
+const openDrawerUpdate = (idProduct: string | undefined) => {
+  if (!idProduct) {
+    toastHandler("Erreur lors de la récupération de l'identifiant du produit", ToastType.ERROR)
     return
   }
-}
-
-const openDrawerUpdate = () => {
-  console.log('openDrawerUpdate')
+  drawerStore.openDrawerUpdateForm(DrawerType.UPDATE_PRODUCT, idProduct)
 }
 
 onMounted(async () => {
-  await fetchProducts()
-
-  console.log(products)
+  products.value = await fetchProducts()
 })
 </script>
 

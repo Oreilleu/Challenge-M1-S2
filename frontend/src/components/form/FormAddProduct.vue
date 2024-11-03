@@ -168,6 +168,11 @@ import type { ResponseApi } from '@/utils/types/response-api.interface'
 import localStorageHandler from '@/utils/localStorageHandler'
 import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
 import { v4 as uuidv4 } from 'uuid'
+import useDrawerStore from '@/utils/store/useDrawerStore'
+import { useRouter } from 'vue-router'
+
+const drawerStore = useDrawerStore()
+const router = useRouter()
 
 // onMounted(() => {
 //   const getCategories = async () => {
@@ -287,6 +292,7 @@ const onSubmit = handleSubmit(async (values) => {
       const json: ResponseApi<null> = await response.json()
 
       if (json.success) {
+        drawerStore.closeDrawer()
         toastHandler('Produit ajouté avec succès', ToastType.SUCCESS)
       } else {
         toastHandler(json.message || "Erreur lors de l'ajout du produit", ToastType.ERROR)

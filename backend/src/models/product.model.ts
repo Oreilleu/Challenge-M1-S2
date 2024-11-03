@@ -17,7 +17,7 @@ const filterSchema = new mongoose.Schema({
 });
 
 const variationSchema = new mongoose.Schema({
-  images: { type: [imageSchema], required: true },
+  imagesApi: { type: [imageSchema], required: true },
   price: {
     type: Number,
     required: [true, "Le prix du produit est obligatoire."],

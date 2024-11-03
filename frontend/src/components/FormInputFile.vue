@@ -71,7 +71,6 @@ const handleFileChange = () => {
 
   if (files.length === 1) {
     labelInputFile.value = formatName(files[0].name, 35)
-
     return
   }
 

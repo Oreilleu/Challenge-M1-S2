@@ -4,7 +4,7 @@ import { Product } from "../types/product.interface";
 import { matchImageByName } from "../utils/matchImageByName";
 
 export const getOne: RequestHandler = async (req, res, next) => {
-  const { id } = req.body;
+  const { id } = req.params;
 
   if (!id) {
     res.status(400).json({
@@ -82,12 +82,12 @@ export const create: RequestHandler = async (req, res, next) => {
       return;
     }
 
-    variation.images = [];
+    variation.imagesApi = [];
 
     variation.nameImages.forEach((nameImage) => {
       const images = matchImageByName(imagesFiles, nameImage);
 
-      variation.images.push(images);
+      variation.imagesApi.push(images);
 
       variation.nameImages = variation.nameImages.filter(
         (name) => name !== nameImage
@@ -118,10 +118,59 @@ export const create: RequestHandler = async (req, res, next) => {
 };
 
 export const edit: RequestHandler = async (req, res, next) => {
-  const body: Product = req.body;
+  const body: Product = JSON.parse(req.body.product);
+  const { id } = req.params;
+
+  if (!id) {
+    res.status(400).json({
+      success: false,
+      message: "Produit non trouvé",
+    });
+    return;
+  }
+
+  if (!body) {
+    res.status(400).json({
+      success: false,
+      message: "Les informations du produit sont requises",
+    });
+    return;
+  }
+
+  const variations = body.variations;
+
+  const imagesFiles = req.files as Express.Multer.File[];
+
+  if (!variations || !variations.length) {
+    res.status(400).json({
+      success: false,
+      message: "Au moins une variation est requise",
+    });
+    return;
+  }
+
+  variations.forEach((variation) => {
+    if (variation.imagesApi) {
+      return;
+    }
+
+    variation.imagesApi = [];
+
+    variation.nameImages?.forEach((nameImage) => {
+      const images = matchImageByName(imagesFiles, nameImage);
+
+      variation.imagesApi?.push(images);
+
+      variation.nameImages = variation.nameImages?.filter(
+        (name) => name !== nameImage
+      );
+    });
+  });
 
   try {
-    const product = await ProductModel.findByIdAndUpdate(body.id, body);
+    const product = await ProductModel.findByIdAndUpdate(id, body, {
+      new: true,
+    });
 
     if (!product) {
       res.status(400).json({

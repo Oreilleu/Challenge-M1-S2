@@ -11,8 +11,10 @@
 import FormAddProduct from './form/FormAddProduct.vue'
 import FormAddCategory from './form/FormAddCategory.vue'
 import { DrawerType } from '@/utils/types/drawer-type.enum'
-// TODO : Errreur d'import non bloquante ??
+// TODO : Errreur d'import non bloquante ??dd
 import FormAddUser from './form/FormAddUser.vue'
+import FormUpdateProduct from './form/FormUpdateProduct.vue'
+import useDrawerStore from '@/utils/store/useDrawerStore'
 
 type Props = {
   drawerContent: DrawerType
@@ -26,6 +28,7 @@ const handlerTitle = {
   [DrawerType.CREATE_PRODUCT]: 'Ajouter un produit',
   [DrawerType.CREATE_CATEGORY]: 'Ajouter une catégorie',
   [DrawerType.CREATE_USER]: 'Ajouter un utilisateur',
+  [DrawerType.UPDATE_PRODUCT]: `Modifier le produit`,
   [DrawerType.NONE]: null
 }
 
@@ -33,6 +36,7 @@ const handlerForm = {
   [DrawerType.CREATE_PRODUCT]: FormAddProduct,
   [DrawerType.CREATE_CATEGORY]: FormAddCategory,
   [DrawerType.CREATE_USER]: FormAddUser,
+  [DrawerType.UPDATE_PRODUCT]: FormUpdateProduct,
   [DrawerType.NONE]: null
 }
 </script>
