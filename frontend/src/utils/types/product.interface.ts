@@ -7,5 +7,5 @@ export interface Product {
   description: string
   brand: string
   model: string
-  variations: Array<Variation>
+  variation: Array<Variation>
 }
