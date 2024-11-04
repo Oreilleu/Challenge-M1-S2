@@ -13,7 +13,6 @@ import ForgotPassword from '@/views/ForgotPassword.vue'
 import ResetPassword from '@/views/ResetPassword.vue'
 import AdminCategories from '@/views/AdminCategories.vue'
 import ProductList from '@/views/ProductList.vue'
-import { pa } from 'element-plus/es/locales.mjs'
 
 const redirectToHomeIfUserAuthenticated = async () => {
   const isAuthenticatedUser = await isAuthenticated()
