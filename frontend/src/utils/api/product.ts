@@ -1,8 +1,8 @@
 import localStorageHandler from '../localStorageHandler'
 import toastHandler from '../toastHandler'
 import { LocalStorageKeys } from '../types/local-storage-keys.enum'
-import type { Product } from '../types/product.interface'
-import type { ResponseApi } from '../types/response-api.interface'
+import type { Product } from '../types/interfaces/product.interface'
+import type { ResponseApi } from '../types/interfaces/response-api.interface'
 import { ToastType } from '../types/toast-type.enum'
 
 export const fetchProducts = async () => {

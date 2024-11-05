@@ -41,7 +41,7 @@ export const nameProductValidation = z
 
 export const descriptionProductValidation = z
   .string()
-  .min(120, { message: 'La description du produit doit avoir au moins 120 caractères.' })
+  .min(2, { message: 'La description du produit doit avoir au moins 120 caractères.' })
   .max(500, { message: 'La description du produit doit avoir maximun 500 caractères' })
 
 export const brandProductValidation = z
