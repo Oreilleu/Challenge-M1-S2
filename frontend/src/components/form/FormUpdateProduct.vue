@@ -37,13 +37,14 @@
       v-model="product.model"
     />
 
-    <FormInput
-      id="category"
-      name="category"
+    <FormSelect
+      id="idCategory"
+      name="idCategory"
       label="Catégorie"
-      placeholder="Categorie du produit"
-      type="text"
-      v-model="product.category"
+      v-model="product.idCategory"
+      labelDefaultOption="Sans catégorie..."
+      :defaultSelectedValue="formattedDefaultCategory?.value || ''"
+      :options="categoryStore.formattedOptionsCategories"
     />
 
     <el-divider class="divider" />
@@ -195,10 +196,12 @@
       </li>
     </ul>
 
-    <span>{{ errors }}</span>
-
-    <el-button type="primary" native-type="submit" :disabled="Object.keys(errors).length > 0"
-      >Ajouter le produit
+    <el-button
+      type="primary"
+      native-type="submit"
+      :disabled="Object.keys(errors).length > 0 || isUnmodifiedProduct()"
+    >
+      Modifier le produit
     </el-button>
   </form>
 </template>
@@ -221,10 +224,18 @@ import type { Filter } from '@/utils/types/filter.interface'
 import type { ImageApi } from '@/utils/types/image.interface'
 import toastHandler from '@/utils/toastHandler'
 import { ToastType } from '@/utils/types/toast-type.enum'
+import FormSelect from '../FormSelect.vue'
+import useCategoryStore from '@/utils/store/useCategoryStore'
+import type { Category } from '@/utils/types/category.interface'
+import type { OptionCategory } from '@/utils/types/option-category.interface'
 
 const drawerStore = useDrawerStore()
+const categoryStore = useCategoryStore()
+
 const response = ref<Product | null>(null)
 const product = ref<Product | null>(null)
+const initialStateProduct = ref<Product | null>(null)
+const formattedDefaultCategory = ref<OptionCategory | null>(null)
 
 const visibleInputImageVariation = ref<Array<string>>([])
 
@@ -272,6 +283,13 @@ const isVariationFromResponse = (variation: Variation) => {
   return !!variation._id
 }
 
+const isUnmodifiedProduct = () => {
+  console.log(JSON.stringify(product.value))
+  console.log(JSON.stringify(initialStateProduct.value))
+  console.log(JSON.stringify(product.value) === JSON.stringify(initialStateProduct.value))
+  return JSON.stringify(product.value) === JSON.stringify(initialStateProduct.value)
+}
+
 onMounted(async () => {
   const responseProduct = await fetchProductById(drawerStore.updateId)
 
@@ -287,6 +305,25 @@ onMounted(async () => {
         variations: JSON.parse(JSON.stringify(responseProduct.variations))
       }
     : null
+
+  initialStateProduct.value = responseProduct
+    ? {
+        name: JSON.parse(JSON.stringify(responseProduct.name)),
+        description: JSON.parse(JSON.stringify(responseProduct.description)),
+        brand: JSON.parse(JSON.stringify(responseProduct.brand)),
+        model: JSON.parse(JSON.stringify(responseProduct.model)),
+        category: JSON.parse(JSON.stringify(responseProduct.category)),
+        variations: JSON.parse(JSON.stringify(responseProduct.variations)),
+        idCategory: JSON.parse(JSON.stringify(responseProduct.category?._id))
+      }
+    : null
+
+  if (responseProduct.category) {
+    formattedDefaultCategory.value = {
+      value: responseProduct.category._id,
+      label: responseProduct.category.name
+    }
+  }
 })
 
 const validationSchema = toTypedSchema(updateProductschema)
@@ -298,6 +335,7 @@ const { handleSubmit, errors } = useForm<Product>({
 
 const onSubmit = handleSubmit(async () => {
   const formData = new FormData()
+
   product.value?.variations.forEach((variation: Variation) => {
     if (Array.isArray(variation.images)) return
 
@@ -313,6 +351,10 @@ const onSubmit = handleSubmit(async () => {
     variation.nameImages = nameFiles
     delete variation.images
   })
+
+  if (product.value?.idCategory === '') {
+    product.value.idCategory = null
+  }
 
   formData.append('product', JSON.stringify(product.value))
 
@@ -348,7 +390,6 @@ const addVariationToDisplay = () => {
     quantite: 1,
     filters: [
       {
-        _id: '',
         name: '',
         value: ''
       }

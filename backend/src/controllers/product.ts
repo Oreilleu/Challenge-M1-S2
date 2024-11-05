@@ -2,6 +2,8 @@ import { RequestHandler } from "express";
 import ProductModel from "../models/product.model";
 import { Product } from "../types/product.interface";
 import { matchImageByName } from "../utils/matchImageByName";
+import path from "path";
+import fs from "fs";
 
 export const getOne: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
@@ -13,7 +15,14 @@ export const getOne: RequestHandler = async (req, res, next) => {
     });
   }
 
-  const product = await ProductModel.findById(id);
+  const product = await ProductModel.findById(id)
+    .populate("idCategory")
+    .lean<Product>();
+
+  if (product?.idCategory) {
+    product.category = product.idCategory;
+    delete product.idCategory;
+  }
 
   if (!product) {
     res.status(400).json({
@@ -32,7 +41,16 @@ export const getOne: RequestHandler = async (req, res, next) => {
 
 export const getAll: RequestHandler = async (req, res, next) => {
   try {
-    const products = await ProductModel.find();
+    const products = await ProductModel.find()
+      .populate("idCategory")
+      .lean<Array<Product>>();
+
+    products.forEach((product) => {
+      if (product.idCategory) {
+        product.category = product.idCategory;
+        delete product.idCategory;
+      }
+    });
 
     res.status(200).json({
       success: true,
@@ -49,6 +67,8 @@ export const getAll: RequestHandler = async (req, res, next) => {
 
 export const create: RequestHandler = async (req, res, next) => {
   const body: Product = JSON.parse(req.body.product);
+  const variations = body.variations;
+  const imagesFiles = req.files as Express.Multer.File[];
 
   if (!body) {
     res.status(400).json({
@@ -57,9 +77,6 @@ export const create: RequestHandler = async (req, res, next) => {
     });
     return;
   }
-  const variations = body.variations;
-
-  const imagesFiles = req.files as Express.Multer.File[];
 
   if (!variations || !variations.length) {
     res.status(400).json({
@@ -120,6 +137,10 @@ export const create: RequestHandler = async (req, res, next) => {
 export const edit: RequestHandler = async (req, res, next) => {
   const body: Product = JSON.parse(req.body.product);
   const { id } = req.params;
+  const imagesFiles = req.files as Express.Multer.File[];
+
+  const variations = body.variations;
+  const variationToDeleteImages: Array<string> = [];
 
   if (!id) {
     res.status(400).json({
@@ -137,10 +158,6 @@ export const edit: RequestHandler = async (req, res, next) => {
     return;
   }
 
-  const variations = body.variations;
-
-  const imagesFiles = req.files as Express.Multer.File[];
-
   if (!variations || !variations.length) {
     res.status(400).json({
       success: false,
@@ -150,8 +167,10 @@ export const edit: RequestHandler = async (req, res, next) => {
   }
 
   variations.forEach((variation) => {
-    if (variation.imagesApi) {
-      return;
+    if (variation.imagesApi) return;
+
+    if (variation._id) {
+      variationToDeleteImages.push(variation._id);
     }
 
     variation.imagesApi = [];
@@ -168,9 +187,7 @@ export const edit: RequestHandler = async (req, res, next) => {
   });
 
   try {
-    const product = await ProductModel.findByIdAndUpdate(id, body, {
-      new: true,
-    });
+    const product = await ProductModel.findByIdAndUpdate(id, body);
 
     if (!product) {
       res.status(400).json({
@@ -182,9 +199,27 @@ export const edit: RequestHandler = async (req, res, next) => {
 
     await product.save();
 
+    product.variations.forEach((oldVariation) => {
+      if (variationToDeleteImages.includes(oldVariation._id.toString())) {
+        oldVariation.imagesApi?.forEach((image) => {
+          const imagePath = path
+            .join(__dirname, "public", image.path)
+            .replace("/src/controllers", "");
+
+          fs.unlink(imagePath, (err) => {
+            if (err) {
+              console.error(
+                `Erreur pour supprimer l'image : ${image.name}`,
+                err
+              );
+            }
+          });
+        });
+      }
+    });
+
     res.status(200).json({
       success: true,
-      data: product,
       message: "Produit modifié avec succès",
     });
   } catch (error) {
@@ -209,6 +244,20 @@ export const remove: RequestHandler = async (req, res, next) => {
       });
       return;
     }
+
+    product.variations.forEach((variation) => {
+      variation.imagesApi?.forEach((image) => {
+        const imagePath = path
+          .join(__dirname, "public", image.path)
+          .replace("/src/controllers", "");
+
+        fs.unlink(imagePath, (err) => {
+          if (err) {
+            console.error(`Erreur pour supprimer l'image : ${image.name}`, err);
+          }
+        });
+      });
+    });
 
     res.status(200).json({
       success: true,

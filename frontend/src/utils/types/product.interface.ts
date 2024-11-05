@@ -1,8 +1,10 @@
+import type { Category } from './category.interface'
 import type { Variation } from './variation.interface'
 
 export interface Product {
   _id?: string
-  category?: string
+  idCategory?: string | null
+  category?: Category
   name: string
   description: string
   brand: string
