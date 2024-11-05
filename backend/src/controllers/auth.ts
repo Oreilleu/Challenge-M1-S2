@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import {
   generateJsonWebToken,
+  killJsonWebToken,
   verifyJsonWebToken,
 } from "../utils/jsonWebtoken";
 import { sendEmail } from "../utils/senderMail";
@@ -243,6 +244,8 @@ export const verifyAccount: RequestHandler = async (req, res) => {
 
     await user.save();
 
+    killJsonWebToken(validateAccountToken);
+
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
     delete userWithoutPassword.isAdmin;
@@ -344,6 +347,8 @@ export const resetPassword: RequestHandler = async (req, res, next) => {
     user.password = hashedPassword;
 
     await user.save();
+
+    killJsonWebToken(token);
 
     res.status(200).json({
       success: true,

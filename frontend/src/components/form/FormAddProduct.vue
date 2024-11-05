@@ -37,13 +37,13 @@
       v-model="product.model"
     />
 
-    <FormInput
-      id="category"
-      name="category"
+    <FormSelect
+      id="idCategory"
+      name="idCategory"
       label="Catégorie"
-      placeholder="Categorie du produit"
-      type="text"
-      v-model="product.category"
+      labelDefaultOption="Sans catégorie..."
+      v-model="product.idCategory"
+      :options="categoryStore.formattedOptionsCategories"
     />
 
     <el-divider class="divider" />
@@ -147,9 +147,9 @@
       </li>
     </ul>
 
-    <el-button type="primary" native-type="submit" :disabled="Object.keys(errors).length > 0"
-      >Ajouter le produit</el-button
-    >
+    <el-button type="primary" native-type="submit" :disabled="Object.keys(errors).length > 0">
+      Ajouter le produit
+    </el-button>
   </form>
 </template>
 
@@ -169,46 +169,18 @@ import localStorageHandler from '@/utils/localStorageHandler'
 import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
 import { v4 as uuidv4 } from 'uuid'
 import useDrawerStore from '@/utils/store/useDrawerStore'
-import { useRouter } from 'vue-router'
+import useCategoryStore from '@/utils/store/useCategoryStore'
+import FormSelect from '../FormSelect.vue'
 
 const drawerStore = useDrawerStore()
-const router = useRouter()
-
-// onMounted(() => {
-//   const getCategories = async () => {
-//     try {
-//       const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/category`, {
-//         method: 'GET',
-//         headers: {
-//           Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
-//         }
-//       })
-
-//       const json: ResponseApi<string[]> = await response.json()
-
-//       if (json.success) {
-//         // categories.push(...json.data)
-//       } else {
-//         toastHandler(
-//           json.message || 'Erreur lors de la récupération des catégories',
-//           ToastType.ERROR
-//         )
-//       }
-//     } catch (error) {
-//       console.error(error)
-//       toastHandler('Erreur lors de la récupération des catégories', ToastType.ERROR)
-//     }
-//   }
-// })
-
-// const categories = reactive([])
+const categoryStore = useCategoryStore()
 
 const product: Product = reactive({
   name: '',
   description: '',
   brand: '',
   model: '',
-  category: undefined,
+  idCategory: undefined,
   variations: [
     {
       images: { files: {} as FileList },
@@ -239,6 +211,10 @@ const addVariation = () => {
   })
 }
 
+const removeVariation = (index: number) => {
+  product.variations.splice(index, 1)
+}
+
 const addFilter = (variation: Variation) => {
   variation.filters.push({
     name: '',
@@ -248,10 +224,6 @@ const addFilter = (variation: Variation) => {
 
 const removeFilter = (variation: Variation, index: number) => {
   variation.filters.splice(index, 1)
-}
-
-const removeVariation = (index: number) => {
-  product.variations.splice(index, 1)
 }
 
 const validationSchema = toTypedSchema(productschema)

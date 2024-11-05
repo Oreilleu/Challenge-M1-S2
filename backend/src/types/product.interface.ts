@@ -6,6 +6,7 @@ export interface Product {
   description: string;
   brand: string;
   model: string;
-  category: string;
+  idCategory?: string;
+  category?: string;
   variations: Array<Variation>;
 }

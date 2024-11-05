@@ -56,6 +56,8 @@ const getElementById = (id: string) => {
 const clickOnInput = () => {
   const input = getElementById(id) as HTMLInputElement
   model.value = { files: {} }
+  listFiles.splice(0, listFiles.length)
+  labelInputFile.value = 'Choisir une image ...'
   input.click()
 }
 

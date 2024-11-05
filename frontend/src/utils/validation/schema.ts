@@ -71,7 +71,7 @@ export const productschema = z.object({
   description: descriptionProductValidation,
   brand: brandProductValidation,
   model: modelProductValidation,
-  category: z.string().optional(),
+  idCategory: z.string().optional(),
   variations: z.array(variationSchema).min(1, { message: 'Il faut au moins une variation' })
 })
 
@@ -80,6 +80,6 @@ export const updateProductschema = z.object({
   description: descriptionProductValidation,
   brand: brandProductValidation,
   model: modelProductValidation,
-  category: z.string().optional(),
+  idCategory: z.string().optional(),
   variations: z.array(variationSchema).min(1, { message: 'Il faut au moins une variation' })
 })
