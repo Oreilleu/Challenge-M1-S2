@@ -5,6 +5,7 @@ import localStorageHandler from './utils/localStorageHandler'
 import { onMounted, ref } from 'vue'
 import { LocalStorageKeys } from './utils/types/local-storage-keys.enum'
 import HeaderComponent from './components/HeaderComponent.vue'
+import FooterComponent from './components/FooterComponent.vue'
 const router = useRouter()
 const route = useRoute()
 
@@ -29,16 +30,12 @@ const logout = () => {
   <header>
     <HeaderComponent />
     LOGO
-    <RouterLink v-if="route.path !== '/register' && !isAuthenticatedUser" to="/register"
-      >Inscription</RouterLink
-    >
-    <RouterLink v-if="route.path !== '/login' && !isAuthenticatedUser" to="/login"
-      >Connexion</RouterLink
-    >
+    <RouterLink v-if="route.path !== '/register' && !isAuthenticatedUser" to="/register">Inscription</RouterLink>
+    <RouterLink v-if="route.path !== '/login' && !isAuthenticatedUser" to="/login">Connexion</RouterLink>
     <el-button v-if="isAuthenticatedUser" type="primary" @click="logout">Se déconnecter</el-button>
   </header>
-  <main>
+  <main class="min-h-screen">
     <RouterView />
   </main>
-  <footer>Mon footer</footer>
+  <FooterComponent />
 </template>

@@ -12,6 +12,7 @@ import Login from '@/views/Login.vue'
 import ForgotPassword from '@/views/ForgotPassword.vue'
 import ResetPassword from '@/views/ResetPassword.vue'
 import AdminCategories from '@/views/AdminCategories.vue'
+import QuiSommesNous from '@/views/QuiSommesNous.vue'
 
 const redirectToHomeIfUserAuthenticated = async () => {
   const isAuthenticatedUser = await isAuthenticated()
@@ -49,6 +50,11 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home
+  },
+  {
+    path: '/qui-sommes-nous',
+    name: 'QuiSommesNous',
+    component: QuiSommesNous
   },
   {
     path: '/register',
