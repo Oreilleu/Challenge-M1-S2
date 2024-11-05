@@ -226,8 +226,7 @@ import toastHandler from '@/utils/toastHandler'
 import { ToastType } from '@/utils/types/toast-type.enum'
 import FormSelect from '../FormSelect.vue'
 import useCategoryStore from '@/utils/store/useCategoryStore'
-import type { Category } from '@/utils/types/category.interface'
-import type { OptionCategory } from '@/utils/types/option-category.interface'
+import type { OptionCategory } from '@/utils/types/interfaces/option-category.interface'
 
 const drawerStore = useDrawerStore()
 const categoryStore = useCategoryStore()

@@ -2,8 +2,8 @@ import { defineStore } from 'pinia'
 import toastHandler from '../toastHandler'
 import { ToastType } from '../types/toast-type.enum'
 import { ref, watch } from 'vue'
-import type { Category } from '../types/category.interface'
-import type { OptionCategory } from '../types/option-category.interface'
+import type { OptionCategory } from '../types/interfaces/option-category.interface'
+import type { Category } from '../types/interfaces/category.interface'
 
 const useCategoryStore = defineStore('category', () => {
   const categories = ref<Category[]>([])

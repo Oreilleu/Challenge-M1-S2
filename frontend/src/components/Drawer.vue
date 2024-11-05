@@ -11,9 +11,10 @@
 import FormAddProduct from './form/FormAddProduct.vue'
 import FormAddCategory from './form/FormAddCategory.vue'
 import { DrawerType } from '@/utils/types/drawer-type.enum'
-// TODO : Errreur d'import non bloquante ??dd
-import FormAddUser from './form/FormAddUser.vue'
 import FormUpdateProduct from './form/FormUpdateProduct.vue'
+// TODO : voir avec le prof pourquoi typescript ne reconnait pas ce composant spécifiquement
+// @ts-ignore
+import FormAddUser from './form/FormAddUser.vue'
 
 type Props = {
   drawerContent: DrawerType
