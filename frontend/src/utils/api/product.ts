@@ -4,6 +4,7 @@ import { LocalStorageKeys } from '../types/local-storage-keys.enum'
 import type { Product } from '../types/interfaces/product.interface'
 import type { ResponseApi } from '../types/interfaces/response-api.interface'
 import { ToastType } from '../types/toast-type.enum'
+import type { PaginateProduct } from '../types/interfaces/pagiante-product.interface'
 
 export const fetchProducts = async () => {
   try {
@@ -31,6 +32,40 @@ export const fetchProducts = async () => {
       ToastType.ERROR
     )
     return []
+  }
+}
+
+export const fetchPaginatedProducts = async (page: number, limit: number) => {
+  try {
+    const response: Response = await fetch(
+      `${import.meta.env.VITE_BASE_API_URL}/product/get-paginate`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+        },
+        body: JSON.stringify({ page, limit })
+      }
+    )
+
+    const json: ResponseApi<PaginateProduct> = await response.json()
+
+    if (!json.success) {
+      toastHandler(
+        json.message || 'Une erreur est survenue lors de la récupération des produits',
+        ToastType.ERROR
+      )
+      return {} as PaginateProduct
+    }
+
+    return json.data || ({} as PaginateProduct)
+  } catch (error: any) {
+    toastHandler(
+      error.message || 'Une erreur est survenue lors de la récupération des produits',
+      ToastType.ERROR
+    )
+    return {} as PaginateProduct
   }
 }
 
@@ -68,5 +103,38 @@ export const fetchProductById = async (id: string | null) => {
   } catch (error) {
     toastHandler('Erreur lors de la récupération du produit', ToastType.ERROR)
     return {} as Product
+  }
+}
+
+export const fetchDeleteProduct = async (id: string | undefined) => {
+  if (!id) {
+    toastHandler("Erreur lors de la récupération de l'identifiant du produit", ToastType.ERROR)
+    return false
+  }
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_BASE_API_URL}/product/delete/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+      }
+    })
+
+    if (!res.ok) {
+      toastHandler('Erreur lors de la suppression du produit', ToastType.ERROR)
+      return false
+    }
+
+    const json: ResponseApi<Product> = await res.json()
+
+    if (!json.success) {
+      toastHandler(json.message || 'Erreur lors de la suppression du produit', ToastType.ERROR)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    toastHandler('Erreur lors de la suppression du produit', ToastType.ERROR)
+    return false
   }
 }

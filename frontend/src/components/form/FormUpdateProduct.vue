@@ -227,8 +227,10 @@ import { ToastType } from '@/utils/types/toast-type.enum'
 import FormSelect from '../FormSelect.vue'
 import useCategoryStore from '@/utils/store/useCategoryStore'
 import type { OptionCategory } from '@/utils/types/interfaces/option-category.interface'
+import useProductStore from '@/utils/store/useProductStore'
 
 const drawerStore = useDrawerStore()
+const productStore = useProductStore()
 const categoryStore = useCategoryStore()
 
 const response = ref<Product | null>(null)
@@ -283,9 +285,6 @@ const isVariationFromResponse = (variation: Variation) => {
 }
 
 const isUnmodifiedProduct = () => {
-  console.log(JSON.stringify(product.value))
-  console.log(JSON.stringify(initialStateProduct.value))
-  console.log(JSON.stringify(product.value) === JSON.stringify(initialStateProduct.value))
   return JSON.stringify(product.value) === JSON.stringify(initialStateProduct.value)
 }
 
@@ -311,9 +310,13 @@ onMounted(async () => {
         description: JSON.parse(JSON.stringify(responseProduct.description)),
         brand: JSON.parse(JSON.stringify(responseProduct.brand)),
         model: JSON.parse(JSON.stringify(responseProduct.model)),
-        category: JSON.parse(JSON.stringify(responseProduct.category)),
+        category: responseProduct.category
+          ? JSON.parse(JSON.stringify(responseProduct.category || {}))
+          : undefined,
         variations: JSON.parse(JSON.stringify(responseProduct.variations)),
-        idCategory: JSON.parse(JSON.stringify(responseProduct.category?._id))
+        idCategory: responseProduct.category
+          ? JSON.parse(JSON.stringify(responseProduct.category?._id))
+          : ''
       }
     : null
 
@@ -372,8 +375,8 @@ const onSubmit = handleSubmit(async () => {
     const json = await responseUpdateProduct.json()
 
     if (json.success) {
-      console.log('Je passe dans le succes')
       drawerStore.closeDrawer()
+      productStore.updateProducts()
       toastHandler('Produit modifié avec succès', ToastType.SUCCESS)
     }
   } catch (error) {

@@ -171,9 +171,11 @@ import { v4 as uuidv4 } from 'uuid'
 import useDrawerStore from '@/utils/store/useDrawerStore'
 import useCategoryStore from '@/utils/store/useCategoryStore'
 import FormSelect from '../FormSelect.vue'
+import useProductStore from '@/utils/store/useProductStore'
 
 const drawerStore = useDrawerStore()
 const categoryStore = useCategoryStore()
+const productStore = useProductStore()
 
 const product: Product = reactive({
   name: '',
@@ -265,6 +267,7 @@ const onSubmit = handleSubmit(async (values) => {
 
       if (json.success) {
         drawerStore.closeDrawer()
+        productStore.updateProducts()
         toastHandler('Produit ajouté avec succès', ToastType.SUCCESS)
       } else {
         toastHandler(json.message || "Erreur lors de l'ajout du produit", ToastType.ERROR)

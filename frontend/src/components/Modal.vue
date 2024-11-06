@@ -1,43 +1,35 @@
 <template>
-    <el-dialog :title="title" :width="width" v-model="localModalVisible" @close="closeModal">
-        <slot></slot>
-        <template #footer>
-            <el-button @click="closeModal">Annuler</el-button>
-            <el-button type="primary" @click="confirmModal">Confirmer</el-button>
-        </template>
-    </el-dialog>
+  <el-dialog :title="title" :width="width" v-model="model" @close="closeModal">
+    <slot></slot>
+    <template #footer>
+      <el-button @click="closeModal">Annuler</el-button>
+      <el-button type="primary" @click="confirmModal">Confirmer</el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-
-const props = defineProps({
-        title: String,
-        width: {
-            type: String,
-            default: '50%'
-        },
-        modalVisible: {
-            type: Boolean,
-            default: false
-        }
+defineProps({
+  title: {
+    type: String,
+    required: true
+  },
+  width: {
+    type: String,
+    default: '50%'
+  }
 })
 
-const emit = defineEmits(['update:modalVisible', 'confirm'])
+const emit = defineEmits(['confirm', 'close'])
 
-const localModalVisible = ref(props.modalVisible)
-
-watch(() => props.modalVisible, (newValue) => {
-    localModalVisible.value = newValue
-})
+const model = defineModel()
 
 const closeModal = () => {
-    localModalVisible.value = false
-    emit('update:modalVisible', false)
+  model.value = false
+  emit('close')
 }
 
 const confirmModal = () => {
-    emit('confirm')
+  emit('confirm')
 }
-
 </script>

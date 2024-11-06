@@ -1,6 +1,13 @@
 import express from "express";
 import checkToken from "../middleware/auth";
-import { getOne, create, edit, getAll, remove } from "../controllers/product";
+import {
+  getOne,
+  create,
+  edit,
+  getAll,
+  remove,
+  getPaginate,
+} from "../controllers/product";
 import checkAdmin from "../middleware/checkAdmin";
 import multer from "multer";
 import { storage } from "../middleware/storage";
@@ -11,6 +18,7 @@ const upload = multer({ storage });
 
 productRouter.get("/get-one/:id", checkToken, getOne);
 productRouter.get("/get-all", checkToken, getAll);
+productRouter.post("/get-paginate", checkToken, getPaginate);
 productRouter.post(
   "/create",
   checkToken,

@@ -1,21 +1,22 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { Product } from '../types/interfaces/product.interface'
+import { fetchPaginatedProducts } from '../api/product'
+import type { PaginateProduct } from '../types/interfaces/pagiante-product.interface'
 
 const useProductStore = defineStore('product', () => {
-  const products = ref<Product[]>([])
+  const paginateProduct = ref<PaginateProduct>()
 
-  //   const getProducts = async () => {
-  //     try {
-  //       const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/product`)
-  //       const json = await response.json()
-  //       products.value = json.data
-  //     } catch (error) {
-  //       console.error(error)
-  //     }
-  //   }
+  const DEFAULT_PAGE = 1
+  const DEFAULT_NUMBER_PRODUCT_PER_PAGE = 10
 
-  return {}
+  const updateProducts = async (page?: number, numberProductPerPage?: number) => {
+    paginateProduct.value = await fetchPaginatedProducts(
+      page || DEFAULT_PAGE,
+      numberProductPerPage || DEFAULT_NUMBER_PRODUCT_PER_PAGE
+    )
+  }
+
+  return { paginateProduct, updateProducts }
 })
 
 export default useProductStore
