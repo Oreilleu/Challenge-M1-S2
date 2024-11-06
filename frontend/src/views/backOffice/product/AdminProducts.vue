@@ -6,7 +6,7 @@
       <el-table
         empty-text="Aucun produit trouvé"
         style="width: auto; overflow: auto"
-        :data="products"
+        :data="productStore.paginateProduct?.paginates"
       >
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="name" label="Nom"></el-table-column>
@@ -22,29 +22,59 @@
           </template>
           <template #default="scope">
             <el-button type="primary" @click="openDrawerUpdate(scope.row._id)">Editer</el-button>
-            <el-button type="danger" @click="deleteProduct(scope.row._id)">Supprimer</el-button>
+            <el-button type="danger" @click="displayModalDelete(scope.row)">Supprimer</el-button>
           </template>
         </el-table-column>
       </el-table>
+
+      <el-pagination
+        :page-size="NUMBER_OF_PRODUCTS_PER_PAGE"
+        layout="prev, pager, next"
+        :total="productStore.paginateProduct?.totalProducts || 0"
+        :hide-on-single-page="
+          productStore.paginateProduct?.totalProducts || 0 < NUMBER_OF_PRODUCTS_PER_PAGE
+        "
+        @current-change="setCurrentPage"
+      />
     </section>
   </AdminLayout>
+  <Modal
+    :model-value="!!productToDelete"
+    :title="'Suppression du produit : ' + productToDelete?.name"
+    @close="productToDelete = null"
+    @confirm="deleteProduct(productToDelete?._id)"
+  >
+  </Modal>
 </template>
 
 <script setup lang="ts">
 import AdminLayout from '@/components/AdminLayout.vue'
-import { fetchProducts } from '@/utils/api/product'
-import localStorageHandler from '@/utils/localStorageHandler'
+import Modal from '@/components/Modal.vue'
+import { fetchDeleteProduct } from '@/utils/api/product'
 import useDrawerStore from '@/utils/store/useDrawerStore'
+import useProductStore from '@/utils/store/useProductStore'
 import toastHandler from '@/utils/toastHandler'
 import { DrawerType } from '@/utils/types/drawer-type.enum'
 import type { Product } from '@/utils/types/interfaces/product.interface'
-import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
 import { ToastType } from '@/utils/types/toast-type.enum'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { onMounted } from 'vue'
 
-const products = ref<Array<Product>>([])
 const drawerStore = useDrawerStore()
+const productStore = useProductStore()
+const page = ref(1)
+const NUMBER_OF_PRODUCTS_PER_PAGE = 10
+
+watch(page, (newPage) => {
+  console.log('Page', newPage)
+})
+const productToDelete = ref<Product | null>(null)
+
+const setCurrentPage = (newPage: number) => {
+  page.value = newPage
+
+  productStore.updateProducts(newPage, NUMBER_OF_PRODUCTS_PER_PAGE)
+}
 
 const search = ref('')
 
@@ -56,39 +86,24 @@ const openDrawerUpdate = (idProduct: string | undefined) => {
   drawerStore.openDrawerUpdateForm(DrawerType.UPDATE_PRODUCT, idProduct)
 }
 
-const deleteProduct = async (idProduct: string | undefined) => {
-  if (!idProduct) {
-    toastHandler("Erreur lors de la récupération de l'identifiant du produit", ToastType.ERROR)
-    return
-  }
-
-  try {
-    const resDeleteProduct = await fetch(
-      `${import.meta.env.VITE_BASE_API_URL}/product/delete/${idProduct}`,
-      {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
-        }
-      }
-    )
-
-    const json = await resDeleteProduct.json()
-
-    if (json.success) {
-      toastHandler('Produit supprimé avec succès', ToastType.SUCCESS)
-      products.value = products.value.filter((product) => product._id !== idProduct)
-    } else {
-      toastHandler('Erreur lors de la suppression du produit', ToastType.ERROR)
-    }
-  } catch (error) {
-    console.error(error)
-    toastHandler('Erreur lors de la suppression du produit', ToastType.ERROR)
-  }
+const displayModalDelete = (product: Product) => {
+  productToDelete.value = product
 }
 
-onMounted(async () => {
-  products.value = await fetchProducts()
+const deleteProduct = async (idProduct: string | undefined) => {
+  const isDeleted = await fetchDeleteProduct(idProduct)
+
+  if (isDeleted) {
+    toastHandler('Produit supprimé avec succès', ToastType.SUCCESS)
+    productStore.updateProducts(page.value, NUMBER_OF_PRODUCTS_PER_PAGE)
+  } else {
+    toastHandler('Erreur lors de la suppression du produit', ToastType.ERROR)
+  }
+  productToDelete.value = null
+}
+
+onMounted(() => {
+  productStore.updateProducts(page.value, NUMBER_OF_PRODUCTS_PER_PAGE)
 })
 </script>
 
