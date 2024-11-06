@@ -1,7 +1,7 @@
-<template>
-    <el-row :gutter="20">
-      <!-- Filter Sidebar -->
-      <el-col :span="5">
+<!-- <template>
+    <el-row :gutter="20"> -->
+<!-- Filter Sidebar -->
+<!-- <el-col :span="5">
         <el-card>
           <h3>Price</h3>
           <el-slider v-model="priceRange" range :min="0" :max="2000" show-tooltip></el-slider>
@@ -17,10 +17,10 @@
             </el-checkbox-group>
           </div>
         </el-card>
-      </el-col>
-  
-      <!-- Product Cards -->
-      <el-col :span="19">
+      </el-col> -->
+
+<!-- Product Cards -->
+<!-- <el-col :span="19">
         <el-input
           v-model="searchQuery"
           placeholder="Rechercher un produit"
@@ -54,10 +54,10 @@
               </div>
             </el-card>
           </el-col>
-        </el-row>
-  
-        <!-- Pagination -->
-        <el-pagination
+        </el-row> -->
+
+<!-- Pagination -->
+<!-- <el-pagination
           v-model:current-page="currentPage"
           :page-size="pageSize"
           :total="totalProducts"
@@ -67,8 +67,8 @@
       </el-col>
     </el-row>
   </template>
-  
-  <script setup lang="ts">
+   -->
+<!-- <script setup lang="ts">
   import localStorageHandler from '@/utils/localStorageHandler'
   import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
   import { onMounted, ref, computed } from 'vue'
@@ -164,4 +164,53 @@
     padding: 10px;
   }
   </style>
+   -->
+   <template>
+    <div>
+      <product-card :products="products" />
+    </div>
+  </template>
+  
+  <script setup lang="ts">
+  import { ref, onMounted } from 'vue';
+  import ProductCard from '@/components/ProductCard.vue';
+  import localStorageHandler from '@/utils/localStorageHandler';
+  import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum';
+  import type { Product } from '@/utils/types/product.interface';
+  
+  const products = ref<Product[] | null>(null);
+  
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/product/get-all`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+        }
+      });
+      const data = await response.json();
+      return data.data || [];  
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+  
+  onMounted(async () => {
+    const responseProducts = await fetchProducts();
+    
+    if (responseProducts.length > 0) {
+      products.value = responseProducts.map(productData => ({
+        name: productData.name,
+        description: productData.description,
+        brand: productData.brand,
+        model: productData.model,
+        category: productData.category,
+        variation: JSON.parse(JSON.stringify(productData.variations)) 
+      }));
+    } else {
+      products.value = null;
+    }
+  });
+  </script>
   
