@@ -7,3 +7,5 @@ export const REGEX_PHONE_VALIDATION =
 export const AVAILABLE_FILE_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg']
 
 export const MAX_IMAGES_PRODUCT = 5
+
+export const NUMBER_ADMIN_PRODUCT_PER_PAGE = 10
