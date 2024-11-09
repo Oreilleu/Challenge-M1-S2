@@ -96,3 +96,32 @@ export const filterValueValidation = z
   .string()
   .min(2, { message: 'La valeur du filtre doit avoir au moins deux caractères.' })
   .max(50, { message: 'La valeur du filtre doit avoir maximun 50 caractères' })
+
+  // Category 
+
+export const categoryNameValidation = z
+  .string()
+  .min(2, { message: 'Le nom de la catégorie doit avoir au moins deux caractères.' })
+  .max(50, { message: 'Le nom de la catégorie doit avoir maximun 50 caractères' })
+
+export const categoryDescriptionValidation = z
+  .string()
+  .min(2, { message: 'La description de la catégorie doit avoir au moins deux caractères.' })
+  .max(500, { message: 'La description de la catégorie doit avoir maximun 500 caractères' })
+
+export const categoryImageValidation = z.object({
+  file: z
+    .instanceof(File, { message: 'Ne doit pas être vide' })
+    .refine(
+      (file) => {
+        return AVAILABLE_FILE_IMAGE_TYPES.includes(file.type)
+      },
+      {
+        message: 'Le fichier doit être de type png, jpg ou jpeg'
+      }
+    )
+})
+
+export const categoryParentValidation = z.string().optional()
+
+

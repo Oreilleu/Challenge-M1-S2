@@ -15,7 +15,11 @@ import {
   phoneValidation,
   variationImagesValidation,
   variationPriceValidation,
-  variationQuantiteValidation
+  variationQuantiteValidation,
+  categoryNameValidation,
+  categoryDescriptionValidation,
+  categoryImageValidation,
+  categoryParentValidation,
 } from './validation'
 
 export const registerFormSchema = z
@@ -82,4 +86,13 @@ export const updateProductschema = z.object({
   model: modelProductValidation,
   idCategory: z.string().optional(),
   variations: z.array(variationSchema).min(1, { message: 'Il faut au moins une variation' })
+})
+
+//Category 
+
+export const categorySchema = z.object({
+  name: categoryNameValidation,
+  description: categoryDescriptionValidation,
+  image: categoryImageValidation,
+  parent: categoryParentValidation
 })
