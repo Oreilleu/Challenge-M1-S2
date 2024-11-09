@@ -5,6 +5,7 @@ import type { Product } from '../types/interfaces/product.interface'
 import type { ResponseApi } from '../types/interfaces/response-api.interface'
 import { ToastType } from '../types/toast-type.enum'
 import type { PaginateProduct } from '../types/interfaces/pagiante-product.interface'
+import type { ColumnProduct } from '../types/column-product.enum'
 
 export const fetchProducts = async () => {
   try {
@@ -48,6 +49,42 @@ export const fetchPaginatedProducts = async (page: number, limit: number) => {
         body: JSON.stringify({ page, limit })
       }
     )
+
+    const json: ResponseApi<PaginateProduct> = await response.json()
+
+    if (!json.success) {
+      toastHandler(
+        json.message || 'Une erreur est survenue lors de la récupération des produits',
+        ToastType.ERROR
+      )
+      return {} as PaginateProduct
+    }
+
+    return json.data || ({} as PaginateProduct)
+  } catch (error: any) {
+    toastHandler(
+      error.message || 'Une erreur est survenue lors de la récupération des produits',
+      ToastType.ERROR
+    )
+    return {} as PaginateProduct
+  }
+}
+
+export const fetchProductsBySearchInput = async (
+  searchInput: string,
+  column: ColumnProduct,
+  page: number,
+  limit: number
+) => {
+  try {
+    const response: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/product/search`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+      },
+      body: JSON.stringify({ searchInput, column, page, limit })
+    })
 
     const json: ResponseApi<PaginateProduct> = await response.json()
 

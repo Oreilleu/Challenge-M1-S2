@@ -4,6 +4,8 @@ import { Product } from "../types/product.interface";
 import { matchImageByName } from "../utils/matchImageByName";
 import path from "path";
 import fs from "fs";
+import { BodySearchProduct } from "../types/body-search-product.interdace";
+import { ColumnProduct } from "../types/column-product.interface";
 
 export const getOne: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
@@ -107,6 +109,99 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
     res.status(500).json({
       success: false,
       message: "Erreur lors de la récupération des produits paginés",
+    });
+  }
+};
+
+export const getBySearch: RequestHandler = async (req, res, next) => {
+  const { searchInput, column, page, limit } = req.body as BodySearchProduct;
+
+  if (!searchInput || !column || !page || !limit) {
+    res.status(400).json({
+      success: false,
+      message: "Tout les champs sont requis",
+    });
+    return;
+  }
+
+  const parsedPage = parseInt(page);
+  const parsedLimit = parseInt(limit);
+
+  const options = {
+    skip: parsedPage === 1 ? 0 : parsedPage * parsedLimit - parsedLimit,
+    limit: parsedLimit,
+  };
+
+  const query =
+    column === ColumnProduct.ALL
+      ? {
+          $or: [
+            { [ColumnProduct.NAME]: { $regex: searchInput, $options: "i" } },
+            { [ColumnProduct.MODEL]: { $regex: searchInput, $options: "i" } },
+            { "category.name": { $regex: searchInput, $options: "i" } },
+          ],
+        }
+      : column === ColumnProduct.CATEGORY
+      ? {
+          "category.name": { $regex: searchInput, $options: "i" },
+        }
+      : {
+          [column]: { $regex: searchInput, $options: "i" },
+        };
+
+  try {
+    const products = await ProductModel.aggregate([
+      {
+        $lookup: {
+          from: "categories",
+          localField: "idCategory",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      {
+        $unwind: "$category",
+      },
+      {
+        $match: query,
+      },
+      {
+        $skip: options.skip,
+      },
+      {
+        $limit: options.limit,
+      },
+    ]);
+
+    const total = await ProductModel.aggregate([
+      {
+        $lookup: {
+          from: "categories",
+          localField: "idCategory",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      {
+        $unwind: "$category",
+      },
+      {
+        $match: query,
+      },
+      {
+        $count: "total",
+      },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: { paginates: products, totalProducts: total },
+    });
+  } catch (error) {
+    console.error("Erreur pour récupérer les produits par recherche", error);
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de la récupération des produits par recherche",
     });
   }
 };
