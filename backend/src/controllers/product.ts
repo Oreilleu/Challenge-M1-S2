@@ -6,7 +6,7 @@ import path from "path";
 import fs from "fs";
 import { BodySearchProduct } from "../types/body-search-product.interdace";
 import { ColumnProduct } from "../types/column-product.interface";
-
+import { AggregateProductOnVariation } from "../types/aggregate-product-on-variation.interface";
 export const getOne: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
 
@@ -69,7 +69,6 @@ export const getAll: RequestHandler = async (req, res, next) => {
 
 export const getPaginate: RequestHandler = async (req, res, next) => {
   const { page, limit } = req.body;
-
   if (!page || !limit) {
     res.status(400).json({
       success: false,
@@ -85,13 +84,28 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
     skip: parsedPage === 1 ? 0 : parsedPage * parsedLimit - parsedLimit,
     limit: parsedLimit,
   };
-
   try {
     const products = await ProductModel.find({}, null, options)
       .populate("idCategory")
       .lean<Array<Product>>();
 
-    const total = await ProductModel.countDocuments();
+    const aggregateVariation: AggregateProductOnVariation[] =
+      await ProductModel.aggregate([
+        { $unwind: "$variations" },
+        { $skip: options.skip },
+        { $limit: options.limit },
+      ]);
+
+    const variations = aggregateVariation.length ? aggregateVariation : [];
+    const totalProducts = await ProductModel.countDocuments();
+
+    const aggregateCountVariation = await ProductModel.aggregate([
+      { $unwind: "$variations" },
+      { $count: "totalVariations" },
+    ]);
+    const totalVariations = aggregateCountVariation.length
+      ? aggregateCountVariation[0].totalVariations
+      : 0;
 
     products.forEach((product) => {
       if (product.idCategory) {
@@ -102,7 +116,12 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: { paginates: products, totalProducts: total },
+      data: {
+        paginatesProducts: products,
+        paginatesVariations: variations,
+        totalProducts,
+        totalVariations,
+      },
     });
   } catch (error) {
     console.error("Erreur pour récupérer les produits paginés", error);
@@ -196,7 +215,7 @@ export const getBySearch: RequestHandler = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: {
-        paginates: products,
+        paginatesProducts: products,
         totalProducts: total.length ? total[0].total : 0,
       },
     });

@@ -26,39 +26,33 @@
         />
         <section>
           <ul class="listVariation">
-            <li v-for="(variation, indexVariation) in formattedVariation" :key="indexVariation">
-              <ProductCard :product="variation.product" :variation="variation.variation" />
+            <li
+              v-for="(variation, indexVariation) in productStore.paginateProduct
+                ?.paginatesVariations"
+              :key="indexVariation"
+            >
+              <ProductCard :product="variation" />
             </li>
           </ul>
         </section>
-        <!-- <product-card :products="productStore.paginateProduct?.paginates" /> -->
         <el-pagination
           :page-size="PRODUCT_PER_PAGE"
           layout="prev, pager, next"
-          :total="productStore.paginateProduct?.totalProducts"
-          :hide-on-single-page="productStore.paginateProduct?.totalProducts < PRODUCT_PER_PAGE"
+          :total="productStore.paginateProduct?.totalVariations"
+          :hide-on-single-page="productStore.paginateProduct?.totalVariations < PRODUCT_PER_PAGE"
           @current-change="setCurrentPage"
         />
-        <!-- <el-pagination
-          v-if="filteredProducts.length > itemsPerPage"
-          :current-page="currentPage"
-          :page-size="itemsPerPage"
-          layout="prev, pager, next"
-          :total="filteredProducts.length"
-          @current-change="handlePageChange"
-        /> -->
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import ProductCard from '@/components/ProductCard.vue'
 import useProductStore from '@/utils/store/useProductStore'
 import { PRODUCT_PER_PAGE } from '@/utils/const'
 
-// const products = ref<Product[] | null>(null)
 const searchQuery = ref<string>('')
 const priceRange = ref<[number, number]>([0, 2000])
 const selectedFilters = ref<{ [key: string]: string[] }>({})
@@ -69,21 +63,6 @@ const setCurrentPage = (newPage: number) => {
   paginationPage.value = newPage
   productStore.updatePaginateProducts(newPage, PRODUCT_PER_PAGE)
 }
-// const fetchProducts = async () => {
-//   try {
-//     const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/product/get-all`, {
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
-//       }
-//     })
-//     const data = await response.json()
-//     return data.data || []
-//   } catch (error) {
-//     console.error(error)
-//     return []
-//   }
-// }
 
 // const extractDynamicFilters = () => {
 //   const filters: { [key: string]: string[] } = {}
@@ -104,31 +83,9 @@ const setCurrentPage = (newPage: number) => {
 //   dynamicFilters.value = filters
 // }
 const productStore = useProductStore()
-const formattedVariation = computed(() =>
-  productStore.paginateProduct?.paginates.flatMap((product) =>
-    product.variations.map((variation) => ({
-      product,
-      variation
-    }))
-  )
-)
+
 onMounted(async () => {
   productStore.updatePaginateProducts(paginationPage.value, PRODUCT_PER_PAGE)
-  // const responseProducts = await fetchProducts()
-
-  // if (responseProducts.length > 0) {
-  //   products.value = responseProducts.map((productData) => ({
-  //     name: productData.name,
-  //     description: productData.description,
-  //     brand: productData.brand,
-  //     model: productData.model,
-  //     category: productData.category,
-  //     variation: JSON.parse(JSON.stringify(productData.variations))
-  //   }))
-  //   extractDynamicFilters()
-  // } else {
-  //   products.value = null
-  // }
 })
 
 // const filteredProducts = computed(() => {
@@ -150,16 +107,6 @@ onMounted(async () => {
 //     return matchesSearch && withinPriceRange && matchesFilters
 //   })
 // })
-
-// const paginatedProducts = computed(() => {
-//   const start = (currentPage.value - 1) * itemsPerPage.value
-//   const end = start + itemsPerPage.value
-//   return filteredProducts.value.slice(start, end)
-// })
-
-// const handlePageChange = (page: number) => {
-//   currentPage.value = page
-// }
 </script>
 
 <style scoped>

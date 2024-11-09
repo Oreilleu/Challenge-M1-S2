@@ -8,8 +8,8 @@
         style="width: auto; overflow: auto"
         :default-sort="{ prop: 'name', order: 'descending' }"
         :data="
-          productStore.paginateProductBySearchInput?.paginates ||
-          productStore.paginateProduct?.paginates
+          productStore.paginateProductBySearchInput?.paginatesProducts ||
+          productStore.paginateProduct?.paginatesProducts
         "
       >
         <el-table-column type="selection" width="55" />
