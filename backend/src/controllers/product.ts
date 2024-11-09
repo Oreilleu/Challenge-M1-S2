@@ -195,7 +195,10 @@ export const getBySearch: RequestHandler = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: { paginates: products, totalProducts: total },
+      data: {
+        paginates: products,
+        totalProducts: total.length ? total[0].total : 0,
+      },
     });
   } catch (error) {
     console.error("Erreur pour récupérer les produits par recherche", error);

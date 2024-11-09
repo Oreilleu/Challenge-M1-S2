@@ -45,18 +45,18 @@
       </el-table>
 
       <el-pagination
-        :page-size="NUMBER_OF_PRODUCTS_PER_PAGE"
+        :page-size="NUMBER_ADMIN_PRODUCT_PER_PAGE"
         layout="prev, pager, next"
         :total="
-          productStore.paginateProductBySearchInput?.totalProducts ||
-          productStore.paginateProduct?.totalProducts ||
-          0
+          isDisplayPaginateBySearchInput()
+            ? productStore.paginateProductBySearchInput?.totalProducts || 0
+            : productStore.paginateProduct?.totalProducts || 0
         "
         :hide-on-single-page="
           productStore.paginateProductBySearchInput?.totalProducts ||
-          0 < NUMBER_OF_PRODUCTS_PER_PAGE ||
+          0 < NUMBER_ADMIN_PRODUCT_PER_PAGE ||
           productStore.paginateProduct?.totalProducts ||
-          0 < NUMBER_OF_PRODUCTS_PER_PAGE
+          0 < NUMBER_ADMIN_PRODUCT_PER_PAGE
         "
         @current-change="setCurrentPage"
       />
@@ -75,6 +75,7 @@
 import AdminLayout from '@/components/AdminLayout.vue'
 import Modal from '@/components/Modal.vue'
 import { fetchDeleteProduct } from '@/utils/api/product'
+import { NUMBER_ADMIN_PRODUCT_PER_PAGE } from '@/utils/const'
 import useDrawerStore from '@/utils/store/useDrawerStore'
 import useProductStore from '@/utils/store/useProductStore'
 import toastHandler from '@/utils/toastHandler'
@@ -88,7 +89,6 @@ import { onMounted } from 'vue'
 const drawerStore = useDrawerStore()
 const productStore = useProductStore()
 const page = ref(1)
-const NUMBER_OF_PRODUCTS_PER_PAGE = 2
 const search = ref('')
 
 const optionsSearchColumn = [
@@ -105,7 +105,11 @@ const productToDelete = ref<Product | null>(null)
 const setCurrentPage = (newPage: number) => {
   page.value = newPage
 
-  productStore.updatePaginateProducts(newPage, NUMBER_OF_PRODUCTS_PER_PAGE)
+  productStore.updatePaginateProducts(newPage, NUMBER_ADMIN_PRODUCT_PER_PAGE)
+}
+
+const isDisplayPaginateBySearchInput = () => {
+  return search.value.trim().length >= 3
 }
 
 const onChangeSearch = (e: string) => {
@@ -118,7 +122,7 @@ const onChangeSearch = (e: string) => {
     e,
     searchColumn.value,
     page.value,
-    NUMBER_OF_PRODUCTS_PER_PAGE
+    NUMBER_ADMIN_PRODUCT_PER_PAGE
   )
 }
 
@@ -139,7 +143,7 @@ const deleteProduct = async (idProduct: string | undefined) => {
 
   if (isDeleted) {
     toastHandler('Produit supprimé avec succès', ToastType.SUCCESS)
-    productStore.updatePaginateProducts(page.value, NUMBER_OF_PRODUCTS_PER_PAGE)
+    productStore.updatePaginateProducts(page.value, NUMBER_ADMIN_PRODUCT_PER_PAGE)
   } else {
     toastHandler('Erreur lors de la suppression du produit', ToastType.ERROR)
   }
@@ -147,7 +151,7 @@ const deleteProduct = async (idProduct: string | undefined) => {
 }
 
 onMounted(() => {
-  productStore.updatePaginateProducts(page.value, NUMBER_OF_PRODUCTS_PER_PAGE)
+  productStore.updatePaginateProducts(page.value, NUMBER_ADMIN_PRODUCT_PER_PAGE)
 })
 </script>
 

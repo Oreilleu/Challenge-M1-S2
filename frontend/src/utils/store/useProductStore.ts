@@ -5,7 +5,7 @@ import type { PaginateProduct } from '../types/interfaces/pagiante-product.inter
 import type { ColumnProduct } from '../types/column-product.enum'
 
 const useProductStore = defineStore('product', () => {
-  const paginateProduct = ref<PaginateProduct>()
+  const paginateProduct = ref<PaginateProduct | null>(null)
   const paginateProductBySearchInput = ref<PaginateProduct | null>(null)
 
   const DEFAULT_PAGE = 1
@@ -36,12 +36,17 @@ const useProductStore = defineStore('product', () => {
     paginateProductBySearchInput.value = null
   }
 
+  const clearPaginate = () => {
+    paginateProduct.value = null
+  }
+
   return {
     paginateProduct,
     paginateProductBySearchInput,
     updatePaginateProducts,
     updatePaginateProductsBySearchInput,
-    clearSearch
+    clearSearch,
+    clearPaginate
   }
 })
 

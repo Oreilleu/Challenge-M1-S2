@@ -47,7 +47,6 @@ const fetchCategories = async () => {
 
     if (json.success) {
       categories.value = json.data
-      console.log('Categories', categories.value)
     } else {
       throw new Error()
     }
@@ -70,8 +69,6 @@ const deleteCategory = async (id: Category['_id']) => {
       const errorData = await response.json()
       throw new Error(errorData.message || 'Une erreur est survenue')
     }
-
-    console.log('Categoie supprimée avec succès')
   } catch (error) {
     console.error(error)
   }
@@ -92,7 +89,6 @@ const handleDelete = (id: Category['_id']) => {
   const category = categories.value.find((category) => category._id === id)
   if (category) {
     deleteCategory(category._id)
-    console.log('Suppression de la catégorie', category)
   } else {
     console.error('Catégorie non trouvée')
   }
