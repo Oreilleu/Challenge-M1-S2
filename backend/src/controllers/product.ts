@@ -7,6 +7,7 @@ import fs from "fs";
 import { BodySearchProduct } from "../types/body-search-product.interdace";
 import { ColumnProduct } from "../types/column-product.interface";
 import { AggregateProductOnVariation } from "../types/aggregate-product-on-variation.interface";
+import { Filter } from "../types/filter.interface";
 export const getOne: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
 
@@ -431,6 +432,39 @@ export const remove: RequestHandler = async (req, res, next) => {
     res.status(500).json({
       success: false,
       message: "Erreur lors de la suppression du produit",
+    });
+  }
+};
+
+export const getFilters: RequestHandler = async (req, res, next) => {
+  try {
+    const filters: { _id: Filter }[] = await ProductModel.aggregate([
+      { $unwind: "$variations" },
+      { $unwind: "$variations.filters" },
+      { $group: { _id: "$variations.filters" } },
+    ]);
+
+    const mappedFilters = filters.map((filter) => ({ ...filter._id }));
+
+    const filteredFilters: { [key: string]: string[] } = {};
+    mappedFilters.forEach((filter) => {
+      if (!filteredFilters[filter.name]) {
+        filteredFilters[filter.name] = [];
+      }
+      if (!filteredFilters[filter.name].includes(filter.value)) {
+        filteredFilters[filter.name].push(filter.value);
+      }
+    });
+    console.log(filters);
+    res.status(200).json({
+      success: true,
+      data: filteredFilters,
+    });
+  } catch (error) {
+    console.error("Erreur pour récupérer les filtres", error);
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de la récupération des filtres",
     });
   }
 };

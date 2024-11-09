@@ -52,40 +52,26 @@ import { ref, onMounted } from 'vue'
 import ProductCard from '@/components/ProductCard.vue'
 import useProductStore from '@/utils/store/useProductStore'
 import { PRODUCT_PER_PAGE } from '@/utils/const'
+import { fetchFilters } from '@/utils/api/filter'
 
 const searchQuery = ref<string>('')
 const priceRange = ref<[number, number]>([0, 2000])
 const selectedFilters = ref<{ [key: string]: string[] }>({})
 const dynamicFilters = ref<{ [key: string]: string[] }>({})
 const paginationPage = ref(1)
+const filters = ref([])
 
 const setCurrentPage = (newPage: number) => {
   paginationPage.value = newPage
   productStore.updatePaginateProducts(newPage, PRODUCT_PER_PAGE)
 }
 
-// const extractDynamicFilters = () => {
-//   const filters: { [key: string]: string[] } = {}
-
-//   products.value?.forEach((product) => {
-//     product.variation.forEach((variation) => {
-//       variation.filters.forEach((filter) => {
-//         if (!filters[filter.name]) {
-//           filters[filter.name] = []
-//         }
-//         if (!filters[filter.name].includes(filter.value)) {
-//           filters[filter.name].push(filter.value)
-//         }
-//       })
-//     })
-//   })
-
-//   dynamicFilters.value = filters
-// }
 const productStore = useProductStore()
 
 onMounted(async () => {
   productStore.updatePaginateProducts(paginationPage.value, PRODUCT_PER_PAGE)
+  const getFilters = await fetchFilters()
+  console.log(getFilters)
 })
 
 // const filteredProducts = computed(() => {
