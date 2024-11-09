@@ -1,5 +1,5 @@
 <template>
-  <Form :validation-schema="validationSchema" class="form-product">
+  <form @submit="onSubmit" class="form-product">
     <FormInput
       id="name"
       name="name"
@@ -12,6 +12,7 @@
     <FormInput
       id="description"
       name="description"
+      as="textarea"
       label="Description"
       placeholder="Description du produit"
       type="text"
@@ -36,13 +37,13 @@
       v-model="product.model"
     />
 
-    <FormInput
-      id="category"
-      name="category"
+    <FormSelect
+      id="idCategory"
+      name="idCategory"
       label="Catégorie"
-      placeholder="Categorie du produit"
-      type="text"
-      v-model="product.model"
+      labelDefaultOption="Sans catégorie..."
+      v-model="product.idCategory"
+      :options="categoryStore.formattedOptionsCategories"
     />
 
     <el-divider class="divider" />
@@ -55,12 +56,10 @@
         :key="indexVariation"
         class="item-variation"
       >
-        <FormInput
+        <FormInputFile
           :id="`variations[${indexVariation}].images`"
           :name="`variations[${indexVariation}].images`"
           label="Images"
-          placeholder="Images"
-          type="file"
           v-model="variation.images"
         />
 
@@ -147,29 +146,47 @@
         <el-divider class="divider" />
       </li>
     </ul>
-  </Form>
+
+    <el-button type="primary" native-type="submit" :disabled="Object.keys(errors).length > 0">
+      Ajouter le produit
+    </el-button>
+  </form>
 </template>
 
 <script setup lang="ts">
 import { reactive } from 'vue'
 import FormInput from '../FormInput.vue'
-import { Form } from 'vee-validate'
+import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { productschema } from '@/utils/validation/schema'
-import type { Product } from '@/utils/types/product.interface'
-import type { Variation } from '@/utils/types/variation.interface'
+import type { Product } from '@/utils/types/interfaces/product.interface'
+import type { Variation } from '@/utils/types/interfaces/variation.interface'
+import FormInputFile from '../FormInputFile.vue'
+import toastHandler from '@/utils/toastHandler'
+import { ToastType } from '@/utils/types/toast-type.enum'
+import type { ResponseApi } from '@/utils/types/interfaces/response-api.interface'
+import localStorageHandler from '@/utils/localStorageHandler'
+import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
+import { v4 as uuidv4 } from 'uuid'
+import useDrawerStore from '@/utils/store/useDrawerStore'
+import useCategoryStore from '@/utils/store/useCategoryStore'
+import FormSelect from '../FormSelect.vue'
+import useProductStore from '@/utils/store/useProductStore'
 
-// TODO : Vérif les erreurs pour disabled le button
+const drawerStore = useDrawerStore()
+const categoryStore = useCategoryStore()
+const productStore = useProductStore()
 
 const product: Product = reactive({
   name: '',
   description: '',
   brand: '',
   model: '',
-  category: undefined,
+  idCategory: undefined,
   variations: [
     {
-      images: '',
+      images: { files: {} as FileList },
+      nameImages: [] as string[],
       price: 1,
       quantite: 1,
       filters: [
@@ -184,7 +201,7 @@ const product: Product = reactive({
 
 const addVariation = () => {
   product.variations.push({
-    images: '',
+    images: { files: {} as FileList },
     price: 1,
     quantite: 1,
     filters: [
@@ -194,6 +211,10 @@ const addVariation = () => {
       }
     ]
   })
+}
+
+const removeVariation = (index: number) => {
+  product.variations.splice(index, 1)
 }
 
 const addFilter = (variation: Variation) => {
@@ -207,11 +228,57 @@ const removeFilter = (variation: Variation, index: number) => {
   variation.filters.splice(index, 1)
 }
 
-const removeVariation = (index: number) => {
-  product.variations.splice(index, 1)
-}
-
 const validationSchema = toTypedSchema(productschema)
+
+const { handleSubmit, errors } = useForm<Product>({
+  validationSchema
+})
+
+const onSubmit = handleSubmit(async (values) => {
+  const formData = new FormData()
+
+  values.variations.forEach((variation: Variation) => {
+    const files = variation.images?.files || ({} as FileList)
+    const nameFiles: string[] = []
+
+    Object.values(files).forEach((value) => {
+      const uniqueNameImage = `${uuidv4()}${Date.now()}`
+      nameFiles.push(uniqueNameImage)
+      formData.append('images', new File([value], uniqueNameImage, { type: value.type }))
+    })
+
+    variation.nameImages = nameFiles
+    delete variation.images
+  })
+
+  formData.append('product', JSON.stringify(values))
+
+  try {
+    const postProduct = async () => {
+      const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/product/create`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+        },
+        body: formData
+      })
+
+      const json: ResponseApi<null> = await response.json()
+
+      if (json.success) {
+        drawerStore.closeDrawer()
+        productStore.updatePaginateProducts()
+        toastHandler('Produit ajouté avec succès', ToastType.SUCCESS)
+      } else {
+        toastHandler(json.message || "Erreur lors de l'ajout du produit", ToastType.ERROR)
+      }
+    }
+    await postProduct()
+  } catch (error) {
+    console.error(error)
+    toastHandler("Erreur lors de l'ajout du produit", ToastType.ERROR)
+  }
+})
 </script>
 
 <style scoped>
@@ -219,7 +286,6 @@ const validationSchema = toTypedSchema(productschema)
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  /* margin: 1rem; */
 }
 
 .form-product {

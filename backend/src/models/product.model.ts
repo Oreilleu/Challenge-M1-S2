@@ -1,5 +1,10 @@
 import mongoose, { Schema } from "mongoose";
 
+const imageSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  path: { type: String, required: true },
+});
+
 const filterSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -12,7 +17,7 @@ const filterSchema = new mongoose.Schema({
 });
 
 const variationSchema = new mongoose.Schema({
-  images: { type: [String], required: true },
+  imagesApi: { type: [imageSchema], required: true },
   price: {
     type: Number,
     required: [true, "Le prix du produit est obligatoire."],
@@ -22,7 +27,7 @@ const variationSchema = new mongoose.Schema({
     required: [true, "La quantité en stock du produit est obligatoire."],
     default: 0,
   },
-  filters: [filterSchema],
+  filters: { type: [filterSchema], required: true },
 });
 
 const productSchema = new mongoose.Schema(
@@ -48,7 +53,7 @@ const productSchema = new mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: "Category",
     },
-    variation: [variationSchema],
+    variations: { type: [variationSchema], required: true },
   },
   { timestamps: true }
 );

@@ -1,5 +1,9 @@
 import { z } from 'zod'
-import { REGEX_PASSWORD_VALIDATION, REGEX_PHONE_VALIDATION } from '../const'
+import {
+  AVAILABLE_FILE_IMAGE_TYPES,
+  REGEX_PASSWORD_VALIDATION,
+  REGEX_PHONE_VALIDATION
+} from '../const'
 
 export const emailValidation = z
   .string()
@@ -37,7 +41,7 @@ export const nameProductValidation = z
 
 export const descriptionProductValidation = z
   .string()
-  .min(120, { message: 'La description du produit doit avoir au moins 120 caractères.' })
+  .min(2, { message: 'La description du produit doit avoir au moins 120 caractères.' })
   .max(500, { message: 'La description du produit doit avoir maximun 500 caractères' })
 
 export const brandProductValidation = z
@@ -54,21 +58,32 @@ export const variationValidation = z
   .array(z.object({}))
   .min(1, { message: 'Il faut au moins une variation' })
 
-// export const variationImagesValidation = z
-//   .array(z.string())
-//   .min(1, { message: 'Il faut au moins une image' })
-
-export const variationImagesValidation = z.string().min(1, {
-  message: 'Il faut au moins une image'
+export const variationImagesValidation = z.object({
+  files: z
+    .instanceof(FileList, { message: 'Ne doit pas être vide' })
+    .refine(
+      (files) => {
+        return Array.from(files).every((file) => AVAILABLE_FILE_IMAGE_TYPES.includes(file.type))
+      },
+      {
+        message: 'Le fichier doit être de type png, jpg ou jpeg'
+      }
+    )
+    .refine((files) => files.length > 0, {
+      message: 'Le fichier est requis'
+    })
+    .refine((files) => files.length <= 5, {
+      message: 'Vous ne pouvez pas ajouter plus de 5 images'
+    })
 })
 
 export const variationPriceValidation = z
-  .number()
+  .number({ message: 'Le prix est requis' })
   .min(1, { message: 'Le prix doit être supérieur à 1 euros' })
   .max(100000, { message: 'Le prix doit être inférieur à 100 000 €' })
 
 export const variationQuantiteValidation = z
-  .number()
+  .number({ message: 'La quantité est requise' })
   .min(1, { message: 'La quantité est requise' })
   .max(1000, { message: 'La quantité doit être inférieur à 1000' })
 

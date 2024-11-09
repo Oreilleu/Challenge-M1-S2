@@ -11,7 +11,9 @@
 import FormAddProduct from './form/FormAddProduct.vue'
 import FormAddCategory from './form/FormAddCategory.vue'
 import { DrawerType } from '@/utils/types/drawer-type.enum'
-// TODO : Errreur d'import non bloquante ??
+import FormUpdateProduct from './form/FormUpdateProduct.vue'
+// TODO : voir avec le prof pourquoi typescript ne reconnait pas ce composant spécifiquement
+// @ts-ignore
 import FormAddUser from './form/FormAddUser.vue'
 
 type Props = {
@@ -25,13 +27,17 @@ const model = defineModel()
 const handlerTitle = {
   [DrawerType.CREATE_PRODUCT]: 'Ajouter un produit',
   [DrawerType.CREATE_CATEGORY]: 'Ajouter une catégorie',
-  [DrawerType.CREATE_USER]: 'Ajouter un utilisateur'
+  [DrawerType.CREATE_USER]: 'Ajouter un utilisateur',
+  [DrawerType.UPDATE_PRODUCT]: `Modifier le produit`,
+  [DrawerType.NONE]: null
 }
 
 const handlerForm = {
   [DrawerType.CREATE_PRODUCT]: FormAddProduct,
   [DrawerType.CREATE_CATEGORY]: FormAddCategory,
-  [DrawerType.CREATE_USER]: FormAddUser
+  [DrawerType.CREATE_USER]: FormAddUser,
+  [DrawerType.UPDATE_PRODUCT]: FormUpdateProduct,
+  [DrawerType.NONE]: null
 }
 </script>
 
