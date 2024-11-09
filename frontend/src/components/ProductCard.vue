@@ -1,11 +1,35 @@
 <template>
-  <div v-if="products && products.length > 0">
+  <el-card shadow="hover" style="width: 320px">
+    <el-image
+      style="width: 100%; height: 200px"
+      fit="cover"
+      :src="getImageUrl((variation.imagesApi || [])[0].path || '')"
+      alt="product image"
+    ></el-image>
+    <span>{{ product.name }}</span>
+    <p><strong>Price:</strong> ${{ variation.price }}</p>
+    <p><strong>Quantity:</strong> {{ variation.quantite }}</p>
+    <p v-if="variation.quantite > 0" style="color: green">
+      <strong>Disponibilité:</strong> Disponible
+    </p>
+    <p v-else style="color: red">
+      <strong>Disponibilité:</strong> Indisponible
+      <el-button type="primary" disabled>Ajouter au panier</el-button>
+    </p>
+    <el-button type="primary">Voir cette offre</el-button>
+  </el-card>
+  <!-- <div v-if="products && products.length > 0">
     <el-row :gutter="20">
       <el-col v-for="(product, index) in products" :key="index" :span="6">
         <el-card shadow="hover">
           <ul v-if="product.variation && product.variation.length > 0">
             <li v-for="(variation, index) in product.variation" :key="index">
-              <img src="https://placehold.co/600x400" alt="product image" />
+              <el-image
+                style="width: 100%; height: 200px"
+                fit="cover"
+                :src="getImageUrl((variation.imagesApi || [])[0].path || '')"
+                alt="product image"
+              ></el-image>
               <span>{{ product.name }}</span>
               <p><strong>Price:</strong> ${{ variation.price }}</p>
               <p><strong>Quantity:</strong> {{ variation.quantite }}</p>
@@ -23,14 +47,18 @@
       </el-col>
     </el-row>
   </div>
-  <p v-else>Loading products...</p>
+  <p v-else>Loading products...</p> -->
 </template>
 
 <script setup lang="ts">
 import { defineProps } from 'vue'
-import type { Product } from '@/utils/types/product.interface'
+import type { Product } from '@/utils/types/interfaces/product.interface'
+import type { Variation } from '@/utils/types/interfaces/variation.interface'
 
-const props = defineProps<{
-  products: Product[] | null
+const getImageUrl = (path: string) => `${import.meta.env.VITE_BASE_API_URL}/${path}`
+
+defineProps<{
+  product: Product
+  variation: Variation
 }>()
 </script>
