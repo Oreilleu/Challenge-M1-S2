@@ -6,19 +6,36 @@
       <el-table
         empty-text="Aucun produit trouvé"
         style="width: auto; overflow: auto"
-        :data="productStore.paginateProduct?.paginates"
+        :default-sort="{ prop: 'name', order: 'descending' }"
+        :data="
+          productStore.paginateProductBySearchInput?.paginates ||
+          productStore.paginateProduct?.paginates
+        "
       >
-        <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column prop="name" label="Nom"></el-table-column>
-        <el-table-column prop="model" label="Modèle"></el-table-column>
-        <el-table-column prop="category.name" label="Catégorie" placeholder="test">
+        <el-table-column type="selection" width="55" />
+        <el-table-column prop="name" label="Nom" />
+        <el-table-column prop="model" label="Modèle" />
+        <el-table-column prop="category.name" label="Catégorie">
           <template #default="scope">
             {{ !scope.row.category ? 'Sans catégorie' : scope.row.category.name }}
           </template>
         </el-table-column>
         <el-table-column>
           <template #header>
-            <el-input v-model="search" placeholder="Rechercher"></el-input>
+            <el-input
+              v-model="search"
+              placeholder="Rechercher"
+              style="margin-bottom: 5px"
+              @input="onChangeSearch"
+            />
+            <el-select v-model="searchColumn">
+              <el-option
+                v-for="item in optionsSearchColumn"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
           </template>
           <template #default="scope">
             <el-button type="primary" @click="openDrawerUpdate(scope.row._id)">Editer</el-button>
@@ -30,9 +47,16 @@
       <el-pagination
         :page-size="NUMBER_OF_PRODUCTS_PER_PAGE"
         layout="prev, pager, next"
-        :total="productStore.paginateProduct?.totalProducts || 0"
+        :total="
+          productStore.paginateProductBySearchInput?.totalProducts ||
+          productStore.paginateProduct?.totalProducts ||
+          0
+        "
         :hide-on-single-page="
-          productStore.paginateProduct?.totalProducts || 0 < NUMBER_OF_PRODUCTS_PER_PAGE
+          productStore.paginateProductBySearchInput?.totalProducts ||
+          0 < NUMBER_OF_PRODUCTS_PER_PAGE ||
+          productStore.paginateProduct?.totalProducts ||
+          0 < NUMBER_OF_PRODUCTS_PER_PAGE
         "
         @current-change="setCurrentPage"
       />
@@ -54,29 +78,49 @@ import { fetchDeleteProduct } from '@/utils/api/product'
 import useDrawerStore from '@/utils/store/useDrawerStore'
 import useProductStore from '@/utils/store/useProductStore'
 import toastHandler from '@/utils/toastHandler'
+import { ColumnProduct } from '@/utils/types/column-product.enum'
 import { DrawerType } from '@/utils/types/drawer-type.enum'
 import type { Product } from '@/utils/types/interfaces/product.interface'
 import { ToastType } from '@/utils/types/toast-type.enum'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { onMounted } from 'vue'
 
 const drawerStore = useDrawerStore()
 const productStore = useProductStore()
 const page = ref(1)
-const NUMBER_OF_PRODUCTS_PER_PAGE = 10
+const NUMBER_OF_PRODUCTS_PER_PAGE = 2
+const search = ref('')
 
-watch(page, (newPage) => {
-  console.log('Page', newPage)
-})
+const optionsSearchColumn = [
+  { label: 'Toutes les colonnes', value: ColumnProduct.ALL },
+  { label: 'Nom', value: ColumnProduct.NAME },
+  { label: 'Modèle', value: ColumnProduct.MODEL },
+  { label: 'Catégorie', value: ColumnProduct.CATEGORY }
+]
+
+const searchColumn = ref(optionsSearchColumn[0].value)
+
 const productToDelete = ref<Product | null>(null)
 
 const setCurrentPage = (newPage: number) => {
   page.value = newPage
 
-  productStore.updateProducts(newPage, NUMBER_OF_PRODUCTS_PER_PAGE)
+  productStore.updatePaginateProducts(newPage, NUMBER_OF_PRODUCTS_PER_PAGE)
 }
 
-const search = ref('')
+const onChangeSearch = (e: string) => {
+  if (e.trim().length < 3) {
+    productStore.clearSearch()
+    return
+  }
+
+  productStore.updatePaginateProductsBySearchInput(
+    e,
+    searchColumn.value,
+    page.value,
+    NUMBER_OF_PRODUCTS_PER_PAGE
+  )
+}
 
 const openDrawerUpdate = (idProduct: string | undefined) => {
   if (!idProduct) {
@@ -95,7 +139,7 @@ const deleteProduct = async (idProduct: string | undefined) => {
 
   if (isDeleted) {
     toastHandler('Produit supprimé avec succès', ToastType.SUCCESS)
-    productStore.updateProducts(page.value, NUMBER_OF_PRODUCTS_PER_PAGE)
+    productStore.updatePaginateProducts(page.value, NUMBER_OF_PRODUCTS_PER_PAGE)
   } else {
     toastHandler('Erreur lors de la suppression du produit', ToastType.ERROR)
   }
@@ -103,7 +147,7 @@ const deleteProduct = async (idProduct: string | undefined) => {
 }
 
 onMounted(() => {
-  productStore.updateProducts(page.value, NUMBER_OF_PRODUCTS_PER_PAGE)
+  productStore.updatePaginateProducts(page.value, NUMBER_OF_PRODUCTS_PER_PAGE)
 })
 </script>
 
