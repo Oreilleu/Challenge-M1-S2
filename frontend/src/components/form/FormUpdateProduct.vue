@@ -376,7 +376,7 @@ const onSubmit = handleSubmit(async () => {
 
     if (json.success) {
       drawerStore.closeDrawer()
-      productStore.updateProducts()
+      productStore.updatePaginateProducts()
       toastHandler('Produit modifié avec succès', ToastType.SUCCESS)
     }
   } catch (error) {
