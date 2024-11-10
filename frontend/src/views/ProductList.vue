@@ -3,13 +3,13 @@
     <el-row :gutter="20">
       <el-col :span="5">
         <el-card>
-          <h3>Price</h3>
-          <el-slider v-model="priceRange" range :min="0" :max="2000" show-tooltip></el-slider>
+          <!-- <h3>Price</h3> -->
+          <!-- <el-slider v-model="priceRange" range :min="0" :max="2000" show-tooltip></el-slider> -->
 
-          <div v-for="(filterGroup, name) in dynamicFilters" :key="name">
+          <div v-for="(filters, name) in filtersApi" :key="name">
             <h3>{{ name }}</h3>
             <el-checkbox-group v-model="selectedFilters[name]" class="checkbox-group-column">
-              <el-checkbox v-for="value in filterGroup" :key="value" :label="value">{{
+              <el-checkbox v-for="value in filters" :key="value" :label="value">{{
                 value
               }}</el-checkbox>
             </el-checkbox-group>
@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import ProductCard from '@/components/ProductCard.vue'
 import useProductStore from '@/utils/store/useProductStore'
 import { PRODUCT_PER_PAGE } from '@/utils/const'
@@ -59,7 +59,7 @@ const priceRange = ref<[number, number]>([0, 2000])
 const selectedFilters = ref<{ [key: string]: string[] }>({})
 const dynamicFilters = ref<{ [key: string]: string[] }>({})
 const paginationPage = ref(1)
-const filters = ref([])
+const filtersApi = ref<Record<string, string[]>>({})
 
 const setCurrentPage = (newPage: number) => {
   paginationPage.value = newPage
@@ -67,11 +67,10 @@ const setCurrentPage = (newPage: number) => {
 }
 
 const productStore = useProductStore()
-
+console.log(computed(() => filtersApi.value))
 onMounted(async () => {
   productStore.updatePaginateProducts(paginationPage.value, PRODUCT_PER_PAGE)
-  const getFilters = await fetchFilters()
-  console.log(getFilters)
+  filtersApi.value = await fetchFilters()
 })
 
 // const filteredProducts = computed(() => {

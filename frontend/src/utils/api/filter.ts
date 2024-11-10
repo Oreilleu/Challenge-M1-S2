@@ -16,22 +16,22 @@ export const fetchFilters = async () => {
       }
     )
 
-    const json: ResponseApi<any> = await response.json()
+    const json: ResponseApi<Record<string, string[]>> = await response.json()
 
     if (!json.success) {
       toastHandler(
         json.message || 'Une erreur est survenue lors de la récupération des filtres',
         ToastType.ERROR
       )
-      return []
+      return {}
     }
 
-    return json.data || []
+    return json.data || {}
   } catch (error: any) {
     toastHandler(
       error.message || 'Une erreur est survenue lors de la récupération des filtres',
       ToastType.ERROR
     )
-    return []
+    return {}
   }
 }
