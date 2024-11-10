@@ -27,8 +27,7 @@
         <section>
           <ul class="listVariation">
             <li
-              v-for="(variation, indexVariation) in productStore.paginateProduct
-                ?.paginatesVariations"
+              v-for="(variation, indexVariation) in variationStore.paginateVariation?.paginates"
               :key="indexVariation"
             >
               <ProductCard :product="variation" />
@@ -38,8 +37,8 @@
         <el-pagination
           :page-size="PRODUCT_PER_PAGE"
           layout="prev, pager, next"
-          :total="productStore.paginateProduct?.totalVariations"
-          :hide-on-single-page="productStore.paginateProduct?.totalVariations < PRODUCT_PER_PAGE"
+          :total="variationStore.paginateVariation?.count"
+          :hide-on-single-page="variationStore.paginateVariation?.count < PRODUCT_PER_PAGE"
           @current-change="setCurrentPage"
         />
       </el-col>
@@ -47,12 +46,24 @@
   </div>
 </template>
 
+<!-- // La pagination se fait sur tout les produits si l'input de recherche est vide (input.length < 3) ET s'il n'y a pas de filtres actifs
+
+// Si l'input de recherche est actif (input.length >= 3) ET les filtres sont inactif, ca affiche les produits filtrés par la recherche
+// -> + les recquêtes de pagination se font sur la route search
+
+// Si les fitres sont actifs, ca affiche les produits filtrés par les filtres
+// -> + les requêtes de pagination se font sur la route getByFiltres
+
+// Si la l'input de rechercher est actif (input.length >= 3) ET les filtres sont actifs, ca affiche les produits filtrés par les filtres + par le texte
+// -> Les requêtes de pagination se font sur la route getByFiltresAndSearch -->
+
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import ProductCard from '@/components/ProductCard.vue'
 import useProductStore from '@/utils/store/useProductStore'
 import { PRODUCT_PER_PAGE } from '@/utils/const'
 import { fetchFilters } from '@/utils/api/filter'
+import useVariationStore from '@/utils/store/useVariationStore'
 
 const searchQuery = ref<string>('')
 const priceRange = ref<[number, number]>([0, 2000])
@@ -63,13 +74,16 @@ const filtersApi = ref<Record<string, string[]>>({})
 
 const setCurrentPage = (newPage: number) => {
   paginationPage.value = newPage
-  productStore.updatePaginateProducts(newPage, PRODUCT_PER_PAGE)
+  variationStore.updatePaginateVariations(paginationPage.value, PRODUCT_PER_PAGE)
+  // productStore.updatePaginateProducts(newPage, PRODUCT_PER_PAGE)
 }
 
-const productStore = useProductStore()
+const variationStore = useVariationStore()
+// const productStore = useProductStore()
 console.log(computed(() => filtersApi.value))
 onMounted(async () => {
-  productStore.updatePaginateProducts(paginationPage.value, PRODUCT_PER_PAGE)
+  // productStore.updatePaginateProducts(paginationPage.value, PRODUCT_PER_PAGE)
+  variationStore.updatePaginateVariations(paginationPage.value, PRODUCT_PER_PAGE)
   filtersApi.value = await fetchFilters()
 })
 

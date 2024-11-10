@@ -90,23 +90,7 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
       .populate("idCategory")
       .lean<Array<Product>>();
 
-    const aggregateVariation: AggregateProductOnVariation[] =
-      await ProductModel.aggregate([
-        { $unwind: "$variations" },
-        { $skip: options.skip },
-        { $limit: options.limit },
-      ]);
-
-    const variations = aggregateVariation.length ? aggregateVariation : [];
     const totalProducts = await ProductModel.countDocuments();
-
-    const aggregateCountVariation = await ProductModel.aggregate([
-      { $unwind: "$variations" },
-      { $count: "totalVariations" },
-    ]);
-    const totalVariations = aggregateCountVariation.length
-      ? aggregateCountVariation[0].totalVariations
-      : 0;
 
     products.forEach((product) => {
       if (product.idCategory) {
@@ -119,9 +103,7 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
       success: true,
       data: {
         paginatesProducts: products,
-        paginatesVariations: variations,
         totalProducts,
-        totalVariations,
       },
     });
   } catch (error) {
