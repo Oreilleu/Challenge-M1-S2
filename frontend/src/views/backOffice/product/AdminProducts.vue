@@ -86,10 +86,22 @@ import { ToastType } from '@/utils/types/toast-type.enum'
 import { ref } from 'vue'
 import { onMounted } from 'vue'
 
+// La pagination se fait sur tout les produits si l'input de recherche est vide (input.length < 3) ET s'il n'y a pas de filtres actifs
+
+// Si l'input de recherche est actif (input.length >= 3) ET les filtres sont inactif, ca affiche les produits filtrés par la recherche
+// -> + les recquêtes de pagination se font sur la route search
+
+// Si les fitres sont actifs, ca affiche les produits filtrés par les filtres
+// -> + les requêtes de pagination se font sur la route getByFiltres
+
+// Si la l'input de rechercher est actif (input.length >= 3) ET les filtres sont actifs, ca affiche les produits filtrés par les filtres + par le texte
+// -> Les requêtes de pagination se font sur la route getByFiltresAndSearch
+
 const drawerStore = useDrawerStore()
 const productStore = useProductStore()
 const page = ref(1)
 const search = ref('')
+const isActiveSearch = ref(false)
 
 const optionsSearchColumn = [
   { label: 'Toutes les colonnes', value: ColumnProduct.ALL },
@@ -105,7 +117,16 @@ const productToDelete = ref<Product | null>(null)
 const setCurrentPage = (newPage: number) => {
   page.value = newPage
 
-  productStore.updatePaginateProducts(newPage, NUMBER_ADMIN_PRODUCT_PER_PAGE)
+  if (isActiveSearch.value)
+    productStore.updatePaginateProductsBySearchInput(
+      search.value,
+      searchColumn.value,
+      newPage,
+      NUMBER_ADMIN_PRODUCT_PER_PAGE
+    )
+  else {
+    productStore.updatePaginateProducts(newPage, NUMBER_ADMIN_PRODUCT_PER_PAGE)
+  }
 }
 
 const isDisplayPaginateBySearchInput = () => {
@@ -114,10 +135,12 @@ const isDisplayPaginateBySearchInput = () => {
 
 const onChangeSearch = (e: string) => {
   if (e.trim().length < 3) {
+    isActiveSearch.value = false
     productStore.clearSearch()
     return
   }
 
+  isActiveSearch.value = true
   productStore.updatePaginateProductsBySearchInput(
     e,
     searchColumn.value,
