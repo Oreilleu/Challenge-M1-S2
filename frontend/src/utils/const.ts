@@ -10,4 +10,4 @@ export const MAX_IMAGES_PRODUCT = 5
 
 export const NUMBER_ADMIN_PRODUCT_PER_PAGE = 10
 
-export const PRODUCT_PER_PAGE = 1
+export const VARIATION_PER_PAGE = 10

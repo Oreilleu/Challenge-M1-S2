@@ -8,10 +8,13 @@
 
           <div v-for="(filters, name) in filtersApi" :key="name">
             <h3>{{ name }}</h3>
-            <el-checkbox-group v-model="selectedFilters[name]" class="checkbox-group-column">
-              <el-checkbox v-for="value in filters" :key="value" :label="value">{{
-                value
-              }}</el-checkbox>
+            <el-checkbox-group v-model="selectedFilters" class="checkbox-group-column">
+              <el-checkbox
+                v-for="value in filters"
+                :key="value"
+                :label="{ name: name, value: value }"
+                >{{ value }}</el-checkbox
+              >
             </el-checkbox-group>
           </div>
         </el-card>
@@ -35,10 +38,10 @@
           </ul>
         </section>
         <el-pagination
-          :page-size="PRODUCT_PER_PAGE"
+          :page-size="VARIATION_PER_PAGE"
           layout="prev, pager, next"
           :total="variationStore.paginateVariation?.count"
-          :hide-on-single-page="variationStore.paginateVariation?.count < PRODUCT_PER_PAGE"
+          :hide-on-single-page="variationStore.paginateVariation?.count < VARIATION_PER_PAGE"
           @current-change="setCurrentPage"
         />
       </el-col>
@@ -46,7 +49,7 @@
   </div>
 </template>
 
-<!-- // La pagination se fait sur tout les produits si l'input de recherche est vide (input.length < 3) ET s'il n'y a pas de filtres actifs
+<!-- // La pagination se fait sur tout les produits si l'input de recherche est vide (input.length < 3) ET s'il n'y a pas de filtres actifs ok
 
 // Si l'input de recherche est actif (input.length >= 3) ET les filtres sont inactif, ca affiche les produits filtrés par la recherche
 // -> + les recquêtes de pagination se font sur la route search
@@ -58,54 +61,51 @@
 // -> Les requêtes de pagination se font sur la route getByFiltresAndSearch -->
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import ProductCard from '@/components/ProductCard.vue'
 import useProductStore from '@/utils/store/useProductStore'
-import { PRODUCT_PER_PAGE } from '@/utils/const'
+import { VARIATION_PER_PAGE } from '@/utils/const'
 import { fetchFilters } from '@/utils/api/filter'
 import useVariationStore from '@/utils/store/useVariationStore'
+import type { Filter } from '@/utils/types/interfaces/filter.interface'
 
 const searchQuery = ref<string>('')
 const priceRange = ref<[number, number]>([0, 2000])
-const selectedFilters = ref<{ [key: string]: string[] }>({})
-const dynamicFilters = ref<{ [key: string]: string[] }>({})
+const selectedFilters = ref<Filter[]>([])
+
 const paginationPage = ref(1)
 const filtersApi = ref<Record<string, string[]>>({})
 
+watch(selectedFilters, () => {
+  if (!selectedFilters.value.length) {
+    variationStore.updatePaginateVariations(paginationPage.value, VARIATION_PER_PAGE)
+    return
+  }
+  variationStore.updatePaginationByFilters(
+    selectedFilters.value,
+    paginationPage.value,
+    VARIATION_PER_PAGE
+  )
+})
+
 const setCurrentPage = (newPage: number) => {
   paginationPage.value = newPage
-  variationStore.updatePaginateVariations(paginationPage.value, PRODUCT_PER_PAGE)
-  // productStore.updatePaginateProducts(newPage, PRODUCT_PER_PAGE)
+  if (!selectedFilters.value.length) {
+    variationStore.updatePaginateVariations(paginationPage.value, VARIATION_PER_PAGE)
+    return
+  }
+  variationStore.updatePaginationByFilters(
+    selectedFilters.value,
+    paginationPage.value,
+    VARIATION_PER_PAGE
+  )
 }
 
 const variationStore = useVariationStore()
-// const productStore = useProductStore()
-console.log(computed(() => filtersApi.value))
 onMounted(async () => {
-  // productStore.updatePaginateProducts(paginationPage.value, PRODUCT_PER_PAGE)
-  variationStore.updatePaginateVariations(paginationPage.value, PRODUCT_PER_PAGE)
+  variationStore.updatePaginateVariations(paginationPage.value, VARIATION_PER_PAGE)
   filtersApi.value = await fetchFilters()
 })
-
-// const filteredProducts = computed(() => {
-//   if (!products.value) return []
-
-//   return products.value.filter((product) => {
-//     const matchesSearch = product.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-//     const withinPriceRange = product.variation.some(
-//       (variation) =>
-//         variation.price >= priceRange.value[0] && variation.price <= priceRange.value[1]
-//     )
-//     const matchesFilters = Object.keys(selectedFilters.value).every((key) => {
-//       if (!selectedFilters.value[key].length) return true
-//       return product.variation.some((variation) =>
-//         variation.filters.some((filter) => selectedFilters.value[key].includes(filter.value))
-//       )
-//     })
-
-//     return matchesSearch && withinPriceRange && matchesFilters
-//   })
-// })
 </script>
 
 <style scoped>

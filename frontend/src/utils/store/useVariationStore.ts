@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { PaginateVariation } from '../types/interfaces/paginate-variation.interface'
-import { fetchPaginateVariations } from '../api/variation'
+import { fetchPaginateVariations, fetchPaginateVariationsByFilters } from '../api/variation'
+import type { Filter } from '../types/interfaces/filter.interface'
 
 const useVariationStore = defineStore('variation', () => {
   const paginateVariation = ref<PaginateVariation | null>(null)
@@ -10,10 +11,22 @@ const useVariationStore = defineStore('variation', () => {
   const DEFAULT_PAGE = 1
   const DEFAULT_NUMBER_VARIATION_PER_PAGE = 10
 
-  const updatePaginateVariations = async (page?: number, numberProductPerPage?: number) => {
+  const updatePaginateVariations = async (page?: number, numberVariationPerPage?: number) => {
     paginateVariation.value = await fetchPaginateVariations(
       page || DEFAULT_PAGE,
-      numberProductPerPage || DEFAULT_NUMBER_VARIATION_PER_PAGE
+      numberVariationPerPage || DEFAULT_NUMBER_VARIATION_PER_PAGE
+    )
+  }
+
+  const updatePaginationByFilters = async (
+    filters: Filter[],
+    page?: number,
+    numberVariationPerPage?: number
+  ) => {
+    paginateVariation.value = await fetchPaginateVariationsByFilters(
+      filters,
+      page || DEFAULT_PAGE,
+      numberVariationPerPage || DEFAULT_NUMBER_VARIATION_PER_PAGE
     )
   }
 
@@ -42,6 +55,7 @@ const useVariationStore = defineStore('variation', () => {
   return {
     paginateVariation,
     updatePaginateVariations,
+    updatePaginationByFilters,
     clearPaginate
   }
 })
