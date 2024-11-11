@@ -9,22 +9,22 @@
           <h4 class="text-lg font-semibold text-white mb-4">À propos</h4>
           <ul class="space-y-2">
             <li>
-              <a href="/qui-sommes-nous" class="text-gray-400 hover:text-white transition duration-200">
+              <a href="/qui-sommes-nous" class="text-gray-300 hover:text-white transition duration-200">
                 Qui sommes-nous
               </a>
             </li>
             <li>
-              <RouterLink to="/nos-magasins" class="text-gray-400 hover:text-white transition duration-200">
+              <RouterLink to="/nos-magasins" class="text-gray-300 hover:text-white transition duration-200">
                 Nos magasins
               </RouterLink>
             </li>
             <li>
-              <RouterLink to="/recrutement" class="text-gray-400 hover:text-white transition duration-200">
-                Recrutement
-              </RouterLink>
+              <a href="/faq" class="text-gray-300 hover:text-white transition duration-200">
+                FAQ
+              </a>
             </li>
             <li>
-              <RouterLink to="/blog" class="text-gray-400 hover:text-white transition duration-200">
+              <RouterLink to="/blog" class="text-gray-300 hover:text-white transition duration-200">
                 Blog
               </RouterLink>
             </li>
@@ -36,17 +36,17 @@
           <h4 class="text-lg font-semibold text-white mb-4">Service Client</h4>
           <ul class="space-y-2">
             <li>
-              <RouterLink to="/centre-aide" class="text-gray-400 hover:text-white transition duration-200">
+              <RouterLink to="/centre-aide" class="text-gray-300 hover:text-white transition duration-200">
                 Centre d'aide
               </RouterLink>
             </li>
             <li>
-              <RouterLink to="/retours-garanties" class="text-gray-400 hover:text-white transition duration-200">
+              <RouterLink to="/retours-garanties" class="text-gray-300 hover:text-white transition duration-200">
                 Retours & Garanties
               </RouterLink>
             </li>
             <li>
-              <RouterLink to="/mode-livraison" class="text-gray-400 hover:text-white transition duration-200">
+              <RouterLink to="/mode-livraison" class="text-gray-300 hover:text-white transition duration-200">
                 Mode de livraison
               </RouterLink>
             </li>
@@ -58,21 +58,21 @@
           <h4 class="text-lg font-semibold text-white mb-4">Condition général</h4>
           <ul class="space-y-2">
             <li>
-              <RouterLink to="/cgv" class="text-gray-400 hover:text-white transition duration-200">CGV</RouterLink>
+              <a href="/cgv" class="text-gray-300 hover:text-white transition duration-200">CGV</a>
             </li>
             <li>
-              <RouterLink to="/mentions-legales" class="text-gray-400 hover:text-white transition duration-200">
+              <RouterLink to="/mentions-legales" class="text-gray-300 hover:text-white transition duration-200">
                 Mentions légales
               </RouterLink>
             </li>
             <li>
               <RouterLink to="/politique-confidentialite"
-                class="text-gray-400 hover:text-white transition duration-200">
+                class="text-gray-300 hover:text-white transition duration-200">
                 Politique de confidentialité
               </RouterLink>
             </li>
             <li>
-              <RouterLink to="/cookies" class="text-gray-400 hover:text-white transition duration-200">
+              <RouterLink to="/cookies" class="text-gray-300 hover:text-white transition duration-200">
                 Cookies
               </RouterLink>
             </li>
@@ -119,29 +119,29 @@
       <div class="border-t border-gray-800 pt-8">
         <div class="flex flex-col md:flex-row justify-between items-center gap-6">
           <div class="flex gap-6 items-center">
-            <div class="flex items-center gap-2 text-gray-400">
+            <div class="flex items-center gap-2 text-gray-300">
               <CreditCard class="w-6 h-6" />
               <span>Visa</span>
             </div>
-            <div class="flex items-center gap-2 text-gray-400">
+            <div class="flex items-center gap-2 text-gray-300">
               <CreditCard class="w-6 h-6" />
               <span>Mastercard</span>
             </div>
-            <div class="flex items-center gap-2 text-gray-400">
+            <div class="flex items-center gap-2 text-gray-300">
               <Wallet class="w-6 h-6" />
               <span>PayPal</span>
             </div>
-            <div class="flex items-center gap-2 text-gray-400">
+            <div class="flex items-center gap-2 text-gray-300">
               <Smartphone class="w-6 h-6" />
               <span>Apple Pay</span>
             </div>
           </div>
           <div class="flex gap-6 items-center">
-            <div class="flex items-center gap-2 text-gray-400">
+            <div class="flex items-center gap-2 text-gray-300">
               <ShieldCheck class="w-6 h-6" />
               <span>Paiement sécurisé</span>
             </div>
-            <div class="flex items-center gap-2 text-gray-400">
+            <div class="flex items-center gap-2 text-gray-300">
               <Truck class="w-6 h-6" />
               <span>Livraison suivie</span>
             </div>
@@ -152,14 +152,14 @@
       <!-- Bottom Bar -->
       <div class="border-t border-gray-800 mt-8 pt-8">
         <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-          <p class="text-sm text-gray-500">
+          <p class="text-sm text-gray-300">
             © {{ new Date().getFullYear() }} Votre Entreprise. Tous droits réservés.
           </p>
           <div class="flex gap-4">
-            <RouterLink to="/plan-site" class="text-sm text-gray-500 hover:text-white transition duration-200">
+            <RouterLink to="/plan-site" class="text-sm text-gray-300 hover:text-white transition duration-200">
               Plan du site
             </RouterLink>
-            <RouterLink to="/accessibilite" class="text-sm text-gray-500 hover:text-white transition duration-200">
+            <RouterLink to="/accessibilite" class="text-sm text-gray-300 hover:text-white transition duration-200">
               Accessibilité
             </RouterLink>
           </div>
