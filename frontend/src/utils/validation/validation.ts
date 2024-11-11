@@ -108,5 +108,7 @@ export const categoryDescriptionValidation = z
   .string()
   .min(2, { message: 'La description de la catégorie doit avoir au moins deux caractères.' })
   .max(500, { message: 'La description de la catégorie doit avoir maximun 500 caractères' })
+  .optional()
+  .or(z.literal(''))
 
 export const categoryParentValidation = z.string().optional()

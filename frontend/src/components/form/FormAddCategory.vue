@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, onMounted } from 'vue'
 import FormInput from '../FormInput.vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
@@ -54,6 +54,7 @@ import useDrawerStore from '@/utils/store/useDrawerStore'
 import FormSelect from '../FormSelect.vue'
 import FormInputFile from '../FormInputFile.vue'
 import useCategoryStore from '@/utils/store/useCategoryStore'
+import { v4 as uuidv4 } from 'uuid'
 
 const drawerStore = useDrawerStore()
 const categoryStore = useCategoryStore()
@@ -61,7 +62,7 @@ const categoryStore = useCategoryStore()
 const category: Category = reactive({
   name: '',
   description: '',
-  image: { file: {} as File },
+  image: { files: {} as FileList },
   parent: ''
 })
 
@@ -78,6 +79,24 @@ const { handleSubmit, errors } = useForm<Category>({
 const onSubmit = handleSubmit(async (values) => {
   const formData = new FormData()
 
+  values.parent = category.parent
+
+  const image = values.image?.files[0] || ({} as File)
+
+  if (!image) {
+    toastHandler("L'image n'a pas été prise en compte", ToastType.ERROR)
+    return
+  }
+
+  values.parent = category.parent || undefined
+
+  const nameImage = `${uuidv4()}${Date.now()}`
+
+  formData.append('image', new File([image], nameImage, { type: image.type }))
+
+  values.nameImage = nameImage
+  delete values.image
+
   formData.append('category', JSON.stringify(values))
 
   try {
@@ -89,7 +108,7 @@ const onSubmit = handleSubmit(async (values) => {
       body: formData
     })
 
-    const json: ResponseApi<null> = await response.json()
+    const json: ResponseApi<Category> = await response.json()
 
     if (json.success) {
       drawerStore.closeDrawer()

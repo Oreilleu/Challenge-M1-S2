@@ -3,7 +3,22 @@ import CategoryModel from "../models/category.model";
 import { Category } from "../types/category.interface";
 
 const createCategory = async (req: Request, res: Response) => {
-  const category: Category = req.body;
+  const category: Category = JSON.parse(req.body.category);
+  const image = req.file as Express.Multer.File;
+
+  if (!image || !category) {
+    res.status(400).json({
+      success: false,
+      message: "Information manquante",
+    });
+    return;
+  }
+
+  category.imageApi = {
+    name: image.originalname,
+    path: image.path.replace("public", ""),
+  };
+
   try {
     const newCategory = await CategoryModel.create(category);
     res.status(201).json({
