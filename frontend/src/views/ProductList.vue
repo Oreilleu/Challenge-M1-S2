@@ -49,17 +49,6 @@
   </div>
 </template>
 
-<!-- // La pagination se fait sur tout les produits si l'input de recherche est vide (input.length < 3) ET s'il n'y a pas de filtres actifs ok
-
-// Si l'input de recherche est actif (input.length >= 3) ET les filtres sont inactif, ca affiche les produits filtrés par la recherche
-// -> + les recquêtes de pagination se font sur la route search
-
-// Si les fitres sont actifs, ca affiche les produits filtrés par les filtres
-// -> + les requêtes de pagination se font sur la route getByFiltres
-
-// Si la l'input de rechercher est actif (input.length >= 3) ET les filtres sont actifs, ca affiche les produits filtrés par les filtres + par le texte
-// -> Les requêtes de pagination se font sur la route getByFiltresAndSearch -->
-
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
 import ProductCard from '@/components/ProductCard.vue'
@@ -77,28 +66,30 @@ const paginationPage = ref(1)
 const filtersApi = ref<Record<string, string[]>>({})
 
 watch(selectedFilters, () => {
-  if (!selectedFilters.value.length) {
+  const options = {
+    filters: selectedFilters.value,
+    searchInput: searchQuery.value
+  }
+  variationStore.updatePaginateVariations(paginationPage.value, VARIATION_PER_PAGE, options)
+})
+watch(searchQuery, () => {
+  if (searchQuery.value.length < 3) {
     variationStore.updatePaginateVariations(paginationPage.value, VARIATION_PER_PAGE)
     return
   }
-  variationStore.updatePaginationByFilters(
-    selectedFilters.value,
-    paginationPage.value,
-    VARIATION_PER_PAGE
-  )
+  const options = {
+    filters: selectedFilters.value,
+    searchInput: searchQuery.value
+  }
+  variationStore.updatePaginateVariations(paginationPage.value, VARIATION_PER_PAGE, options)
 })
-
 const setCurrentPage = (newPage: number) => {
   paginationPage.value = newPage
-  if (!selectedFilters.value.length) {
-    variationStore.updatePaginateVariations(paginationPage.value, VARIATION_PER_PAGE)
-    return
+  const options = {
+    filters: selectedFilters.value,
+    searchInput: searchQuery.value
   }
-  variationStore.updatePaginationByFilters(
-    selectedFilters.value,
-    paginationPage.value,
-    VARIATION_PER_PAGE
-  )
+  variationStore.updatePaginateVariations(paginationPage.value, VARIATION_PER_PAGE, options)
 }
 
 const variationStore = useVariationStore()

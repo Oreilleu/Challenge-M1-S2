@@ -1,10 +1,9 @@
 import { RequestHandler } from "express";
 import ProductModel from "../models/product.model";
-import { AggregateProductOnVariation } from "../types/aggregate-product-on-variation.interface";
 import { AggregateProductOnFilter } from "../types/aggregate-product-on-filter.interface";
-import { Filter } from "../types/filter.interface";
+import { BodyPaginateVariation } from "../types/body-paginate-variation.interface";
 export const getPaginate: RequestHandler = async (req, res, next) => {
-  const { page, limit } = req.body;
+  const { page, limit, searchOption } = req.body as BodyPaginateVariation;
   if (!page || !limit) {
     res.status(400).json({
       success: false,
@@ -15,75 +14,47 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
   const parsedPage = parseInt(page);
   const parsedLimit = parseInt(limit);
 
-  const options = {
-    skip: parsedPage === 1 ? 0 : parsedPage * parsedLimit - parsedLimit,
-    limit: parsedLimit,
-  };
-  try {
-    const aggregateVariation: AggregateProductOnVariation[] =
-      await ProductModel.aggregate([
-        { $unwind: "$variations" },
-        { $skip: options.skip },
-        { $limit: options.limit },
-      ]);
-
-    const variations = aggregateVariation.length ? aggregateVariation : [];
-    const aggregateCountVariation = await ProductModel.aggregate([
-      { $unwind: "$variations" },
-      { $count: "totalVariations" },
-    ]);
-    const count = aggregateCountVariation.length
-      ? aggregateCountVariation[0].totalVariations
-      : 0;
-    res.status(200).json({
-      success: true,
-      data: {
-        paginates: variations,
-        count,
-      },
-    });
-  } catch (error) {
-    console.error("Erreur pour récupérer les produits paginés", error);
-    res.status(500).json({
-      success: false,
-      message: "Erreur lors de la récupération des produits paginés",
-    });
-  }
-};
-
-export const getPaginateByFilters: RequestHandler = async (req, res, next) => {
-  const { page, limit, filters } = req.body;
-  if (!page || !limit || !filters) {
-    res.status(400).json({
-      success: false,
-      message:
-        "La numéro de page, le nombre d'élément par page et les filtres sont requis",
-    });
-    return;
-  }
-  const parsedPage = parseInt(page);
-  const parsedLimit = parseInt(limit);
-
-  const options = {
+  const paginationOptions = {
     skip: parsedPage === 1 ? 0 : parsedPage * parsedLimit - parsedLimit,
     limit: parsedLimit,
   };
 
+  const searchInput = searchOption?.searchInput || "";
+  const filters = searchOption?.filters || [];
+  const query = (aggregateCondition: any) => {
+    if (aggregateCondition.length > 0) {
+      if (searchInput) {
+        return {
+          $and: [
+            ...aggregateCondition,
+            { name: { $regex: searchInput, $options: "i" } },
+          ],
+        };
+      } else {
+        return {
+          $or: aggregateCondition,
+        };
+      }
+    }
+    if (searchInput.length >= 3) {
+      return { name: { $regex: searchInput, $options: "i" } };
+    }
+    return {};
+  };
   try {
     const aggregateConditions = filters.map((filter: any) => ({
       "variations.filters.name": filter.name,
       "variations.filters.value": filter.value,
     }));
-    const aggregateFilter: {
+
+    const variationByFilter: {
       _id: string;
       product: AggregateProductOnFilter;
     }[] = await ProductModel.aggregate([
       { $unwind: "$variations" },
       { $unwind: "$variations.filters" },
       {
-        $match: {
-          $or: aggregateConditions,
-        },
+        $match: query(aggregateConditions),
       },
       {
         $group: {
@@ -91,21 +62,14 @@ export const getPaginateByFilters: RequestHandler = async (req, res, next) => {
           product: { $first: "$$ROOT" },
         },
       },
-      { $skip: options.skip },
-      { $limit: options.limit },
+      { $skip: paginationOptions.skip },
+      { $limit: paginationOptions.limit },
     ]);
-    const variations = aggregateFilter.length
-      ? aggregateFilter.map((product) => {
-          return product.product;
-        })
-      : [];
-    const aggregateCountFilter = await ProductModel.aggregate([
+    const count = await ProductModel.aggregate([
       { $unwind: "$variations" },
       { $unwind: "$variations.filters" },
       {
-        $match: {
-          $or: aggregateConditions,
-        },
+        $match: query(aggregateConditions),
       },
       {
         $group: {
@@ -113,16 +77,20 @@ export const getPaginateByFilters: RequestHandler = async (req, res, next) => {
           product: { $first: "$$ROOT" },
         },
       },
-      { $count: "count" },
+      {
+        $count: "count",
+      },
     ]);
-    const count = aggregateCountFilter.length
-      ? aggregateCountFilter[0].count
-      : 0;
+
     res.status(200).json({
       success: true,
       data: {
-        paginates: variations,
-        count,
+        paginates: variationByFilter.length
+          ? variationByFilter.map(
+              (aggregateVariation) => aggregateVariation.product
+            )
+          : [],
+        count: count.length ? count[0].count : 0,
       },
     });
   } catch (error) {

@@ -7,6 +7,7 @@ import {
   getAll,
   remove,
   getPaginate,
+  getFilters,
 } from "../controllers/product";
 import checkAdmin from "../middleware/checkAdmin";
 import multer from "multer";

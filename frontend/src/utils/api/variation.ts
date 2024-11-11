@@ -3,10 +3,15 @@ import toastHandler from '../toastHandler'
 import type { Filter } from '../types/interfaces/filter.interface'
 import type { PaginateVariation } from '../types/interfaces/paginate-variation.interface'
 import type { ResponseApi } from '../types/interfaces/response-api.interface'
+import type { VariationSearchOption } from '../types/interfaces/variation-search-option.interface'
 import { LocalStorageKeys } from '../types/local-storage-keys.enum'
 import { ToastType } from '../types/toast-type.enum'
 
-export const fetchPaginateVariations = async (page: number, limit: number) => {
+export const fetchPaginateVariations = async (
+  page: number,
+  limit: number,
+  searchOption?: VariationSearchOption
+) => {
   try {
     const response: Response = await fetch(
       `${import.meta.env.VITE_BASE_API_URL}/variation/get-paginate`,
@@ -16,7 +21,7 @@ export const fetchPaginateVariations = async (page: number, limit: number) => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
         },
-        body: JSON.stringify({ page, limit })
+        body: JSON.stringify({ page, limit, searchOption })
       }
     )
 
