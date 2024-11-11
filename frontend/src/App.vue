@@ -29,10 +29,7 @@ const logout = () => {
 <template>
   <header>
     <HeaderComponent />
-    LOGO
-    <RouterLink v-if="route.path !== '/register' && !isAuthenticatedUser" to="/register">Inscription</RouterLink>
-    <RouterLink v-if="route.path !== '/login' && !isAuthenticatedUser" to="/login">Connexion</RouterLink>
-    <el-button v-if="isAuthenticatedUser" type="primary" @click="logout">Se déconnecter</el-button>
+
   </header>
   <main class="min-h-screen">
     <RouterView />

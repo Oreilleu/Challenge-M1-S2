@@ -1,26 +1,5 @@
 <template>
-  <footer class="bg-blue-950 text-gray-300">
-    <!-- Newsletter Section -->
-    <div class="border-b border-gray-800">
-      <div class="max-w-7xl mx-auto px-4 py-12">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div class="text-center md:text-left">
-            <h3 class="text-xl font-bold text-white mb-2">Restez informé !</h3>
-            <p class="text-sm text-gray-400">Inscrivez-vous pour recevoir nos meilleures offres</p>
-          </div>
-          <div class="w-full md:w-96">
-            <form @submit.prevent="subscribeNewsletter" class="flex gap-2">
-              <input type="email" v-model="email" placeholder="Votre adresse email"
-                class="flex-1 px-4 py-2 bg-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
-              <button type="submit"
-                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
-                S'inscrire
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+  <footer class="text-gray-300" style="background-color: #0046be;">
 
     <!-- Main Footer Content -->
     <div class="max-w-7xl mx-auto px-4 py-12">

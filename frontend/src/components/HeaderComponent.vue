@@ -6,8 +6,8 @@
                     <button @click="toggleMenu" class="md:hidden p-2 hover:bg-gray-100 rounded-lg">
                         <Menu class="w-6 h-6" />
                     </button>
-                    <div class="bg-gray-200 w-20 h-10 flex items-center justify-center mx-4 my-2.5">
-                        <span class="text-sm font-bold">Logo</span>
+                    <div class="w-20 h-10 flex items-center justify-center mx-4 my-2.5">
+                        <img src="/logo.png" />
                     </div>
                 </div>
 
@@ -20,9 +20,13 @@
                 </div>
 
                 <div class="flex items-center">
-                    <button class="p-2 hover:bg-gray-100 rounded-lg">
+                    <!-- Lien d'inscription avec l'icône User -->
+                    <RouterLink v-if="route.path !== '/register' && !isAuthenticatedUser" to="/register"
+                        class="p-2 hover:bg-gray-100 rounded-lg">
                         <User class="w-6 h-6" />
-                    </button>
+                    </RouterLink>
+
+                    <!-- Bouton pour le panier -->
                     <button class="p-2 hover:bg-gray-100 rounded-lg">
                         <ShoppingCart class="w-6 h-6" />
                     </button>
@@ -97,9 +101,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRoute } from 'vue-router';
 import { Menu, Search, User, ShoppingCart, ChevronRight } from 'lucide-vue-next';
 
 const isMenuOpen = ref(false);
+const route = useRoute();
+const isAuthenticatedUser = false;
 
 const toggleMenu = () => {
     isMenuOpen.value = !isMenuOpen.value;
