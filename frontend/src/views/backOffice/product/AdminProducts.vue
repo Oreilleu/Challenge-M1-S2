@@ -75,6 +75,17 @@ import { ToastType } from '@/utils/types/toast-type.enum'
 import { ref } from 'vue'
 import { onMounted } from 'vue'
 
+// La pagination se fait sur tout les produits si l'input de recherche est vide (input.length < 3) ET s'il n'y a pas de filtres actifs
+
+// Si l'input de recherche est actif (input.length >= 3) ET les filtres sont inactif, ca affiche les produits filtrés par la recherche
+// -> + les recquêtes de pagination se font sur la route search
+
+// Si les fitres sont actifs, ca affiche les produits filtrés par les filtres
+// -> + les requêtes de pagination se font sur la route getByFiltres
+
+// Si la l'input de rechercher est actif (input.length >= 3) ET les filtres sont actifs, ca affiche les produits filtrés par les filtres + par le texte
+// -> Les requêtes de pagination se font sur la route getByFiltresAndSearch
+
 const drawerStore = useDrawerStore()
 const productStore = useProductStore()
 
