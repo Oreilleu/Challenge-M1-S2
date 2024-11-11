@@ -31,6 +31,7 @@ const handlerTitle = {
   [DrawerType.CREATE_USER]: 'Ajouter un utilisateur',
   [DrawerType.UPDATE_PRODUCT]: `Modifier le produit`,
   [DrawerType.UPDATE_CATEGORY]: `Modifier la catégorie`,
+  [DrawerType.NONE]: null
 }
 
 const handlerForm = {
@@ -39,6 +40,7 @@ const handlerForm = {
   [DrawerType.CREATE_USER]: FormAddUser,
   [DrawerType.UPDATE_PRODUCT]: FormUpdateProduct,
   [DrawerType.UPDATE_CATEGORY]: formUpdateCategory,
+  [DrawerType.NONE]: null
 }
 </script>
 

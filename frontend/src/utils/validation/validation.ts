@@ -58,7 +58,7 @@ export const variationValidation = z
   .array(z.object({}))
   .min(1, { message: 'Il faut au moins une variation' })
 
-export const variationImagesValidation = z.object({
+export const imagesValidation = z.object({
   files: z
     .instanceof(FileList, { message: 'Ne doit pas être vide' })
     .refine(
@@ -97,7 +97,7 @@ export const filterValueValidation = z
   .min(2, { message: 'La valeur du filtre doit avoir au moins deux caractères.' })
   .max(50, { message: 'La valeur du filtre doit avoir maximun 50 caractères' })
 
-  // Category 
+// Category
 
 export const categoryNameValidation = z
   .string()
@@ -109,19 +109,4 @@ export const categoryDescriptionValidation = z
   .min(2, { message: 'La description de la catégorie doit avoir au moins deux caractères.' })
   .max(500, { message: 'La description de la catégorie doit avoir maximun 500 caractères' })
 
-export const categoryImageValidation = z.object({
-  file: z
-    .instanceof(File, { message: 'Ne doit pas être vide' })
-    .refine(
-      (file) => {
-        return AVAILABLE_FILE_IMAGE_TYPES.includes(file.type)
-      },
-      {
-        message: 'Le fichier doit être de type png, jpg ou jpeg'
-      }
-    )
-})
-
 export const categoryParentValidation = z.string().optional()
-
-
