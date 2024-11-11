@@ -7,8 +7,6 @@ import {
   getAll,
   remove,
   getPaginate,
-  getBySearch,
-  getFilters,
 } from "../controllers/product";
 import checkAdmin from "../middleware/checkAdmin";
 import multer from "multer";
@@ -21,7 +19,6 @@ const upload = multer({ storage });
 productRouter.get("/get-one/:id", checkToken, getOne);
 productRouter.get("/get-all", checkToken, getAll);
 productRouter.post("/get-paginate", checkToken, getPaginate);
-productRouter.post("/search", checkToken, getBySearch);
 productRouter.post(
   "/create",
   checkToken,

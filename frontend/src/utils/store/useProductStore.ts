@@ -3,37 +3,17 @@ import { ref } from 'vue'
 import { fetchPaginatedProducts, fetchProductsBySearchInput } from '../api/product'
 import type { PaginateProduct } from '../types/interfaces/pagiante-product.interface'
 import type { ColumnProduct } from '../types/column-product.enum'
+import type { ProductSearchOption } from '../types/interfaces/product-search-option.interface'
 
 const useProductStore = defineStore('product', () => {
   const paginateProduct = ref<PaginateProduct | null>(null)
-  const paginateProductBySearchInput = ref<PaginateProduct | null>(null)
 
-  const DEFAULT_PAGE = 1
-  const DEFAULT_NUMBER_PRODUCT_PER_PAGE = 10
-
-  const updatePaginateProducts = async (page?: number, numberProductPerPage?: number) => {
-    paginateProduct.value = await fetchPaginatedProducts(
-      page || DEFAULT_PAGE,
-      numberProductPerPage || DEFAULT_NUMBER_PRODUCT_PER_PAGE
-    )
-  }
-
-  const updatePaginateProductsBySearchInput = async (
-    search: string,
-    column: ColumnProduct,
-    page?: number,
-    numberProductPerPage?: number
+  const updatePaginateProducts = async (
+    page: number,
+    numberProductPerPage: number,
+    searchOption?: ProductSearchOption
   ) => {
-    paginateProductBySearchInput.value = await fetchProductsBySearchInput(
-      search,
-      column,
-      page || DEFAULT_PAGE,
-      numberProductPerPage || DEFAULT_NUMBER_PRODUCT_PER_PAGE
-    )
-  }
-
-  const clearSearch = () => {
-    paginateProductBySearchInput.value = null
+    paginateProduct.value = await fetchPaginatedProducts(page, numberProductPerPage, searchOption)
   }
 
   const clearPaginate = () => {
@@ -42,10 +22,7 @@ const useProductStore = defineStore('product', () => {
 
   return {
     paginateProduct,
-    paginateProductBySearchInput,
     updatePaginateProducts,
-    updatePaginateProductsBySearchInput,
-    clearSearch,
     clearPaginate
   }
 })
