@@ -7,7 +7,6 @@ import {
   getAll,
   remove,
   getPaginate,
-  getFilters,
 } from "../controllers/product";
 import checkAdmin from "../middleware/checkAdmin";
 import multer from "multer";
@@ -35,6 +34,5 @@ productRouter.put(
   edit
 );
 productRouter.delete("/delete/:id", checkToken, checkAdmin, remove);
-productRouter.get("/get-filters", checkToken, getFilters);
 
 export default productRouter;
