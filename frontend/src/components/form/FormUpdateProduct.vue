@@ -70,7 +70,7 @@
               style="text-align: center"
             >
               <el-image
-                :src="getImageUrl((image as ImageApi).path)"
+                :src="formatImageUrl((image as ImageApi).path)"
                 fit="cover"
                 style="height: 200px"
               />
@@ -228,6 +228,8 @@ import FormSelect from '../FormSelect.vue'
 import useCategoryStore from '@/utils/store/useCategoryStore'
 import type { OptionCategory } from '@/utils/types/interfaces/option-category.interface'
 import useProductStore from '@/utils/store/useProductStore'
+import { formatImageUrl } from '../../utils/formatImageUrl'
+import { NUMBER_ADMIN_PRODUCT_PER_PAGE } from '@/utils/const'
 
 const drawerStore = useDrawerStore()
 const productStore = useProductStore()
@@ -239,8 +241,6 @@ const initialStateProduct = ref<Product | null>(null)
 const formattedDefaultCategory = ref<OptionCategory | null>(null)
 
 const visibleInputImageVariation = ref<Array<string>>([])
-
-const getImageUrl = (path: string) => `${import.meta.env.VITE_BASE_API_URL}/${path}`
 
 const displayInputImages = (variationId: string | undefined) => {
   if (!variationId) return
@@ -376,7 +376,7 @@ const onSubmit = handleSubmit(async () => {
 
     if (json.success) {
       drawerStore.closeDrawer()
-      productStore.updatePaginateProducts()
+      productStore.updatePaginateProducts(1, NUMBER_ADMIN_PRODUCT_PER_PAGE)
       toastHandler('Produit modifié avec succès', ToastType.SUCCESS)
     }
   } catch (error) {

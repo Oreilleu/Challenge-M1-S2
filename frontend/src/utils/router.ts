@@ -10,6 +10,7 @@ import Home from '@/views/Home.vue'
 import Login from '@/views/Login.vue'
 import ForgotPassword from '@/views/ForgotPassword.vue'
 import ResetPassword from '@/views/ResetPassword.vue'
+import Product from '@/views/Product.vue'
 import AdminCategories from '@/views/backOffice/category/AdminCategories.vue'
 
 const redirectToHomeIfUserAuthenticated = async () => {
@@ -102,6 +103,11 @@ const routes = [
     name: 'AdminUsers',
     component: AdminUsers,
     beforeEnter: isAdminPage
+  },
+  {
+    path: '/products',
+    name: 'Product',
+    component: Product
   },
   {
     path: '/admin/categories',

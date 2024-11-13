@@ -18,3 +18,5 @@ export const OPTION_PRODUCT_SEARCH_COLUMN = [
   { label: 'Modèle', value: ColumnProduct.MODEL },
   { label: 'Catégorie', value: ColumnProduct.CATEGORY }
 ]
+
+export const VARIATION_PER_PAGE = 1
