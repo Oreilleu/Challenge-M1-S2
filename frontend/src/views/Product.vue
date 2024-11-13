@@ -38,7 +38,7 @@
           :page-size="VARIATION_PER_PAGE"
           layout="prev, pager, next"
           :total="variationStore.paginateVariation?.count"
-          :hide-on-single-page="variationStore.paginateVariation?.count < VARIATION_PER_PAGE"
+          :hide-on-single-page="(variationStore.paginateVariation?.count || 0) < VARIATION_PER_PAGE"
           @current-change="setCurrentPage"
         />
       </el-col>
