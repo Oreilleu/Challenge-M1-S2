@@ -1,8 +1,12 @@
+import { ObjectId } from "mongoose";
 import { Filter } from "./filter.interface";
+import { Image } from "./image.interface";
 
 export interface Variation {
-  images: string[];
+  _id: string;
   price: number;
   quantite: number;
-  filter: Filter;
+  nameImages: Array<string>;
+  imagesApi: Array<Image>;
+  filters: Array<Filter>;
 }

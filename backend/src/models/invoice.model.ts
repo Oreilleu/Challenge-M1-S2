@@ -27,4 +27,6 @@ const invoiceSchema = new Schema({
     },
 });
 
-export default mongoose.model('Invoice', invoiceSchema);
+const InvoiceModel = mongoose.model('Invoice', invoiceSchema);
+
+export default InvoiceModel;

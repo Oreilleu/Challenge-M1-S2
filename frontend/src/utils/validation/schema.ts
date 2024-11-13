@@ -53,7 +53,7 @@ export const resetPasswordFormSchema = z
   })
 
 export const variationSchema = z.object({
-  images: variationImagesValidation,
+  images: variationImagesValidation.optional(),
   price: variationPriceValidation,
   quantite: variationQuantiteValidation,
   filters: z
@@ -71,6 +71,15 @@ export const productschema = z.object({
   description: descriptionProductValidation,
   brand: brandProductValidation,
   model: modelProductValidation,
-  category: z.string().optional(),
+  idCategory: z.string().optional(),
+  variations: z.array(variationSchema).min(1, { message: 'Il faut au moins une variation' })
+})
+
+export const updateProductschema = z.object({
+  name: nameProductValidation,
+  description: descriptionProductValidation,
+  brand: brandProductValidation,
+  model: modelProductValidation,
+  idCategory: z.string().optional(),
   variations: z.array(variationSchema).min(1, { message: 'Il faut au moins une variation' })
 })

@@ -16,6 +16,8 @@
     "@vee-validate/zod": "^4.14.4",
     "element-plus": "^2.8.2",
     "lucide-vue-next": "^0.456.0",
+    "pinia": "^2.2.6",
+    "uuid": "^11.0.1",
     "vee-validate": "^4.14.4",
     "vue": "^3.4.29",
     "vue-router": "^4.4.5",

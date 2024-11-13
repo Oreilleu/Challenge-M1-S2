@@ -4,32 +4,20 @@ import { isAuthenticated } from '@/utils/isAuthenticatedUser'
 import localStorageHandler from './utils/localStorageHandler'
 import { onMounted, ref } from 'vue'
 import { LocalStorageKeys } from './utils/types/local-storage-keys.enum'
-import HeaderComponent from './components/HeaderComponent.vue'
-import FooterComponent from './components/FooterComponent.vue'
-const router = useRouter()
-const route = useRoute()
+import useAuthStore from './utils/store/useAuthStore'
 
-const isAuthenticatedUser = ref(false)
-const checkAuthentication = async () => {
-  isAuthenticatedUser.value = await isAuthenticated()
-}
+const authStore = useAuthStore()
 
 onMounted(() => {
-  checkAuthentication()
+  authStore.checkAuthentication()
 })
 
-const logout = () => {
-  localStorageHandler().remove(LocalStorageKeys.AUTH_TOKEN)
-  localStorageHandler().remove(LocalStorageKeys.USER)
-  isAuthenticatedUser.value = false
-  router.push('/login')
-}
+const route = useRoute()
 </script>
 
 <template>
   <header>
     <HeaderComponent />
-
   </header>
   <main class="min-h-screen">
     <RouterView />
