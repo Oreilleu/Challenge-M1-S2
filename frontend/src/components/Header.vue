@@ -20,12 +20,16 @@
 
         <div class="user-cart">
           <RouterLink
-            v-if="route.path !== '/register' && !isAuthenticatedUser"
+            v-if="route.path !== '/register' && !authStore.isAuthenticatedUser"
             to="/register"
-            class="user-button"
-          >
-            <User class="icon" />
+            >Inscription
           </RouterLink>
+          <RouterLink v-if="route.path !== '/login' && !authStore.isAuthenticatedUser" to="/login">
+            Connexion
+          </RouterLink>
+          <el-button v-if="authStore.isAuthenticatedUser" type="primary" @click="authStore.logout">
+            Se déconnecter
+          </el-button>
           <el-button style="border: none; height: 100%">
             <ShoppingCart class="icon" />
           </el-button>
@@ -94,12 +98,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { Menu, Search, User, ShoppingCart, ChevronRight } from 'lucide-vue-next'
+import { Menu, Search, ShoppingCart, ChevronRight } from 'lucide-vue-next'
+import useAuthStore from '@/utils/store/useAuthStore'
 
 const isMenuOpen = ref(false)
 const route = useRoute()
-const isAuthenticatedUser = false
-
+const authStore = useAuthStore()
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
 }

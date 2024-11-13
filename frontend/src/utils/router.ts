@@ -14,6 +14,7 @@ import Product from '@/views/Product.vue'
 import AdminCategories from '@/views/backOffice/category/AdminCategories.vue'
 import WhoWeAre from '@/views/WhoWeAre.vue'
 import TermsOfService from '@/views/TermsOfService.vue'
+// @ts-ignore
 import FAQ from '@/views/FAQ.vue'
 
 const redirectToHomeIfUserAuthenticated = async () => {
