@@ -10,7 +10,7 @@ import Home from '@/views/Home.vue'
 import Login from '@/views/Login.vue'
 import ForgotPassword from '@/views/ForgotPassword.vue'
 import ResetPassword from '@/views/ResetPassword.vue'
-import ProductList from '@/views/ProductList.vue'
+import Product from '@/views/Product.vue'
 import AdminCategories from '@/views/backOffice/category/AdminCategories.vue'
 
 const redirectToHomeIfUserAuthenticated = async () => {
@@ -106,8 +106,8 @@ const routes = [
   },
   {
     path: '/products',
-    name: 'ProductList',
-    component: ProductList
+    name: 'Product',
+    component: Product
   },
   {
     path: '/admin/categories',

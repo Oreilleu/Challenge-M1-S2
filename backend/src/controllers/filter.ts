@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { Filter } from "../types/filter.interface";
 import ProductModel from "../models/product.model";
+import { FormattedFilters } from "../types/formatted-filter.interface";
 
 export const getAll: RequestHandler = async (req, res, next) => {
   try {
@@ -12,15 +13,18 @@ export const getAll: RequestHandler = async (req, res, next) => {
 
     const mappedFilters = filters.map((filter) => ({ ...filter._id }));
 
-    const filteredFilters: { [key: string]: string[] } = {};
-    mappedFilters.forEach((filter) => {
-      if (!filteredFilters[filter.name]) {
-        filteredFilters[filter.name] = [];
+    const filteredFilters = mappedFilters.reduce((acc, filter) => {
+      const trimFilterName = filter.name.trim();
+      const trimFilterValue = filter.value.trim();
+      if (!acc[trimFilterName]) {
+        acc[trimFilterName] = [];
       }
-      if (!filteredFilters[filter.name].includes(filter.value)) {
-        filteredFilters[filter.name].push(filter.value);
+      if (!acc[trimFilterName].includes(trimFilterValue)) {
+        acc[trimFilterName].push(trimFilterValue);
       }
-    });
+      return acc;
+    }, {} as FormattedFilters);
+
     res.status(200).json({
       success: true,
       data: filteredFilters,

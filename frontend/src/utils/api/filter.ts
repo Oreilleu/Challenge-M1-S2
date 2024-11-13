@@ -1,5 +1,6 @@
 import localStorageHandler from '../localStorageHandler'
 import toastHandler from '../toastHandler'
+import type { FormattedFilters } from '../types/interfaces/formatedFilters.interface'
 import type { ResponseApi } from '../types/interfaces/response-api.interface'
 import { LocalStorageKeys } from '../types/local-storage-keys.enum'
 import { ToastType } from '../types/toast-type.enum'
@@ -13,7 +14,7 @@ export const fetchFilters = async () => {
       }
     })
 
-    const json: ResponseApi<Record<string, string[]>> = await response.json()
+    const json: ResponseApi<FormattedFilters> = await response.json()
 
     if (!json.success) {
       toastHandler(

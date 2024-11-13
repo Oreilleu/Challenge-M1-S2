@@ -3,7 +3,7 @@
     <el-image
       style="width: 100%; height: 200px"
       fit="cover"
-      :src="getImageUrl((product.variations.imagesApi || [])[0].path || '')"
+      :src="formatImageUrl((product.variations.imagesApi || [])[0].path || '')"
       alt="product image"
     ></el-image>
     <span>{{ product.name }}</span>
@@ -23,8 +23,7 @@
 <script setup lang="ts">
 import { defineProps } from 'vue'
 import type { AggregateProductOnVariation } from '@/utils/types/interfaces/aggregate-product-on-variation.interface'
-
-const getImageUrl = (path: string) => `${import.meta.env.VITE_BASE_API_URL}/${path}`
+import { formatImageUrl } from '../utils/formatImageUrl'
 
 defineProps<{
   product: AggregateProductOnVariation

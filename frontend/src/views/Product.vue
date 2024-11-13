@@ -3,9 +3,6 @@
     <el-row :gutter="20">
       <el-col :span="5">
         <el-card>
-          <!-- <h3>Price</h3> -->
-          <!-- <el-slider v-model="priceRange" range :min="0" :max="2000" show-tooltip></el-slider> -->
-
           <div v-for="(filters, name) in filtersApi" :key="name">
             <h3>{{ name }}</h3>
             <el-checkbox-group v-model="selectedFilters" class="checkbox-group-column">
@@ -50,20 +47,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import ProductCard from '@/components/ProductCard.vue'
-import useProductStore from '@/utils/store/useProductStore'
 import { VARIATION_PER_PAGE } from '@/utils/const'
 import { fetchFilters } from '@/utils/api/filter'
 import useVariationStore from '@/utils/store/useVariationStore'
 import type { Filter } from '@/utils/types/interfaces/filter.interface'
+import type { FormattedFilters } from '@/utils/types/interfaces/formatedFilters.interface'
 
 const searchQuery = ref<string>('')
-const priceRange = ref<[number, number]>([0, 2000])
 const selectedFilters = ref<Filter[]>([])
 
 const paginationPage = ref(1)
-const filtersApi = ref<Record<string, string[]>>({})
+const filtersApi = ref<FormattedFilters>({})
 
 watch(selectedFilters, () => {
   const options = {
@@ -72,6 +68,7 @@ watch(selectedFilters, () => {
   }
   variationStore.updatePaginateVariations(paginationPage.value, VARIATION_PER_PAGE, options)
 })
+
 watch(searchQuery, () => {
   if (searchQuery.value.length < 3) {
     variationStore.updatePaginateVariations(paginationPage.value, VARIATION_PER_PAGE)
@@ -83,6 +80,7 @@ watch(searchQuery, () => {
   }
   variationStore.updatePaginateVariations(paginationPage.value, VARIATION_PER_PAGE, options)
 })
+
 const setCurrentPage = (newPage: number) => {
   paginationPage.value = newPage
   const options = {
@@ -93,6 +91,7 @@ const setCurrentPage = (newPage: number) => {
 }
 
 const variationStore = useVariationStore()
+
 onMounted(async () => {
   variationStore.updatePaginateVariations(paginationPage.value, VARIATION_PER_PAGE)
   filtersApi.value = await fetchFilters()
