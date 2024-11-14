@@ -60,7 +60,7 @@
       style="margin: 0"
       native-type="submit"
       :disabled="Object.keys(errors).length > 0"
-      >Ajouter le produit
+      >Modifier la catégorie
     </el-button>
   </form>
 </template>
@@ -135,6 +135,7 @@ const onSubmit = handleSubmit(async () => {
 
     if (json.success) {
       drawerStore.closeDrawer()
+      categoryStore.updateCategorie()
       toastHandler('Produit modifié avec succès', ToastType.SUCCESS)
     }
   } catch (error) {
