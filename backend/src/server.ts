@@ -26,12 +26,12 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // Routes setup
-app.use("/", authRouter);
-app.use("/user", userRouter);
-app.use("/product", productRouter);
-app.use("/variation", variationRouter);
-app.use("/filter", filterRouter);
-app.use("/category", categoryRoute());
+app.use("/api/", authRouter);
+app.use("/api/user", userRouter);
+app.use("/api/product", productRouter);
+app.use("/api/variation", variationRouter);
+app.use("/api/filter", filterRouter);
+app.use("/api/category", categoryRoute());
 
 // Error server handler
 app.use(errorHandler);
