@@ -20,7 +20,7 @@ const categoryRoute = () => {
 
   router.post("/", upload.single("image"), createCategory);
 
-  router.put("/:id", updateCategory);
+  router.put("/:id", upload.single("image"), updateCategory);
 
   router.delete("/:id", deleteCategory);
 

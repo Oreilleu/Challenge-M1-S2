@@ -90,6 +90,6 @@ export const updateProductschema = z.object({
 export const categorySchema = z.object({
   name: categoryNameValidation,
   description: categoryDescriptionValidation,
-  image: imagesValidation,
+  image: imagesValidation.optional(),
   parent: categoryParentValidation
 })

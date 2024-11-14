@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, onMounted } from 'vue'
+import { reactive } from 'vue'
 import FormInput from '../FormInput.vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
@@ -64,10 +64,6 @@ const category: Category = reactive({
   description: '',
   image: { files: {} as FileList },
   parent: ''
-})
-
-onMounted(() => {
-  categoryStore.getCategory()
 })
 
 const validationSchema = toTypedSchema(categorySchema)
@@ -112,6 +108,7 @@ const onSubmit = handleSubmit(async (values) => {
 
     if (json.success) {
       drawerStore.closeDrawer()
+      categoryStore.updateCategorie()
       toastHandler('Catégorie ajoutée avec succès', ToastType.SUCCESS)
     } else {
       toastHandler(json.message || "Erreur lors de l'ajout de la catégorie", ToastType.ERROR)
