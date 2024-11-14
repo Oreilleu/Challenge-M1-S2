@@ -6,7 +6,6 @@ import path from "path";
 import fs from "fs";
 import { ColumnProduct } from "../types/column-product.interface";
 import { BodyPaginateProduct } from "../types/body-paginate-product.interface";
-import { Filter } from "../types/filter.interface";
 export const getOne: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
 

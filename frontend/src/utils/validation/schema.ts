@@ -13,9 +13,12 @@ import {
   nameProductValidation,
   passwordValidation,
   phoneValidation,
-  variationImagesValidation,
+  imagesValidation,
   variationPriceValidation,
-  variationQuantiteValidation
+  variationQuantiteValidation,
+  categoryNameValidation,
+  categoryDescriptionValidation,
+  categoryParentValidation
 } from './validation'
 
 export const registerFormSchema = z
@@ -53,7 +56,7 @@ export const resetPasswordFormSchema = z
   })
 
 export const variationSchema = z.object({
-  images: variationImagesValidation.optional(),
+  images: imagesValidation.optional(),
   price: variationPriceValidation,
   quantite: variationQuantiteValidation,
   filters: z
@@ -82,4 +85,11 @@ export const updateProductschema = z.object({
   model: modelProductValidation,
   idCategory: z.string().optional(),
   variations: z.array(variationSchema).min(1, { message: 'Il faut au moins une variation' })
+})
+
+export const categorySchema = z.object({
+  name: categoryNameValidation,
+  description: categoryDescriptionValidation,
+  image: imagesValidation.optional(),
+  parent: categoryParentValidation
 })

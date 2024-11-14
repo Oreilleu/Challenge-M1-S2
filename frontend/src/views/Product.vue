@@ -61,6 +61,17 @@ const selectedFilters = ref<Filter[]>([])
 const paginationPage = ref(1)
 const filtersApi = ref<FormattedFilters>({})
 
+const setCurrentPage = (newPage: number) => {
+  paginationPage.value = newPage
+  const options = {
+    filters: selectedFilters.value,
+    searchInput: searchQuery.value
+  }
+  variationStore.updatePaginateVariations(paginationPage.value, VARIATION_PER_PAGE, options)
+}
+
+const variationStore = useVariationStore()
+
 watch(selectedFilters, () => {
   const options = {
     filters: selectedFilters.value,
@@ -80,17 +91,6 @@ watch(searchQuery, () => {
   }
   variationStore.updatePaginateVariations(paginationPage.value, VARIATION_PER_PAGE, options)
 })
-
-const setCurrentPage = (newPage: number) => {
-  paginationPage.value = newPage
-  const options = {
-    filters: selectedFilters.value,
-    searchInput: searchQuery.value
-  }
-  variationStore.updatePaginateVariations(paginationPage.value, VARIATION_PER_PAGE, options)
-}
-
-const variationStore = useVariationStore()
 
 onMounted(async () => {
   variationStore.updatePaginateVariations(paginationPage.value, VARIATION_PER_PAGE)

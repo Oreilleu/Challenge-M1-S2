@@ -16,7 +16,7 @@
       :label="label"
       type="file"
       v-model="model"
-      multiple
+      :multiple="multiple"
       @change="handleFileChange"
       hidden-input
       hidden-label
@@ -34,6 +34,7 @@ type Props = {
   name: string
   label: string
   hiddenLabel?: boolean
+  multiple?: boolean
 }
 
 const model = defineModel()

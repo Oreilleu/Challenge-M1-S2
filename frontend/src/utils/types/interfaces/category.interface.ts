@@ -1,7 +1,11 @@
+import type { ImageApi } from './image.interface'
+
 export interface Category {
-  _id: string
+  _id?: string
   name: string
   description?: string
-  image?: string
+  image?: { files: FileList }
+  nameImage?: string
+  imageApi?: ImageApi
   parent?: string
 }

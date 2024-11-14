@@ -83,6 +83,7 @@
             :name="`variations[${index}].images`"
             label="Images"
             v-model="variation.images"
+            multiple
           />
 
           <el-button
@@ -108,6 +109,7 @@
           :name="`variations[${index}].images`"
           label="Images"
           v-model="variation.images"
+          multiple
         />
 
         <div class="price-quantity">
@@ -322,7 +324,7 @@ onMounted(async () => {
 
   if (responseProduct.category) {
     formattedDefaultCategory.value = {
-      value: responseProduct.category._id,
+      value: responseProduct.category._id as string,
       label: responseProduct.category.name
     }
   }

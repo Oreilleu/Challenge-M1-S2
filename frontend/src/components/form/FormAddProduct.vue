@@ -61,6 +61,7 @@
           :name="`variations[${indexVariation}].images`"
           label="Images"
           v-model="variation.images"
+          multiple
         />
 
         <div class="price-quantity">
