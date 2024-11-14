@@ -8,7 +8,7 @@ const activationAccountTemplate = async (email: string, name: string) => {
 
   return `<main>
       <h1>Bonjour ${name} pour activer votre compte cliqué sur le lien : </h1>
-      <a href={${frontUrl}/verify-account?token=${jwt}}>Activer le compte</a>
+      <a href="${frontUrl}/verify-account?token=${jwt}">Activer le compte</a>
     </main>`;
 };
 
