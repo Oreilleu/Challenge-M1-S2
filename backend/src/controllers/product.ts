@@ -4,9 +4,9 @@ import { Product } from "../types/product.interface";
 import { matchImageByName } from "../utils/matchImageByName";
 import path from "path";
 import fs from "fs";
-import { BodySearchProduct } from "../types/body-search-product.interdace";
 import { ColumnProduct } from "../types/column-product.interface";
-
+import { BodyPaginateProduct } from "../types/body-paginate-product.interface";
+import { Filter } from "../types/filter.interface";
 export const getOne: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
 
@@ -68,7 +68,7 @@ export const getAll: RequestHandler = async (req, res, next) => {
 };
 
 export const getPaginate: RequestHandler = async (req, res, next) => {
-  const { page, limit } = req.body;
+  const { page, limit, searchOption } = req.body as BodyPaginateProduct;
 
   if (!page || !limit) {
     res.status(400).json({
@@ -81,76 +81,54 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
   const parsedPage = parseInt(page);
   const parsedLimit = parseInt(limit);
 
-  const options = {
+  const paginationOptions = {
     skip: parsedPage === 1 ? 0 : parsedPage * parsedLimit - parsedLimit,
     limit: parsedLimit,
   };
 
-  try {
-    const products = await ProductModel.find({}, null, options)
-      .populate("idCategory")
-      .lean<Array<Product>>();
+  const filterOptions =
+    searchOption && searchOption?.searchInput.length < 3
+      ? undefined
+      : searchOption;
 
-    const total = await ProductModel.countDocuments();
-
-    products.forEach((product) => {
-      if (product.idCategory) {
-        product.category = product.idCategory;
-        delete product.idCategory;
-      }
-    });
-
-    res.status(200).json({
-      success: true,
-      data: { paginates: products, totalProducts: total },
-    });
-  } catch (error) {
-    console.error("Erreur pour récupérer les produits paginés", error);
-    res.status(500).json({
-      success: false,
-      message: "Erreur lors de la récupération des produits paginés",
-    });
-  }
-};
-
-export const getBySearch: RequestHandler = async (req, res, next) => {
-  const { searchInput, column, page, limit } = req.body as BodySearchProduct;
-
-  if (!searchInput || !column || !page || !limit) {
-    res.status(400).json({
-      success: false,
-      message: "Tout les champs sont requis",
-    });
-    return;
-  }
-
-  const parsedPage = parseInt(page);
-  const parsedLimit = parseInt(limit);
-
-  const options = {
-    skip: parsedPage === 1 ? 0 : parsedPage * parsedLimit - parsedLimit,
-    limit: parsedLimit,
-  };
-
-  const query =
-    column === ColumnProduct.ALL
+  const query = filterOptions
+    ? filterOptions.column === ColumnProduct.ALL
       ? {
           $or: [
-            { [ColumnProduct.NAME]: { $regex: searchInput, $options: "i" } },
-            { [ColumnProduct.MODEL]: { $regex: searchInput, $options: "i" } },
-            { "category.name": { $regex: searchInput, $options: "i" } },
+            {
+              [ColumnProduct.NAME]: {
+                $regex: filterOptions.searchInput,
+                $options: "i",
+              },
+            },
+            {
+              [ColumnProduct.MODEL]: {
+                $regex: filterOptions.searchInput,
+                $options: "i",
+              },
+            },
+            {
+              "category.name": {
+                $regex: filterOptions.searchInput,
+                $options: "i",
+              },
+            },
           ],
         }
-      : column === ColumnProduct.CATEGORY
+      : filterOptions.column === ColumnProduct.CATEGORY
       ? {
-          "category.name": { $regex: searchInput, $options: "i" },
+          "category.name": { $regex: filterOptions.searchInput, $options: "i" },
         }
       : {
-          [column]: { $regex: searchInput, $options: "i" },
-        };
+          [filterOptions.column]: {
+            $regex: filterOptions.searchInput,
+            $options: "i",
+          },
+        }
+    : {};
 
   try {
-    const products = await ProductModel.aggregate([
+    const paginates = await ProductModel.aggregate([
       {
         $lookup: {
           from: "categories",
@@ -166,14 +144,14 @@ export const getBySearch: RequestHandler = async (req, res, next) => {
         $match: query,
       },
       {
-        $skip: options.skip,
+        $skip: paginationOptions.skip,
       },
       {
-        $limit: options.limit,
+        $limit: paginationOptions.limit,
       },
     ]);
 
-    const total = await ProductModel.aggregate([
+    const count = await ProductModel.aggregate([
       {
         $lookup: {
           from: "categories",
@@ -189,22 +167,19 @@ export const getBySearch: RequestHandler = async (req, res, next) => {
         $match: query,
       },
       {
-        $count: "total",
+        $count: "count",
       },
     ]);
 
     res.status(200).json({
       success: true,
-      data: {
-        paginates: products,
-        totalProducts: total.length ? total[0].total : 0,
-      },
+      data: { paginates, count: count.length ? count[0].count : 0 },
     });
   } catch (error) {
-    console.error("Erreur pour récupérer les produits par recherche", error);
+    console.error("Erreur pour récupérer les produits.", error);
     res.status(500).json({
       success: false,
-      message: "Erreur lors de la récupération des produits par recherche",
+      message: "Erreur lors de la récupération des produits.",
     });
   }
 };

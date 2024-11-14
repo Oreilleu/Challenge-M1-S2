@@ -9,7 +9,8 @@ import authRouter from "./routes/auth";
 import userRouter from "./routes/user";
 import productRouter from "./routes/product";
 import categoryRoute from "./routes/category";
-
+import variationRouter from "./routes/variation";
+import filterRouter from "./routes/filter";
 const app = express();
 
 connectDb();
@@ -25,10 +26,12 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // Routes setup
-app.use("/", authRouter);
-app.use("/user", userRouter);
-app.use("/product", productRouter);
-app.use("/category", categoryRoute());
+app.use("/api/", authRouter);
+app.use("/api/user", userRouter);
+app.use("/api/product", productRouter);
+app.use("/api/variation", variationRouter);
+app.use("/api/filter", filterRouter);
+app.use("/api/category", categoryRoute());
 
 // Error server handler
 app.use(errorHandler);

@@ -173,6 +173,7 @@ import useDrawerStore from '@/utils/store/useDrawerStore'
 import useCategoryStore from '@/utils/store/useCategoryStore'
 import FormSelect from '../FormSelect.vue'
 import useProductStore from '@/utils/store/useProductStore'
+import { NUMBER_ADMIN_PRODUCT_PER_PAGE } from '@/utils/const'
 
 const drawerStore = useDrawerStore()
 const categoryStore = useCategoryStore()
@@ -268,7 +269,7 @@ const onSubmit = handleSubmit(async (values) => {
 
       if (json.success) {
         drawerStore.closeDrawer()
-        productStore.updatePaginateProducts()
+        productStore.updatePaginateProducts(1, NUMBER_ADMIN_PRODUCT_PER_PAGE)
         toastHandler('Produit ajouté avec succès', ToastType.SUCCESS)
       } else {
         toastHandler(json.message || "Erreur lors de l'ajout du produit", ToastType.ERROR)

@@ -6,6 +6,7 @@ import type { ResponseApi } from '../types/interfaces/response-api.interface'
 import { ToastType } from '../types/toast-type.enum'
 import type { PaginateProduct } from '../types/interfaces/pagiante-product.interface'
 import type { ColumnProduct } from '../types/column-product.enum'
+import type { ProductSearchOption } from '../types/interfaces/product-search-option.interface'
 
 export const fetchProducts = async () => {
   try {
@@ -36,7 +37,11 @@ export const fetchProducts = async () => {
   }
 }
 
-export const fetchPaginatedProducts = async (page: number, limit: number) => {
+export const fetchPaginatedProducts = async (
+  page: number,
+  limit: number,
+  searchOption?: ProductSearchOption
+) => {
   try {
     const response: Response = await fetch(
       `${import.meta.env.VITE_BASE_API_URL}/product/get-paginate`,
@@ -46,7 +51,7 @@ export const fetchPaginatedProducts = async (page: number, limit: number) => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
         },
-        body: JSON.stringify({ page, limit })
+        body: JSON.stringify({ page, limit, searchOption })
       }
     )
 

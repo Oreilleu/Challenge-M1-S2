@@ -7,10 +7,7 @@
         empty-text="Aucun produit trouvé"
         style="width: auto; overflow: auto"
         :default-sort="{ prop: 'name', order: 'descending' }"
-        :data="
-          productStore.paginateProductBySearchInput?.paginates ||
-          productStore.paginateProduct?.paginates
-        "
+        :data="productStore.paginateProduct?.paginates"
       >
         <el-table-column type="selection" width="55" />
         <el-table-column prop="name" label="Nom" />
@@ -23,14 +20,14 @@
         <el-table-column>
           <template #header>
             <el-input
-              v-model="search"
+              v-model="searchInput"
               placeholder="Rechercher"
               style="margin-bottom: 5px"
               @input="onChangeSearch"
             />
             <el-select v-model="searchColumn">
               <el-option
-                v-for="item in optionsSearchColumn"
+                v-for="item in OPTION_PRODUCT_SEARCH_COLUMN"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -47,16 +44,9 @@
       <el-pagination
         :page-size="NUMBER_ADMIN_PRODUCT_PER_PAGE"
         layout="prev, pager, next"
-        :total="
-          isDisplayPaginateBySearchInput()
-            ? productStore.paginateProductBySearchInput?.totalProducts || 0
-            : productStore.paginateProduct?.totalProducts || 0
-        "
+        :total="productStore.paginateProduct?.count || 0"
         :hide-on-single-page="
-          productStore.paginateProductBySearchInput?.totalProducts ||
-          0 < NUMBER_ADMIN_PRODUCT_PER_PAGE ||
-          productStore.paginateProduct?.totalProducts ||
-          0 < NUMBER_ADMIN_PRODUCT_PER_PAGE
+          productStore.paginateProduct?.count || 0 < NUMBER_ADMIN_PRODUCT_PER_PAGE
         "
         @current-change="setCurrentPage"
       />
@@ -75,11 +65,10 @@
 import AdminLayout from '@/components/AdminLayout.vue'
 import Modal from '@/components/Modal.vue'
 import { fetchDeleteProduct } from '@/utils/api/product'
-import { NUMBER_ADMIN_PRODUCT_PER_PAGE } from '@/utils/const'
+import { NUMBER_ADMIN_PRODUCT_PER_PAGE, OPTION_PRODUCT_SEARCH_COLUMN } from '@/utils/const'
 import useDrawerStore from '@/utils/store/useDrawerStore'
 import useProductStore from '@/utils/store/useProductStore'
 import toastHandler from '@/utils/toastHandler'
-import { ColumnProduct } from '@/utils/types/column-product.enum'
 import { DrawerType } from '@/utils/types/drawer-type.enum'
 import type { Product } from '@/utils/types/interfaces/product.interface'
 import { ToastType } from '@/utils/types/toast-type.enum'
@@ -88,42 +77,33 @@ import { onMounted } from 'vue'
 
 const drawerStore = useDrawerStore()
 const productStore = useProductStore()
+
 const page = ref(1)
-const search = ref('')
-
-const optionsSearchColumn = [
-  { label: 'Toutes les colonnes', value: ColumnProduct.ALL },
-  { label: 'Nom', value: ColumnProduct.NAME },
-  { label: 'Modèle', value: ColumnProduct.MODEL },
-  { label: 'Catégorie', value: ColumnProduct.CATEGORY }
-]
-
-const searchColumn = ref(optionsSearchColumn[0].value)
-
+const searchInput = ref('')
+const searchColumn = ref(OPTION_PRODUCT_SEARCH_COLUMN[0].value)
 const productToDelete = ref<Product | null>(null)
+
+const createSearchOption = () => {
+  return {
+    searchInput: searchInput.value,
+    column: searchColumn.value
+  }
+}
 
 const setCurrentPage = (newPage: number) => {
   page.value = newPage
 
-  productStore.updatePaginateProducts(newPage, NUMBER_ADMIN_PRODUCT_PER_PAGE)
-}
+  const searchOption = createSearchOption()
 
-const isDisplayPaginateBySearchInput = () => {
-  return search.value.trim().length >= 3
+  productStore.updatePaginateProducts(newPage, NUMBER_ADMIN_PRODUCT_PER_PAGE, searchOption)
 }
 
 const onChangeSearch = (e: string) => {
-  if (e.trim().length < 3) {
-    productStore.clearSearch()
-    return
-  }
+  searchInput.value = e
 
-  productStore.updatePaginateProductsBySearchInput(
-    e,
-    searchColumn.value,
-    page.value,
-    NUMBER_ADMIN_PRODUCT_PER_PAGE
-  )
+  const searchOption = createSearchOption()
+
+  productStore.updatePaginateProducts(page.value, NUMBER_ADMIN_PRODUCT_PER_PAGE, searchOption)
 }
 
 const openDrawerUpdate = (idProduct: string | undefined) => {
