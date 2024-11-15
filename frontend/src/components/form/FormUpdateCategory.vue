@@ -19,15 +19,17 @@
       v-model="category.description"
     />
 
-    <FormSelect
+    <FormInputSelect
       id="parentCategory"
       name="parentCategory"
       label="Catégorie parente"
-      labelDefaultOption="Sélectionnez une option"
+      labelDefaultOption="Sans catégorie parente"
       placeholder="Categorie parente"
       type="text"
-      v-model="category.parent"
+      v-model="category.idParent"
+      :defaultSelectedValue="formattedDefaultParent?.value || ''"
       :options="categoryStore.formattedOptionsCategories"
+      :disabledDefaultOption="false"
     />
 
     <el-image
@@ -66,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import FormInput from '../FormInput.vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
@@ -78,11 +80,12 @@ import { v4 as uuidv4 } from 'uuid'
 import useDrawerStore from '@/utils/store/useDrawerStore'
 import toastHandler from '@/utils/toastHandler'
 import { ToastType } from '@/utils/types/toast-type.enum'
-import FormSelect from '../FormSelect.vue'
+import FormInputSelect from '../FormInputSelect.vue'
 import FormInputFile from '../FormInputFile.vue'
 import useCategoryStore from '@/utils/store/useCategoryStore'
 import { formatImageUrl } from '@/utils/formatImageUrl'
 import { getCategoryById } from '@/utils/api/category'
+import type { OptionCategory } from '@/utils/types/interfaces/option-category.interface'
 
 const drawerStore = useDrawerStore()
 const categoryStore = useCategoryStore()
@@ -90,6 +93,7 @@ const categoryStore = useCategoryStore()
 const response = ref<Category | null>(null)
 const category = ref<Category | null>(null)
 const isShowInputImage = ref<boolean>(false)
+const formattedDefaultParent = ref<OptionCategory | null>(null)
 
 const validationSchema = toTypedSchema(categorySchema)
 
@@ -116,6 +120,8 @@ const onSubmit = handleSubmit(async () => {
     category.value.nameImage = nameImage
     delete category.value.image
   }
+
+  delete category.value?.parent
 
   formData.append('category', JSON.stringify(category.value))
 
@@ -157,7 +163,6 @@ watch(isShowInputImage, () => {
     }
   }
 })
-
 onMounted(async () => {
   const responseCategory = await getCategoryById(drawerStore.updateId)
 
@@ -167,10 +172,18 @@ onMounted(async () => {
     ? {
         name: responseCategory.name,
         description: responseCategory.description,
-        parent: responseCategory.parent ? responseCategory.parent : '',
+        idParent: responseCategory.parent?._id,
+        parent: responseCategory.parent,
         imageApi: responseCategory.imageApi
       }
     : null
+
+  if (responseCategory.parent) {
+    formattedDefaultParent.value = {
+      value: responseCategory.parent._id as string,
+      label: responseCategory.parent.name
+    }
+  }
 })
 </script>
 

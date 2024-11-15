@@ -1,3 +1,4 @@
+import { Category } from "./category.interface";
 import { Variation } from "./variation.interface";
 
 export interface Product {
@@ -7,6 +8,6 @@ export interface Product {
   brand: string;
   model: string;
   idCategory?: string;
-  category?: string;
+  category?: Category;
   variations: Array<Variation>;
 }

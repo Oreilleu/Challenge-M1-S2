@@ -21,7 +21,7 @@ const categorySchema = new Schema({
     type: String,
     required: false,
   },
-  parent: {
+  idParent: {
     type: Schema.Types.ObjectId,
     ref: "Category",
     required: false,

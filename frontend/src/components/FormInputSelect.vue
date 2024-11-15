@@ -10,7 +10,7 @@
       class="select"
       :disabled="!options.length"
     >
-      <option value="" :selected="!defaultSelectedValue" disabled>
+      <option value="" :selected="!defaultSelectedValue" :disabled="disabledDefaultOption">
         {{ !options.length ? "Pas d'options disponible" : labelDefaultOption }}
       </option>
       <option
@@ -40,6 +40,7 @@ type Props = {
     label: string
   }>
   hiddenLabel?: boolean
+  disabledDefaultOption: boolean
 }
 
 const { defaultSelectedValue } = defineProps<Props>()

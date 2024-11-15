@@ -19,15 +19,16 @@
       v-model="category.description"
     />
 
-    <FormSelect
-      id="parentCategory"
-      name="parentCategory"
+    <FormInputSelect
+      id="idParentCategory"
+      name="idParentCategory"
       label="Catégorie parente"
-      labelDefaultOption="Sélectionnez une option"
+      labelDefaultOption="Sans catégorie parente"
       placeholder="Categorie parente"
       type="text"
-      v-model="category.parent"
+      v-model="category.idParent"
       :options="categoryStore.formattedOptionsCategories"
+      :disabledDefaultOption="false"
     />
 
     <FormInputFile id="image" name="image" label="Image de la catégorie" v-model="category.image" />
@@ -51,7 +52,7 @@ import type { ResponseApi } from '@/utils/types/interfaces/response-api.interfac
 import localStorageHandler from '@/utils/localStorageHandler'
 import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
 import useDrawerStore from '@/utils/store/useDrawerStore'
-import FormSelect from '../FormSelect.vue'
+import FormInputSelect from '../FormInputSelect.vue'
 import FormInputFile from '../FormInputFile.vue'
 import useCategoryStore from '@/utils/store/useCategoryStore'
 import { v4 as uuidv4 } from 'uuid'
@@ -63,7 +64,7 @@ const category: Category = reactive({
   name: '',
   description: '',
   image: { files: {} as FileList },
-  parent: ''
+  idParent: ''
 })
 
 const validationSchema = toTypedSchema(categorySchema)
@@ -75,7 +76,7 @@ const { handleSubmit, errors } = useForm<Category>({
 const onSubmit = handleSubmit(async (values) => {
   const formData = new FormData()
 
-  values.parent = category.parent
+  values.idParent = category.idParent
 
   const image = values.image?.files[0] || ({} as File)
 
@@ -84,7 +85,7 @@ const onSubmit = handleSubmit(async (values) => {
     return
   }
 
-  values.parent = category.parent || undefined
+  values.idParent = category.idParent || undefined
 
   const nameImage = `${uuidv4()}${Date.now()}`
 

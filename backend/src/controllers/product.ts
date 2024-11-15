@@ -6,6 +6,7 @@ import path from "path";
 import fs from "fs";
 import { ColumnProduct } from "../types/column-product.interface";
 import { BodyPaginateProduct } from "../types/body-paginate-product.interface";
+
 export const getOne: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
 
@@ -20,7 +21,7 @@ export const getOne: RequestHandler = async (req, res, next) => {
     .populate("idCategory")
     .lean<Product>();
 
-  if (product?.idCategory) {
+  if (product?.idCategory && typeof product.idCategory !== "string") {
     product.category = product.idCategory;
     delete product.idCategory;
   }

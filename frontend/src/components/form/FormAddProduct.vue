@@ -37,13 +37,14 @@
       v-model="product.model"
     />
 
-    <FormSelect
+    <FormInputSelect
       id="idCategory"
       name="idCategory"
       label="Catégorie"
       labelDefaultOption="Choisir une catégorie..."
       v-model="product.idCategory"
       :options="categoryStore.formattedOptionsCategories"
+      :disabledDefaultOption="true"
     />
 
     <el-divider class="divider" />
@@ -169,7 +170,7 @@ import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
 import { v4 as uuidv4 } from 'uuid'
 import useDrawerStore from '@/utils/store/useDrawerStore'
 import useCategoryStore from '@/utils/store/useCategoryStore'
-import FormSelect from '../FormSelect.vue'
+import FormInputSelect from '../FormInputSelect.vue'
 import useProductStore from '@/utils/store/useProductStore'
 import { NUMBER_ADMIN_PRODUCT_PER_PAGE } from '@/utils/const'
 import { productSchema } from '@/utils/validation/schema'

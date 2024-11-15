@@ -37,7 +37,7 @@
       v-model="product.model"
     />
 
-    <FormSelect
+    <FormInputSelect
       id="idCategory"
       name="idCategory"
       label="Catégorie"
@@ -45,6 +45,7 @@
       labelDefaultOption="Choisir une catégorie..."
       :defaultSelectedValue="formattedDefaultCategory?.value || ''"
       :options="categoryStore.formattedOptionsCategories"
+      :disabledDefaultOption="true"
     />
 
     <el-divider class="divider" />
@@ -226,7 +227,7 @@ import type { Filter } from '@/utils/types/interfaces/filter.interface'
 import type { ImageApi } from '@/utils/types/interfaces/image.interface'
 import toastHandler from '@/utils/toastHandler'
 import { ToastType } from '@/utils/types/toast-type.enum'
-import FormSelect from '../FormSelect.vue'
+import FormInputSelect from '../FormInputSelect.vue'
 import useCategoryStore from '@/utils/store/useCategoryStore'
 import type { OptionCategory } from '@/utils/types/interfaces/option-category.interface'
 import useProductStore from '@/utils/store/useProductStore'
