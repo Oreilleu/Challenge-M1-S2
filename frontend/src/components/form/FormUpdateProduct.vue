@@ -42,7 +42,7 @@
       name="idCategory"
       label="Catégorie"
       v-model="product.idCategory"
-      labelDefaultOption="Sans catégorie..."
+      labelDefaultOption="Choisir une catégorie..."
       :defaultSelectedValue="formattedDefaultCategory?.value || ''"
       :options="categoryStore.formattedOptionsCategories"
     />
@@ -213,7 +213,7 @@ import { onMounted, ref } from 'vue'
 import FormInput from '../FormInput.vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
-import { updateProductschema } from '@/utils/validation/schema'
+import { productSchema } from '@/utils/validation/schema'
 import type { Product } from '@/utils/types/interfaces/product.interface'
 import type { Variation } from '@/utils/types/interfaces/variation.interface'
 import FormInputFile from '../FormInputFile.vue'
@@ -330,7 +330,7 @@ onMounted(async () => {
   }
 })
 
-const validationSchema = toTypedSchema(updateProductschema)
+const validationSchema = toTypedSchema(productSchema)
 
 const { handleSubmit, errors } = useForm<Product>({
   validationSchema,

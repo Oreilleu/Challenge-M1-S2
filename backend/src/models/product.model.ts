@@ -52,6 +52,7 @@ const productSchema = new mongoose.Schema(
     idCategory: {
       type: Schema.Types.ObjectId,
       ref: "Category",
+      required: [true, "La catégorie du produit est obligatoire."],
     },
     variations: { type: [variationSchema], required: true },
   },

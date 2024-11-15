@@ -41,7 +41,7 @@
       id="idCategory"
       name="idCategory"
       label="Catégorie"
-      labelDefaultOption="Sans catégorie..."
+      labelDefaultOption="Choisir une catégorie..."
       v-model="product.idCategory"
       :options="categoryStore.formattedOptionsCategories"
     />
@@ -147,7 +147,6 @@
         <el-divider class="divider" />
       </li>
     </ul>
-
     <el-button type="primary" native-type="submit" :disabled="Object.keys(errors).length > 0">
       Ajouter le produit
     </el-button>
@@ -159,7 +158,6 @@ import { reactive } from 'vue'
 import FormInput from '../FormInput.vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
-import { productschema } from '@/utils/validation/schema'
 import type { Product } from '@/utils/types/interfaces/product.interface'
 import type { Variation } from '@/utils/types/interfaces/variation.interface'
 import FormInputFile from '../FormInputFile.vue'
@@ -174,6 +172,7 @@ import useCategoryStore from '@/utils/store/useCategoryStore'
 import FormSelect from '../FormSelect.vue'
 import useProductStore from '@/utils/store/useProductStore'
 import { NUMBER_ADMIN_PRODUCT_PER_PAGE } from '@/utils/const'
+import { productSchema } from '@/utils/validation/schema'
 
 const drawerStore = useDrawerStore()
 const categoryStore = useCategoryStore()
@@ -230,7 +229,7 @@ const removeFilter = (variation: Variation, index: number) => {
   variation.filters.splice(index, 1)
 }
 
-const validationSchema = toTypedSchema(productschema)
+const validationSchema = toTypedSchema(productSchema)
 
 const { handleSubmit, errors } = useForm<Product>({
   validationSchema

@@ -40,32 +40,6 @@ export const getOne: RequestHandler = async (req, res, next) => {
   });
 };
 
-export const getAll: RequestHandler = async (req, res, next) => {
-  try {
-    const products = await ProductModel.find()
-      .populate("idCategory")
-      .lean<Array<Product>>();
-
-    products.forEach((product) => {
-      if (product.idCategory) {
-        product.category = product.idCategory;
-        delete product.idCategory;
-      }
-    });
-
-    res.status(200).json({
-      success: true,
-      data: products,
-    });
-  } catch (error) {
-    console.error("Erreur pour récupérer tous les produits", error);
-    res.status(500).json({
-      success: false,
-      message: "Erreur lors de la récupération des produits",
-    });
-  }
-};
-
 export const getPaginate: RequestHandler = async (req, res, next) => {
   const { page, limit, searchOption } = req.body as BodyPaginateProduct;
 

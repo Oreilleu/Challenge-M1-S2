@@ -51,7 +51,7 @@ export const resetPasswordFormSchema = z
     confirmPassword: confirmPasswordValidation
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: 'Les mots de passe ne correspondent pas',
+    message: 'Les mots de passe ne correspondent pas.',
     path: ['confirmPassword']
   })
 
@@ -66,25 +66,18 @@ export const variationSchema = z.object({
         value: filterValueValidation
       })
     )
-    .min(1, { message: 'Il faut au moins un filtre' })
+    .min(1, { message: 'Il faut au moins un filtre.' })
 })
 
-export const productschema = z.object({
+export const productSchema = z.object({
   name: nameProductValidation,
   description: descriptionProductValidation,
   brand: brandProductValidation,
   model: modelProductValidation,
-  idCategory: z.string().optional(),
-  variations: z.array(variationSchema).min(1, { message: 'Il faut au moins une variation' })
-})
-
-export const updateProductschema = z.object({
-  name: nameProductValidation,
-  description: descriptionProductValidation,
-  brand: brandProductValidation,
-  model: modelProductValidation,
-  idCategory: z.string().optional(),
-  variations: z.array(variationSchema).min(1, { message: 'Il faut au moins une variation' })
+  idCategory: z
+    .string({ required_error: 'Il faut une catégorie.' })
+    .min(1, { message: 'Il faut une catégorie.' }),
+  variations: z.array(variationSchema).min(1, { message: 'Il faut au moins une variation.' })
 })
 
 export const categorySchema = z.object({

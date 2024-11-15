@@ -10,7 +10,7 @@
       class="select"
       :disabled="!options.length"
     >
-      <option value="" :selected="!defaultSelectedValue" :disabled="!options.length">
+      <option value="" :selected="!defaultSelectedValue" disabled>
         {{ !options.length ? "Pas d'options disponible" : labelDefaultOption }}
       </option>
       <option
@@ -22,11 +22,12 @@
         {{ option.label }}
       </option>
     </Field>
+    <ErrorMessage :name="name" class="error" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { Field } from 'vee-validate'
+import { ErrorMessage, Field } from 'vee-validate'
 
 type Props = {
   id: string
@@ -55,5 +56,9 @@ model.value = defaultSelectedValue
   border: 1px solid hsla(0, 0%, 7%, 0.43);
   padding-left: 10px;
   background: unset;
+}
+.error {
+  color: var(--danger);
+  align-self: start;
 }
 </style>

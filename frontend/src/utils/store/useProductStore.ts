@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { fetchPaginatedProducts, fetchProductsBySearchInput } from '../api/product'
+import { fetchPaginatedProducts } from '../api/product'
 import type { PaginateProduct } from '../types/interfaces/pagiante-product.interface'
-import type { ColumnProduct } from '../types/column-product.enum'
 import type { ProductSearchOption } from '../types/interfaces/product-search-option.interface'
 
 const useProductStore = defineStore('product', () => {

@@ -1,5 +1,5 @@
 <template>
-  <header class="header">
+  <header v-if="!isAdminPage(route.fullPath)" class="header">
     <div class="container">
       <div class="header-content">
         <div class="logo-menu">
@@ -41,16 +41,10 @@
       <div class="container">
         <ul class="nav-links">
           <li>
-            <RouterLink to="/" class="nav-link">Accueil</RouterLink>
+            <RouterLink to="/products" class="nav-link">Tous les produits</RouterLink>
           </li>
-          <li>
-            <RouterLink to="/nouveautes" class="nav-link">Nouveautés</RouterLink>
-          </li>
-          <li>
-            <RouterLink to="/smartphones" class="nav-link">Smartphones</RouterLink>
-          </li>
-          <li>
-            <RouterLink to="/ordinateurs" class="nav-link">Ordinateurs</RouterLink>
+          <li v-for="category in categoryStore.categories" :key="category._id">
+            <RouterLink :to="`/${category.name}`" class="nav-link">{{ category.name }}</RouterLink>
           </li>
         </ul>
       </div>
@@ -59,21 +53,15 @@
     <div v-if="isMenuOpen" class="mobile-menu">
       <ul class="mobile-menu-links">
         <li>
-          <RouterLink to="/" class="mobile-menu-link">Accueil</RouterLink>
+          <RouterLink to="/products" class="nav-link">Tous les produits</RouterLink>
         </li>
-        <li>
-          <RouterLink to="/nouveautes" class="mobile-menu-link">Nouveautés</RouterLink>
-        </li>
-        <li>
-          <RouterLink to="/smartphones" class="mobile-menu-link">Smartphones</RouterLink>
-        </li>
-        <li>
-          <RouterLink to="/ordinateurs" class="mobile-menu-link">Ordinateurs</RouterLink>
+        <li v-for="category in categoryStore.categories" :key="category._id">
+          <RouterLink :to="`/${category.name}`" class="nav-link">{{ category.name }}</RouterLink>
         </li>
       </ul>
     </div>
 
-    <div class="breadcrumb">
+    <!-- <div class="breadcrumb">
       <div class="container">
         <ul class="breadcrumb-links">
           <li>
@@ -91,7 +79,7 @@
           <li>Iphone 14 plus - 280 G</li>
         </ul>
       </div>
-    </div>
+    </div> -->
   </header>
 </template>
 
@@ -100,10 +88,13 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { Menu, Search, ShoppingCart, ChevronRight } from 'lucide-vue-next'
 import useAuthStore from '@/utils/store/useAuthStore'
+import { isAdminPage } from '@/utils/isAdminPage'
+import useCategoryStore from '@/utils/store/useCategoryStore'
 
 const isMenuOpen = ref(false)
 const route = useRoute()
 const authStore = useAuthStore()
+const categoryStore = useCategoryStore()
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
 }

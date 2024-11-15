@@ -1,5 +1,5 @@
 <template>
-  <footer class="footer">
+  <footer v-if="!isAdminPage(route.fullPath)" class="footer">
     <div class="container">
       <div class="footer-grid">
         <div>
@@ -140,6 +140,7 @@
 </template>
 
 <script setup lang="ts">
+import { isAdminPage } from '@/utils/isAdminPage'
 import {
   Phone,
   Mail,
@@ -150,6 +151,8 @@ import {
   ShieldCheck,
   Truck
 } from 'lucide-vue-next'
+import { useRoute } from 'vue-router'
+const route = useRoute()
 </script>
 
 <style scoped>
