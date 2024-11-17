@@ -43,7 +43,7 @@
       label="Catégorie"
       labelDefaultOption="Sans catégorie..."
       v-model="product.idCategory"
-      :options="categoryStore.formattedOptionsCategories"
+      :options="categoryStore.formattedOptionsSubCategories"
     />
 
     <el-divider class="divider" />

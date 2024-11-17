@@ -2,16 +2,34 @@ import { defineStore } from 'pinia'
 import { onMounted, ref } from 'vue'
 import type { OptionCategory } from '../types/interfaces/option-category.interface'
 import type { Category } from '../types/interfaces/category.interface'
-import { fetchCategories } from '../api/category'
+import { fetchCategories, fetchSubCategories, fetchMasterCategories } from '../api/category'
 
 const useCategoryStore = defineStore('category', () => {
+  const subCategories = ref<Category[]>([])
   const categories = ref<Category[]>([])
-  const formattedOptionsCategories = ref<Array<OptionCategory>>([])
+  const masterCategories = ref<Category[]>([])
+  const formattedOptionsSubCategories = ref<Array<OptionCategory>>([])
+  const formattedOptionsMasterCategories = ref<Array<OptionCategory>>([])
 
-  const updateCategorie = async () => {
+  const loadCategories = async () => {
     categories.value = await fetchCategories()
+  }
 
-    formattedOptionsCategories.value = categories.value.map((category: Category) => {
+  const loadSubCategories = async () => {
+    subCategories.value = await fetchSubCategories()
+
+    formattedOptionsSubCategories.value = subCategories.value.map((category: Category) => {
+      return {
+        value: category._id || '',
+        label: category.name
+      }
+    })
+  }
+
+  const loadMasterCategories = async () => {
+    masterCategories.value = await fetchMasterCategories()
+
+    formattedOptionsMasterCategories.value = masterCategories.value.map((category: Category) => {
       return {
         value: category._id || '',
         label: category.name
@@ -20,12 +38,17 @@ const useCategoryStore = defineStore('category', () => {
   }
 
   onMounted(() => {
-    if (!categories.value.length) {
-      updateCategorie()
+    if(!categories.value.length){
+      loadCategories()
+      loadSubCategories()
+
+    }
+    if(!masterCategories.value.length){
+      loadMasterCategories()
     }
   })
 
-  return { categories, formattedOptionsCategories, updateCategorie }
+  return { categories, formattedOptionsSubCategories, formattedOptionsMasterCategories, loadCategories}
 })
 
 export default useCategoryStore

@@ -44,7 +44,7 @@
       v-model="product.idCategory"
       labelDefaultOption="Sans catégorie..."
       :defaultSelectedValue="formattedDefaultCategory?.value || ''"
-      :options="categoryStore.formattedOptionsCategories"
+      :options="categoryStore.formattedOptionsSubCategories"
     />
 
     <el-divider class="divider" />
