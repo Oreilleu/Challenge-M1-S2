@@ -17,7 +17,43 @@ export const fetchCategories = async () => {
     return json.data || []
   } catch (error) {
     console.error(error)
-    toastHandler('Erreur lors de la rcupération des catégories.', ToastType.ERROR)
+    toastHandler('Erreur lors de la récupération des catégories.', ToastType.ERROR)
+
+    return []
+  }
+}
+
+export const fetchSubCategories = async () => {
+  try {
+    const response: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/category/sub-categories`)
+    const json: ResponseApi<Category[]> = await response.json()
+
+    if (!json.success) {
+      return []
+    }
+
+    return json.data || []
+  } catch (error) {
+    console.error(error)
+    toastHandler('Erreur lors de la récupération des sous-catégories.', ToastType.ERROR)
+
+    return []
+  }
+}
+
+export const fetchMasterCategories = async () => {
+  try {
+    const response: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/category/master-categories`)
+    const json: ResponseApi<Category[]> = await response.json()
+
+    if (!json.success) {
+      return []
+    }
+
+    return json.data || []
+  } catch (error) {
+    console.error(error)
+    toastHandler('Erreur lors de la récupération des catégories principales.', ToastType.ERROR)
 
     return []
   }
