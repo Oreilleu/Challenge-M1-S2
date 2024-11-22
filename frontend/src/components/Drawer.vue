@@ -12,10 +12,11 @@ import FormAddProduct from './form/FormAddProduct.vue'
 import FormAddCategory from './form/FormAddCategory.vue'
 import { DrawerType } from '@/utils/types/drawer-type.enum'
 import FormUpdateProduct from './form/FormUpdateProduct.vue'
-import formUpdateCategory from './form/FormUpdateCategory.vue'
+import FormUpdateCategory from './form/FormUpdateCategory.vue'
 // TODO : voir avec le prof pourquoi typescript ne reconnait pas ce composant spécifiquement
 // @ts-ignore
 import FormAddUser from './form/FormAddUser.vue'
+import CartDrawer from './CartDrawer.vue'
 
 type Props = {
   drawerContent: DrawerType
@@ -31,6 +32,7 @@ const handlerTitle = {
   [DrawerType.CREATE_USER]: 'Ajouter un utilisateur',
   [DrawerType.UPDATE_PRODUCT]: `Modifier le produit`,
   [DrawerType.UPDATE_CATEGORY]: `Modifier la catégorie`,
+  [DrawerType.CART]: 'Panier',
   [DrawerType.NONE]: null
 }
 
@@ -39,7 +41,8 @@ const handlerForm = {
   [DrawerType.CREATE_CATEGORY]: FormAddCategory,
   [DrawerType.CREATE_USER]: FormAddUser,
   [DrawerType.UPDATE_PRODUCT]: FormUpdateProduct,
-  [DrawerType.UPDATE_CATEGORY]: formUpdateCategory,
+  [DrawerType.UPDATE_CATEGORY]: FormUpdateCategory,
+  [DrawerType.CART]: CartDrawer,
   [DrawerType.NONE]: null
 }
 </script>

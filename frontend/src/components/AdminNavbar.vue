@@ -43,7 +43,7 @@
   <Drawer
     v-model="drawerStore.isOpen"
     direction="ltr"
-    :size="isMobile ? '100%' : '50%'"
+    :size="breakpointStore.isMobile ? '100%' : '50%'"
     :drawerContent="drawerStore.opennedDrawer || DrawerType.CREATE_PRODUCT"
   />
 </template>
@@ -54,14 +54,11 @@ import Drawer from './Drawer.vue'
 import { DrawerType } from '@/utils/types/drawer-type.enum'
 import useDrawerStore from '@/utils/store/useDrawerStore'
 import useAuthStore from '@/utils/store/useAuthStore'
+import useBreakpointStore from '@/utils/store/useBreakpointStore'
 
 const authStore = useAuthStore()
 const drawerStore = useDrawerStore()
-
-// TODO : trouver comment stocker des donnéees globalement avec vue js (equivalent useContext react)
-// OU : si possible Géré le responsive en css
-// DANS TOUT LES CAS : Ajouter des breakpoint value dans le css
-const isMobile = window.innerWidth < 890
+const breakpointStore = useBreakpointStore()
 </script>
 
 <style scoped>

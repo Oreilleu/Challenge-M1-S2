@@ -16,7 +16,7 @@
       <strong>Disponibilité:</strong> Indisponible
       <el-button type="primary" disabled>Ajouter au panier</el-button>
     </p>
-    <el-button type="primary">Voir cette offre</el-button>
+    <el-button @click="addToCart" type="primary">Add to cart</el-button>
   </el-card>
 </template>
 
@@ -24,8 +24,15 @@
 import { defineProps } from 'vue'
 import type { AggregateProductOnVariation } from '@/utils/types/interfaces/aggregate-product-on-variation.interface'
 import { formatImageUrl } from '../utils/formatImageUrl'
+import useCartStore from '@/utils/store/useCartStore'
 
-defineProps<{
+const cartStore = useCartStore()
+
+const { product } = defineProps<{
   product: AggregateProductOnVariation
 }>()
+
+const addToCart = () => {
+  cartStore.addProduct(product)
+}
 </script>

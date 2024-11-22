@@ -3,7 +3,7 @@ import type { Variation } from './variation.interface'
 
 export interface Product {
   _id?: string
-  idCategory?: string | null
+  idCategory?: string
   category?: Category
   name: string
   description: string

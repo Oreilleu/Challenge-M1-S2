@@ -30,7 +30,7 @@
           <el-button v-if="authStore.isAuthenticatedUser" type="primary" @click="authStore.logout">
             Se déconnecter
           </el-button>
-          <el-button style="border: none; height: 100%">
+          <el-button @click="openCartDrawer" style="border: none; height: 100%">
             <ShoppingCart class="icon" />
           </el-button>
         </div>
@@ -61,42 +61,41 @@
       </ul>
     </div>
 
-    <!-- <div class="breadcrumb">
-      <div class="container">
-        <ul class="breadcrumb-links">
-          <li>
-            <RouterLink to="/" class="breadcrumb-link">Accueil</RouterLink>
-          </li>
-          <ChevronRight class="breadcrumb-icon" />
-          <li>
-            <RouterLink to="/smartphones" class="breadcrumb-link">Smartphones</RouterLink>
-          </li>
-          <ChevronRight class="breadcrumb-icon" />
-          <li>
-            <RouterLink to="/iphone" class="breadcrumb-link">Iphone</RouterLink>
-          </li>
-          <ChevronRight class="breadcrumb-icon" />
-          <li>Iphone 14 plus - 280 G</li>
-        </ul>
-      </div>
-    </div> -->
+    <Drawer
+      :size="breakpointStore.isMobile ? '100%' : '50%'"
+      v-model="drawerStore.isOpen"
+      direction="ltr"
+      :drawerContent="drawerStore.opennedDrawer"
+    />
   </header>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { Menu, Search, ShoppingCart, ChevronRight } from 'lucide-vue-next'
+import { Menu, Search, ShoppingCart } from 'lucide-vue-next'
 import useAuthStore from '@/utils/store/useAuthStore'
 import { isAdminPage } from '@/utils/isAdminPage'
 import useCategoryStore from '@/utils/store/useCategoryStore'
+import useDrawerStore from '@/utils/store/useDrawerStore'
+import { DrawerType } from '@/utils/types/drawer-type.enum'
+import Drawer from './Drawer.vue'
+import useBreakpointStore from '@/utils/store/useBreakpointStore'
 
 const isMenuOpen = ref(false)
 const route = useRoute()
+
+const drawerStore = useDrawerStore()
 const authStore = useAuthStore()
 const categoryStore = useCategoryStore()
+const breakpointStore = useBreakpointStore()
+
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
+}
+
+const openCartDrawer = () => {
+  drawerStore.openDrawer(DrawerType.CART)
 }
 </script>
 

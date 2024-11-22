@@ -16,6 +16,7 @@ import WhoWeAre from '@/views/WhoWeAre.vue'
 import TermsOfService from '@/views/TermsOfService.vue'
 // @ts-ignore
 import FAQ from '@/views/FAQ.vue'
+import Cart from '@/views/Cart.vue'
 
 const redirectToHomeIfUserAuthenticated = async () => {
   const isAuthenticatedUser = await isAuthenticated()
@@ -102,6 +103,11 @@ const routes = [
     name: 'AccountUnvalidated',
     component: AccountUnvalidated,
     beforeEnter: [redirectToLoginIfUserUnauthenticated, redirectToHomeIfUserVerified]
+  },
+  {
+    path: '/cart',
+    name: 'Cart',
+    component: Cart
   },
 
   //backoffice routes prefix /admin

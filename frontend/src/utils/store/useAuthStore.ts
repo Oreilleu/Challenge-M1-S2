@@ -15,11 +15,11 @@ const useAuthStore = defineStore('auth', () => {
     isAuthenticatedUser.value = await isAuthenticated()
   }
 
-  const signIn = (token: string, user: User) => {
+  const signIn = (token: string, user: User, redirecTo?: string) => {
     localStorageHandler().set(LocalStorageKeys.AUTH_TOKEN, token)
     localStorageHandler().set(LocalStorageKeys.USER, user)
     isAuthenticatedUser.value = true
-    router.push('/')
+    router.push(redirecTo || '/')
   }
 
   const logout = () => {
