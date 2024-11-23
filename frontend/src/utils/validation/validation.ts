@@ -112,3 +112,5 @@ export const categoryDescriptionValidation = z
   .or(z.literal(''))
 
 export const categoryParentValidation = z.string().optional()
+
+export const masterCategoryValidation = z.boolean().default(false)

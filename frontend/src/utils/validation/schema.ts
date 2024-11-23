@@ -18,7 +18,8 @@ import {
   variationQuantiteValidation,
   categoryNameValidation,
   categoryDescriptionValidation,
-  categoryParentValidation
+  categoryParentValidation,
+  masterCategoryValidation
 } from './validation'
 
 export const registerFormSchema = z
@@ -91,5 +92,6 @@ export const categorySchema = z.object({
   name: categoryNameValidation,
   description: categoryDescriptionValidation,
   image: imagesValidation.optional(),
-  parent: categoryParentValidation
+  parent: categoryParentValidation,
+  masterCategory: masterCategoryValidation
 })

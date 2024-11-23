@@ -19,15 +19,23 @@
       v-model="category.description"
     />
 
-    <FormSelect
-      id="parentCategory"
-      name="parentCategory"
+    <!--
+      Une catégorie principale ne peut pas avoir de catégorie parente. Gérer ce cas
+    -->
+    <div class="my-2">
+      <el-checkbox v-if="category.masterCategory" v-model="category.masterCategory" label="Catégorie principale"/>
+    </div>
+
+    <FormSelect v-if="!category.masterCategory"
+      id="parent"
+      name="parent"
       label="Catégorie parente"
       labelDefaultOption="Sélectionnez une option"
       placeholder="Categorie parente"
       type="text"
       v-model="category.parent"
-      :options="categoryStore.formattedOptionsCategories"
+      :default-selected-value="category.parent || 'Pas de catégorie parente'"
+      :options="categoryStore.formattedOptionsMasterCategories"
     />
 
     <el-image
@@ -60,7 +68,7 @@
       style="margin: 0"
       native-type="submit"
       :disabled="Object.keys(errors).length > 0"
-      >Ajouter le produit
+      >Modifier la catégorie
     </el-button>
   </form>
 </template>
@@ -117,6 +125,10 @@ const onSubmit = handleSubmit(async () => {
     delete category.value.image
   }
 
+  if(category.value?.masterCategory) {
+    category.value.parent = ''
+  }
+
   formData.append('category', JSON.stringify(category.value))
 
   try {
@@ -135,11 +147,12 @@ const onSubmit = handleSubmit(async () => {
 
     if (json.success) {
       drawerStore.closeDrawer()
-      toastHandler('Produit modifié avec succès', ToastType.SUCCESS)
+      categoryStore.loadCategories()
+      toastHandler('Catégorie modifiée avec succès', ToastType.SUCCESS)
     }
   } catch (error) {
     console.error(error)
-    toastHandler('Erreur lors de la modification du produit.', ToastType.ERROR)
+    toastHandler('Erreur lors de la modification de la catégorie.', ToastType.ERROR)
   }
 })
 
@@ -166,7 +179,8 @@ onMounted(async () => {
     ? {
         name: responseCategory.name,
         description: responseCategory.description,
-        parent: responseCategory.parent ? responseCategory.parent : '',
+        masterCategory: responseCategory.masterCategory || false,
+        parent: responseCategory.parent || undefined,
         imageApi: responseCategory.imageApi
       }
     : null

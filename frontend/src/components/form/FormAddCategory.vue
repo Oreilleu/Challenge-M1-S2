@@ -19,15 +19,19 @@
       v-model="category.description"
     />
 
-    <FormSelect
-      id="parentCategory"
-      name="parentCategory"
+    <div class="my-2">
+      <el-checkbox v-model="category.masterCategory" label="Catégorie principale"/>
+    </div>
+
+    <FormSelect v-if="!category.masterCategory"
+      id="parent"
+      name="parent"
       label="Catégorie parente"
       labelDefaultOption="Sélectionnez une option"
       placeholder="Categorie parente"
       type="text"
       v-model="category.parent"
-      :options="categoryStore.formattedOptionsCategories"
+      :options="categoryStore.formattedOptionsMasterCategories"
     />
 
     <FormInputFile id="image" name="image" label="Image de la catégorie" v-model="category.image" />
@@ -59,12 +63,15 @@ import { v4 as uuidv4 } from 'uuid'
 const drawerStore = useDrawerStore()
 const categoryStore = useCategoryStore()
 
+
 const category: Category = reactive({
   name: '',
   description: '',
   image: { files: {} as FileList },
-  parent: ''
+  masterCategory: false,
+  parent: undefined
 })
+
 
 const validationSchema = toTypedSchema(categorySchema)
 
@@ -75,8 +82,6 @@ const { handleSubmit, errors } = useForm<Category>({
 const onSubmit = handleSubmit(async (values) => {
   const formData = new FormData()
 
-  values.parent = category.parent
-
   const image = values.image?.files[0] || ({} as File)
 
   if (!image) {
@@ -84,14 +89,16 @@ const onSubmit = handleSubmit(async (values) => {
     return
   }
 
-  values.parent = category.parent || undefined
-
   const nameImage = `${uuidv4()}${Date.now()}`
 
   formData.append('image', new File([image], nameImage, { type: image.type }))
 
   values.nameImage = nameImage
   delete values.image
+
+  if(values.masterCategory) {
+    values.parent = undefined
+  }
 
   formData.append('category', JSON.stringify(values))
 
@@ -108,7 +115,7 @@ const onSubmit = handleSubmit(async (values) => {
 
     if (json.success) {
       drawerStore.closeDrawer()
-      categoryStore.updateCategorie()
+      categoryStore.loadCategories()
       toastHandler('Catégorie ajoutée avec succès', ToastType.SUCCESS)
     } else {
       toastHandler(json.message || "Erreur lors de l'ajout de la catégorie", ToastType.ERROR)
