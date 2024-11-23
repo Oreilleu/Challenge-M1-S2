@@ -43,7 +43,7 @@
   <Drawer
     v-model="drawerStore.isOpen"
     direction="ltr"
-    :size="breakpointStore.isMobile ? '100%' : '50%'"
+    :size="breakpointStore.isTablet || breakpointStore.isMobile ? '100%' : '50%'"
     :drawerContent="drawerStore.opennedDrawer || DrawerType.CREATE_PRODUCT"
   />
 </template>

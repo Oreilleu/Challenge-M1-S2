@@ -110,3 +110,10 @@ img {
     position: absolute !important;
   }
 }
+
+.link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+}

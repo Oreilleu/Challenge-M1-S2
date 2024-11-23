@@ -85,7 +85,7 @@
       <el-divider />
     </div>
 
-    <RouterLink to="/login" class="link-login">Se connecter</RouterLink>
+    <RouterLink to="/login" class="link">Se connecter</RouterLink>
   </Form>
 </template>
 
@@ -194,12 +194,5 @@ form {
   align-items: center;
   justify-content: center;
   gap: 20px;
-}
-
-.link-login {
-  color: var(--primary);
-  text-decoration: none;
-  font-weight: bold;
-  cursor: pointer;
 }
 </style>

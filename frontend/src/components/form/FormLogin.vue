@@ -141,11 +141,4 @@ form {
   justify-content: center;
   gap: 20px;
 }
-
-.link {
-  color: var(--primary);
-  text-decoration: none;
-  font-weight: bold;
-  cursor: pointer;
-}
 </style>
