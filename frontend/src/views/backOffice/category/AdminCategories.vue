@@ -18,6 +18,7 @@
       <Modal
         :model-value="!!categoryToDelete"
         :title="'Suppression du produit : ' + categoryToDelete?.name"
+        :displayFooter="true"
         @close="categoryToDelete = null"
         @confirm="deleteCategory(categoryToDelete?._id)"
       >

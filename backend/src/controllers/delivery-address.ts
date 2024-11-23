@@ -1,30 +1,50 @@
-// const deliveryAddress = new DeliveryAddressModel({
-//     user: "670fbb69f9f7afb30d4f5d4f",
-//     street: "rue de la paix",
-//     city: "Paris",
-//     postalCode: "75000",
-//     country: "France",
-//   })
-  
-//   deliveryAddress.save();
-  
-//   console.log(deliveryAddress.id);
-  
-//   const getDeliveryAddress = async (addressId: string) => {
-//     try {
-//       const deliveryAddress = await DeliveryAddressModel.findById(addressId).populate("user");
-  
-//       if (!deliveryAddress) {
-//         console.log("Adresse de livraison non trouvée");
-//         return;
-//       }
-  
-//       const user = deliveryAddress.user;
-  
-//       console.log(user);
-//     } catch (error) {
-//       console.error("Erreur lors de la recherche de l'adresse de livraison", error);
-//     }
-//   }
-  
-//   getDeliveryAddress(deliveryAddress.id);
+import { Request, Response } from "express";
+import DeliveryAddressModel from "../models/delivery-address.model";
+import { AuthenticatedRequest } from "../types/authenticated-request.interface";
+
+export const create = async (req: Request, res: Response) => {
+  const { user, body } = req as AuthenticatedRequest;
+
+  if (!body || !user) {
+    res.status(400).json({
+      success: false,
+      message: "Information manquante",
+    });
+    return;
+  }
+
+  try {
+    const deliveryAddress = new DeliveryAddressModel({
+      ...body,
+      idUser: user._id,
+    });
+
+    await deliveryAddress.save();
+
+    res.status(201).json({
+      success: true,
+      data: deliveryAddress,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: (error as Error).message,
+    });
+  }
+};
+
+export const getAll = async (req: Request, res: Response) => {
+  try {
+    const deliveryAddresses = await DeliveryAddressModel.find();
+
+    res.status(200).json({
+      success: true,
+      data: deliveryAddresses,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: (error as Error).message,
+    });
+  }
+};

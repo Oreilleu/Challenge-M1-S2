@@ -13,6 +13,7 @@ import variationRouter from "./routes/variation";
 import filterRouter from "./routes/filter";
 import checkAdmin from "./middleware/checkAdmin";
 import checkToken from "./middleware/auth";
+import deliveryAddressRouter from "./routes/delivery-address";
 const app = express();
 
 connectDb();
@@ -30,6 +31,7 @@ app.use(express.static("public"));
 // Routes setup
 app.use("/api/", authRouter);
 app.use("/api/user", userRouter);
+app.use("/api/delivery-adress", checkToken, deliveryAddressRouter);
 app.use("/api/product", checkToken, checkAdmin, productRouter);
 app.use("/api/variation", variationRouter);
 app.use("/api/filter", filterRouter);

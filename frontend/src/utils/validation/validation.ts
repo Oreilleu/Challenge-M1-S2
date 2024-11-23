@@ -112,3 +112,24 @@ export const categoryDescriptionValidation = z
   .or(z.literal(''))
 
 export const categoryParentValidation = z.string().optional()
+
+export const streetValidation = z
+  .string({ required_error: 'La rue est obligatoire.' })
+  .min(1, { message: 'La rue est obligatoire' })
+  .max(250, { message: 'La rue doit avoir maximun 250 caractères' })
+
+export const cityValidation = z
+  .string({ required_error: 'La ville est obligatoire.' })
+  .min(1, { message: 'La ville est obligatoire' })
+  .max(250, { message: 'La ville doit avoir maximun 250 caractères' })
+
+export const postalCodeValidation = z
+  .string({ required_error: 'Le code postal est obligatoire.' })
+  .regex(/^(?:0[1-9]|[1-8]\d|9[0-8])\d{3}$/, {
+    message: 'Le code postal doit être sous la forme : 75001'
+  })
+
+export const countryValidation = z
+  .string({ required_error: 'Le pays est obligatoire.' })
+  .min(1, { message: 'Le pays est obligatoire' })
+  .max(250, { message: 'Le pays doit avoir maximun 250 caractères' })

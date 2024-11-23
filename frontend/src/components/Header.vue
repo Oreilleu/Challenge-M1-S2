@@ -42,7 +42,7 @@
       >
         <el-button
           v-if="authStore.isAuthenticatedUser"
-          @click="openCartDrawer"
+          @click="goToMyAccount"
           style="border: none; height: 100%"
         >
           <el-icon :size="20">
@@ -92,7 +92,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { Menu, ShoppingCart, User } from 'lucide-vue-next'
 import useAuthStore from '@/utils/store/useAuthStore'
 import { isAdminPage } from '@/utils/isAdminPage'
@@ -104,6 +104,7 @@ import useBreakpointStore from '@/utils/store/useBreakpointStore'
 
 const isMenuOpen = ref(false)
 const route = useRoute()
+const router = useRouter()
 
 const drawerStore = useDrawerStore()
 const authStore = useAuthStore()
@@ -118,10 +119,14 @@ const openCartDrawer = () => {
   drawerStore.openDrawer(DrawerType.CART)
 }
 
+const goToMyAccount = () => {
+  router.push('/my-account')
+}
+
 const rowStyle = computed(() => {
   return breakpointStore.isMobile
     ? 'padding: 5px; row-gap: 15px'
-    : 'padding: 5px 15px; height: 70px; display:flex'
+    : 'padding: 5px 15px; height: 70px; display:flex; gap: 10px'
 })
 
 const colLogoStyle = computed(() => {

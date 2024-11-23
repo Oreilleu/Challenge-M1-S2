@@ -18,7 +18,11 @@ import {
   variationQuantiteValidation,
   categoryNameValidation,
   categoryDescriptionValidation,
-  categoryParentValidation
+  categoryParentValidation,
+  streetValidation,
+  cityValidation,
+  postalCodeValidation,
+  countryValidation
 } from './validation'
 
 export const registerFormSchema = z
@@ -85,4 +89,11 @@ export const categorySchema = z.object({
   description: categoryDescriptionValidation,
   image: imagesValidation.optional(),
   parent: categoryParentValidation
+})
+
+export const deliveryAddressSchema = z.object({
+  street: streetValidation,
+  city: cityValidation,
+  postalCode: postalCodeValidation,
+  country: countryValidation
 })

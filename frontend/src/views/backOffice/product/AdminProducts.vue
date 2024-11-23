@@ -55,6 +55,7 @@
   <Modal
     :model-value="!!productToDelete"
     :title="'Suppression du produit : ' + productToDelete?.name"
+    :displayFooter="true"
     @close="productToDelete = null"
     @confirm="deleteProduct(productToDelete?._id)"
   >

@@ -425,12 +425,6 @@ const removeFilter = (filters: Array<Filter>, index: number) => {
   gap: 1rem;
 }
 
-.form-product {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
 .list-variation {
   width: 100%;
 }
