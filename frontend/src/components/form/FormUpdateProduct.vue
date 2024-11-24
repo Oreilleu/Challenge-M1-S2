@@ -44,7 +44,7 @@
       v-model="product.idCategory"
       labelDefaultOption="Choisir une catégorie..."
       :defaultSelectedValue="formattedDefaultCategory?.value || ''"
-      :options="categoryStore.formattedOptionsCategories"
+      :options="categoryStore.formattedOptionsSubCategories"
       :disabledDefaultOption="true"
     />
 

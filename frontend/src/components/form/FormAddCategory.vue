@@ -23,15 +23,14 @@
       <el-checkbox v-model="category.masterCategory" label="Catégorie principale"/>
     </div>
 
-    <FormSelect v-if="!category.masterCategory"
+    <FormInputSelect v-if="!category.masterCategory"
       id="parent"
       name="parent"
       label="Catégorie parente"
       labelDefaultOption="Sélectionnez une option"
-      placeholder="Categorie parente"
-      type="text"
       v-model="category.parent"
       :options="categoryStore.formattedOptionsMasterCategories"
+      :disabledDefaultOption=true
     />
 
     <FormInputFile id="image" name="image" label="Image de la catégorie" v-model="category.image" />
@@ -55,7 +54,7 @@ import type { ResponseApi } from '@/utils/types/interfaces/response-api.interfac
 import localStorageHandler from '@/utils/localStorageHandler'
 import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
 import useDrawerStore from '@/utils/store/useDrawerStore'
-import FormSelect from '../FormSelect.vue'
+import FormInputSelect from '../FormInputSelect.vue'
 import FormInputFile from '../FormInputFile.vue'
 import useCategoryStore from '@/utils/store/useCategoryStore'
 import { v4 as uuidv4 } from 'uuid'

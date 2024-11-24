@@ -43,7 +43,7 @@
       label="Catégorie"
       labelDefaultOption="Choisir une catégorie..."
       v-model="product.idCategory"
-      :options="categoryStore.formattedOptionsCategories"
+      :options="categoryStore.formattedOptionsSubCategories"
       :disabledDefaultOption="true"
     />
 

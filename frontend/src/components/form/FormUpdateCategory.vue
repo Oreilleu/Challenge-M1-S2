@@ -26,16 +26,15 @@
       <el-checkbox v-if="category.masterCategory" v-model="category.masterCategory" label="Catégorie principale"/>
     </div>
 
-    <FormSelect v-if="!category.masterCategory"
+    <FormInputSelect v-if="!category.masterCategory"
       id="parent"
       name="parent"
       label="Catégorie parente"
       labelDefaultOption="Sélectionnez une option"
-      placeholder="Categorie parente"
-      type="text"
       v-model="category.parent"
       :default-selected-value="category.parent || 'Pas de catégorie parente'"
       :options="categoryStore.formattedOptionsMasterCategories"
+      :disabledDefaultOption=true
     />
 
     <el-image
@@ -86,7 +85,7 @@ import { v4 as uuidv4 } from 'uuid'
 import useDrawerStore from '@/utils/store/useDrawerStore'
 import toastHandler from '@/utils/toastHandler'
 import { ToastType } from '@/utils/types/toast-type.enum'
-import FormSelect from '../FormSelect.vue'
+import FormInputSelect from '../FormInputSelect.vue'
 import FormInputFile from '../FormInputFile.vue'
 import useCategoryStore from '@/utils/store/useCategoryStore'
 import { formatImageUrl } from '@/utils/formatImageUrl'
