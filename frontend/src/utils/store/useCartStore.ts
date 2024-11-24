@@ -4,18 +4,19 @@ import type { AggregateProductOnVariation } from '../types/interfaces/aggregate-
 import type { CartItem } from '../types/interfaces/cart-item.interface'
 import { LocalStorageKeys } from '../types/local-storage-keys.enum'
 import localStorageHandler from '../localStorageHandler'
+import type { DeliveryAddress } from '../types/interfaces/delivery-address.interface'
 
 const useCartStore = defineStore('cart', () => {
   const cart = ref<CartItem[]>([])
-  const price = ref(0)
+  const price = ref<number>(0)
+  const billingAddress = ref<DeliveryAddress | null>(null)
+  const selectedAddressId = ref<string>('')
 
-  onMounted(() => {
-    const cartItems = localStorageHandler().get(LocalStorageKeys.CART)
-    if (cartItems) {
-      cart.value = cartItems
-    }
-
-    calculTotal()
+  const order = ref({
+    products: cart.value,
+    price: price.value,
+    billingAddress: null,
+    shippingAddress: null
   })
 
   const addProduct = (product: AggregateProductOnVariation, quantite?: number) => {
@@ -85,7 +86,27 @@ const useCartStore = defineStore('cart', () => {
     return product.variations.quantite === 0
   }
 
-  return { cart, price, addProduct, updateQuantity, removeProduct, clearCart, calculTotal }
+  onMounted(() => {
+    const cartItems = localStorageHandler().get(LocalStorageKeys.CART)
+    if (cartItems) {
+      cart.value = cartItems
+    }
+
+    calculTotal()
+  })
+
+  return {
+    selectedAddressId,
+    billingAddress,
+    order,
+    cart,
+    price,
+    addProduct,
+    updateQuantity,
+    removeProduct,
+    clearCart,
+    calculTotal
+  }
 })
 
 export default useCartStore

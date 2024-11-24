@@ -3,52 +3,101 @@
     <h1>Panier</h1>
 
     <div class="container-stepper">
-      <el-steps
-        style="min-width: 950px; margin: auto"
-        :active="active"
-        finish-status="success"
-        simple
-      >
-        <el-step title="Panier" @click="active = 0" />
-        <el-step v-if="!authStore.isAuthenticatedUser" title="Connexion" @click="active = 1" />
-        <el-step title="Livraison" @click="active = 2" />
-        <el-step title="Paiement" @click="active = 3" />
-        <el-step title="Résumé" @click="active = 4" />
+      <el-steps style="min-width: 1020px; margin: auto" :active="active" simple>
+        <el-step title="Panier" @click="clickOnStep(StepperCart.CART)" />
+        <el-step title="Connexion" @click="clickOnStep(StepperCart.LOGIN)" />
+        <el-step title="Livraison" @click="clickOnStep(StepperCart.SHIPPING)" />
+        <el-step title="Paiement" @click="clickOnStep(StepperCart.PAYMENT)" />
+        <el-step title="Résumé" @click="clickOnStep(StepperCart.REVIEW)" />
       </el-steps>
     </div>
 
-    <component
-      :is="handlerStep[active]"
-      :useAsComponent="true"
-      redirectTo="/cart"
-      :nextStep="() => (active = 2)"
-    />
+    <div class="step">
+      <component
+        :is="getCurrentStepComponent"
+        :useAsComponent="true"
+        redirectTo="/cart"
+        :onValidCart="() => onValidCart()"
+        :onValidLogin="() => onValidLogin()"
+        :onValidDeliveryAddress="() => next(StepperCart.PAYMENT)"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import CartDrawer from '@/components/CartDrawer.vue'
 import FormLogin from '@/components/form/FormLogin.vue'
-import ListCartItem from '@/components/ListCartItem.vue'
+import SelectDeliveryAddress from '@/components/SelectDeliveryAddress.vue'
 import useAuthStore from '@/utils/store/useAuthStore'
+import useCartStore from '@/utils/store/useCartStore'
+import useDeliveryAddressStore from '@/utils/store/useDeliveryAddressStore'
+import toastHandler from '@/utils/toastHandler'
+import { StepperCart } from '@/utils/types/stepper-cart.enum'
+import { ToastType } from '@/utils/types/toast-type.enum'
 import { computed, ref } from 'vue'
+
+const authStore = useAuthStore()
+const cartStore = useCartStore()
+const deliveryAddressStore = useDeliveryAddressStore()
 
 const active = ref(0)
 
-const authStore = useAuthStore()
-
-const handlerStep = computed<{ [key: number]: any }>(() => ({
-  0: ListCartItem,
-  1: FormLogin,
-  2: null,
-  3: null,
-  4: null
-}))
-
-const prev = () => {
-  if (active.value-- < 0) active.value = 0
+const stepComponents: { [key in StepperCart]: any } = {
+  [StepperCart.CART]: CartDrawer,
+  [StepperCart.LOGIN]: FormLogin,
+  [StepperCart.SHIPPING]: SelectDeliveryAddress,
+  [StepperCart.PAYMENT]: null, // Payment component
+  [StepperCart.REVIEW]: null // Review component
 }
 
-const next = () => {
+const getCurrentStepComponent = computed(() => {
+  if (active.value === StepperCart.LOGIN && authStore.isAuthenticatedUser) {
+    return stepComponents[StepperCart.SHIPPING]
+  }
+  return stepComponents[active.value as StepperCart]
+})
+
+const clickOnStep = (index: StepperCart) => {
+  if (!cartStore.cart.length) return
+
+  if (index === StepperCart.PAYMENT && !cartStore.selectedAddressId) {
+    toastHandler('Veuillez sélectionner une adresse de livraison', ToastType.WARNING)
+    return
+  }
+
+  if (index === StepperCart.LOGIN && authStore.isAuthenticatedUser) {
+    index = StepperCart.SHIPPING
+  }
+
+  active.value = index
+}
+
+const onValidCart = () => {
+  if (authStore.isAuthenticatedUser) {
+    next(StepperCart.SHIPPING)
+  } else {
+    next(StepperCart.LOGIN)
+  }
+}
+
+const onValidLogin = () => {
+  next(StepperCart.SHIPPING)
+  deliveryAddressStore.updateDeliveryAddress()
+}
+// const { test } = useCartStore()
+const onValidDeliveryAddress = () => {
+  next(StepperCart.PAYMENT)
+}
+
+const next = (index?: number) => {
+  if (!cartStore.cart.length) return
+
+  if (index) {
+    active.value = index
+    return
+  }
+
   if (active.value++ > 2) active.value = 0
 }
 </script>
@@ -64,5 +113,9 @@ h1 {
 
 .container-stepper {
   overflow-x: auto;
+}
+
+.step {
+  margin: 30px;
 }
 </style>

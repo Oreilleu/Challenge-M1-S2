@@ -3,22 +3,22 @@
     <div>
       <div>
         <el-text>Rue :</el-text>
-        <el-text style="font-weight: bold">{{ deliveryAddress.street }}</el-text>
+        <el-text style="font-weight: bold">{{ ' ' }}{{ deliveryAddress.street }}</el-text>
       </div>
       <div>
         <el-text>Ville :</el-text>
-        <el-text style="font-weight: bold">{{ deliveryAddress.city }}</el-text>
+        <el-text style="font-weight: bold">{{ ' ' }}{{ deliveryAddress.city }}</el-text>
       </div>
       <div>
         <el-text>Code postal :</el-text>
-        <el-text style="font-weight: bold">{{ deliveryAddress.postalCode }}</el-text>
+        <el-text style="font-weight: bold">{{ ' ' }}{{ deliveryAddress.postalCode }}</el-text>
       </div>
       <div>
         <el-text>Pays :</el-text>
-        <el-text style="font-weight: bold">{{ deliveryAddress.country }}</el-text>
+        <el-text style="font-weight: bold">{{ ' ' }}{{ deliveryAddress.country }}</el-text>
       </div>
     </div>
-    <div class="container-icon">
+    <div v-if="!hideIcon" class="container-icon">
       <el-button style="margin: 0" @click="openModalDelete">
         <el-icon :size="20">
           <CircleX />
@@ -33,6 +33,7 @@
   </article>
 
   <Modal
+    v-if="!hideIcon"
     :model-value="modelDeleteModal"
     :title="
       'Suppression de l\adresse de livraison : ' +
@@ -46,6 +47,7 @@
   />
 
   <Modal
+    v-if="!hideIcon"
     :model-value="modelUpdateModal"
     :title="
       'Modification de l\adresse de livraison : ' +
@@ -72,6 +74,7 @@ import FormUpdateDeliveryAddress from './form/FormUpdateDeliveryAddress.vue'
 
 type Props = {
   deliveryAddress: DeliveryAddress
+  hideIcon?: boolean
 }
 
 defineProps<Props>()
