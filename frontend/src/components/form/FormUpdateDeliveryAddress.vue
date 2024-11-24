@@ -17,39 +17,45 @@
 </template>
 
 <script setup lang="ts">
+import localStorageHandler from '@/utils/localStorageHandler'
+import useDeliveryAddressStore from '@/utils/store/useDeliveryAddressStore'
+import toastHandler from '@/utils/toastHandler'
 import type { DeliveryAddress } from '@/utils/types/interfaces/delivery-address.interface'
+import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
+import { ToastType } from '@/utils/types/toast-type.enum'
 import { deliveryAddressSchema } from '@/utils/validation/schema'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useForm } from 'vee-validate'
 import FormInput from '../FormInput.vue'
-import localStorageHandler from '@/utils/localStorageHandler'
-import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
-import useDeliveryAddressStore from '@/utils/store/useDeliveryAddressStore'
-import toastHandler from '@/utils/toastHandler'
-import { ToastType } from '@/utils/types/toast-type.enum'
+
+type Props = {
+  deliveryAddress: DeliveryAddress
+  closeModal: () => void
+}
+
+const { deliveryAddress, closeModal } = defineProps<Props>()
 
 const deliveryAddressStore = useDeliveryAddressStore()
 
 const validationSchema = toTypedSchema(deliveryAddressSchema)
 
 const { handleSubmit, errors } = useForm<DeliveryAddress>({
-  validationSchema
+  validationSchema,
+  initialValues: deliveryAddress
 })
 
 const onSubmit = handleSubmit(async (values) => {
-  if (deliveryAddressStore.deliveryAddress.length >= 5) {
-    toastHandler('Vous ne pouvez pas ajouter plus de 5 adresses de livraison', ToastType.ERROR)
-    return
-  }
-
-  const response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/delivery-adress/add`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(values)
-  })
+  const response = await fetch(
+    `${import.meta.env.VITE_BASE_API_URL}/delivery-adress/update/${deliveryAddress._id}`,
+    {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(values)
+    }
+  )
 
   const json = await response.json()
 
@@ -63,6 +69,7 @@ const onSubmit = handleSubmit(async (values) => {
 
   toastHandler('Adresse ajoutée avec succès', ToastType.SUCCESS)
   deliveryAddressStore.updateDeliveryAddress()
+  closeModal()
 })
 </script>
 

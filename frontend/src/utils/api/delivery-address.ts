@@ -36,3 +36,42 @@ export const fetchDeliveryAddress = async () => {
     return [] as DeliveryAddress[]
   }
 }
+
+export const fetchDeleteDeliveryAddress = async (id: string | undefined) => {
+  if (!id) {
+    toastHandler(
+      "Erreur lors de la récupération de l'identifiant de l'adresse de livraison.",
+      ToastType.ERROR
+    )
+    return false
+  }
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_BASE_API_URL}/delivery-adress/delete/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+      }
+    })
+
+    if (!res.ok) {
+      toastHandler("Erreur lors de la suppression de l'adresse de livraison.", ToastType.ERROR)
+      return false
+    }
+
+    const json: ResponseApi<DeliveryAddress> = await res.json()
+
+    if (!json.success) {
+      toastHandler(
+        json.message || "Erreur lors de la suppression de l'adresse de livraison.",
+        ToastType.ERROR
+      )
+      return false
+    }
+
+    return true
+  } catch (error) {
+    toastHandler("Erreur lors de la suppression de l'adresse de livraison.", ToastType.ERROR)
+    return false
+  }
+}

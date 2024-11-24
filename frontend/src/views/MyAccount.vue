@@ -30,15 +30,11 @@ import DeliveryAddressCard from '@/components/DeliveryAddressCard.vue'
 import FormAddDeliveryAddress from '@/components/form/FormAddDeliveryAddress.vue'
 import Modal from '@/components/Modal.vue'
 import useDeliveryAddressStore from '@/utils/store/useDeliveryAddressStore'
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 
 const deliveryAddressStore = useDeliveryAddressStore()
 
 const isModalOpen = ref(false)
-
-onMounted(() => {
-  deliveryAddressStore.updateDeliveryAddress()
-})
 </script>
 
 <style scoped>
