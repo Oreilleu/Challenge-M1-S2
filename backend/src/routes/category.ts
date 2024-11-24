@@ -2,6 +2,8 @@ import { Router } from "express";
 import {
   createCategory,
   getCategories,
+  getSubCategories,
+  getMasterCategories,
   getCategoryById,
   updateCategory,
   deleteCategory,
@@ -17,6 +19,10 @@ const categoryRoute = () => {
   const router = Router();
 
   router.get("/", getCategories);
+
+  router.get("/sub-categories", getSubCategories);
+
+  router.get("/master-categories", getMasterCategories);
 
   router.get("/:id", getCategoryById);
 

@@ -6,7 +6,7 @@ export interface Category {
   description?: string
   image?: { files: FileList }
   nameImage?: string
-  imageApi?: ImageApi
-  idParent?: string
-  parent?: Category
+  imageApi?: ImageApi,
+  masterCategory: boolean,
+  parent?: string
 }

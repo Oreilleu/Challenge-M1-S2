@@ -6,6 +6,6 @@ export interface Category {
   imageApi: Image;
   nameImage: string;
   description?: string;
-  idParent?: string;
-  parent?: Category;
+  masterCategory: boolean;
+  parent?: ObjectId;
 }

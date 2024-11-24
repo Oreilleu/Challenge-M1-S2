@@ -26,6 +26,11 @@ const categorySchema = new Schema({
     ref: "Category",
     required: false,
   },
+  masterCategory:{
+    type: Boolean,
+    required: true, 
+    default: false
+  },
   imageApi: { type: imageSchema, required: true },
 });
 

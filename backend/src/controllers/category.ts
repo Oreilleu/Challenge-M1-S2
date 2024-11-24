@@ -16,6 +16,14 @@ const createCategory = async (req: Request, res: Response) => {
     return;
   }
 
+  if (category.masterCategory && category.parent) {
+    res.status(400).json({
+      success: false,
+      message: "Une catégorie principale ne peut pas être une sous-catégorie",
+    });
+    return;
+  }
+
   category.imageApi = {
     name: image.originalname,
     path: image.path.replace("public", ""),
@@ -38,19 +46,9 @@ const createCategory = async (req: Request, res: Response) => {
 
 const getCategories = async (req: Request, res: Response) => {
   try {
-    const resMongoCategories = await CategoryModel.find()
-      .populate("idParent")
-      .lean<Category[]>()
-      .sort({ name: 1 });
-
-    const categories = resMongoCategories.map((category) => {
-      if (category.idParent && typeof category.idParent !== "string") {
-        category.parent = category.idParent;
-        delete category.idParent;
-      }
-      return category;
-    });
-
+    const categories = await CategoryModel.find()
+    .populate("parent")
+    .sort({ name: 1 });
     res.status(200).json({
       success: true,
       data: categories,
@@ -64,18 +62,46 @@ const getCategories = async (req: Request, res: Response) => {
   }
 };
 
+const getSubCategories = async (req: Request, res: Response) => {
+  try {
+    const categories = await CategoryModel.find({
+      masterCategory: false,
+    }).sort({ name: 1 });
+    res.status(200).json({
+      success: true,
+      data: categories,
+    });
+  } catch (error) {
+    console.error("Erreur pour récupérer les sous-catégories", error);
+    res.status(500).json({
+      success: false,
+      message: (error as Error).message,
+    });
+  }
+}
+
+const getMasterCategories = async (req: Request, res: Response) => {
+  try{
+    const categories = await CategoryModel.find({
+      masterCategory: true,
+    }).sort({ name: 1 });
+    res.status(200).json({
+      success: true,
+      data: categories,
+    });
+  } catch (error) {
+    console.error("Erreur pour récupérer les catégories principales", error);
+    res.status(500).json({
+      success: false,
+      message: (error as Error).message,
+    });
+  }
+}
+
 const getCategoryById = async (req: Request, res: Response) => {
   const id = req.params.id;
   try {
-    const category = await CategoryModel.findById(id)
-      .populate("idParent")
-      .lean<Category>();
-
-    if (category?.idParent && typeof category.idParent !== "string") {
-      category.parent = category.idParent;
-      delete category.idParent;
-    }
-
+    const category = await CategoryModel.findById(id);
     res.status(200).json({
       success: true,
       data: category,
@@ -93,6 +119,21 @@ const updateCategory = async (req: Request, res: Response) => {
   const id = req.params.id;
   const image = req.file as Express.Multer.File;
 
+  if (image) {
+    body.imageApi = {
+      name: image.originalname,
+      path: image.path.replace("public", ""),
+    };
+  }
+
+  if(body.masterCategory && body.parent) {
+    res.status(400).json({
+      success: false,
+      message: "Une catégorie principale ne peut pas être une sous-catégorie",
+    });
+    return;
+  }
+
   if (!body || !id) {
     res.status(400).json({
       success: false,
@@ -101,25 +142,8 @@ const updateCategory = async (req: Request, res: Response) => {
     return;
   }
 
-  if (image) {
-    body.imageApi = {
-      name: image.originalname,
-      path: image.path.replace("public", ""),
-    };
-  }
-
   try {
-    const updateData: any = { ...body };
-
-    if (body.idParent === "") {
-      updateData.$unset = { idParent: "" };
-      delete updateData.idParent;
-    }
-
-    const updatedCategory = await CategoryModel.findByIdAndUpdate(
-      id,
-      updateData
-    );
+    const updatedCategory = await CategoryModel.findByIdAndUpdate(id, body);
 
     if (!updatedCategory) {
       res.status(404).json({
@@ -182,6 +206,8 @@ const deleteCategory = async (req: Request, res: Response) => {
 export {
   createCategory,
   getCategories,
+  getSubCategories,
+  getMasterCategories,
   getCategoryById,
   updateCategory,
   deleteCategory,

@@ -4,6 +4,12 @@
       <h1>Liste des catégories</h1>
       <el-table :data="categoryStore.categories" :empty-text="'Aucune catégorie trouvée'">
         <el-table-column prop="name" label="Nom"></el-table-column>
+        <el-table-column prop="description" label="Description"></el-table-column>
+        <el-table-column label="Catégorie parente">
+          <template #default="scope">
+            {{ scope.row.parent?.name || '' }}
+          </template>
+        </el-table-column>
         <el-table-column align="right">
           <template #header>
             <el-input v-model="search" placeholder="Rechercher"></el-input>
@@ -64,7 +70,7 @@ const deleteCategory = async (idCategory: string | undefined) => {
 
   if (isDeleted) {
     toastHandler('Produit supprimé avec succès', ToastType.SUCCESS)
-    categoryStore.updateCategorie()
+    categoryStore.loadCategories();
   } else {
     toastHandler('Erreur lors de la suppression du produit', ToastType.ERROR)
   }

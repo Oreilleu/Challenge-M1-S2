@@ -19,17 +19,23 @@
       v-model="category.description"
     />
 
-    <FormInputSelect
-      id="parentCategory"
-      name="parentCategory"
+    <!--
+      Une catégorie principale ne peut pas avoir de catégorie parente. Gérer ce cas
+    -->
+    <div class="my-2">
+      <el-checkbox v-if="category.masterCategory" v-model="category.masterCategory" label="Catégorie principale"/>
+    </div>
+
+    <FormSelect v-if="!category.masterCategory"
+      id="parent"
+      name="parent"
       label="Catégorie parente"
-      labelDefaultOption="Sans catégorie parente"
+      labelDefaultOption="Sélectionnez une option"
       placeholder="Categorie parente"
       type="text"
-      v-model="category.idParent"
-      :defaultSelectedValue="formattedDefaultParent?.value || ''"
-      :options="categoryStore.formattedOptionsCategories"
-      :disabledDefaultOption="false"
+      v-model="category.parent"
+      :default-selected-value="category.parent || 'Pas de catégorie parente'"
+      :options="categoryStore.formattedOptionsMasterCategories"
     />
 
     <el-image
@@ -68,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import FormInput from '../FormInput.vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
@@ -80,12 +86,11 @@ import { v4 as uuidv4 } from 'uuid'
 import useDrawerStore from '@/utils/store/useDrawerStore'
 import toastHandler from '@/utils/toastHandler'
 import { ToastType } from '@/utils/types/toast-type.enum'
-import FormInputSelect from '../FormInputSelect.vue'
+import FormSelect from '../FormSelect.vue'
 import FormInputFile from '../FormInputFile.vue'
 import useCategoryStore from '@/utils/store/useCategoryStore'
 import { formatImageUrl } from '@/utils/formatImageUrl'
 import { getCategoryById } from '@/utils/api/category'
-import type { OptionCategory } from '@/utils/types/interfaces/option-category.interface'
 
 const drawerStore = useDrawerStore()
 const categoryStore = useCategoryStore()
@@ -93,7 +98,6 @@ const categoryStore = useCategoryStore()
 const response = ref<Category | null>(null)
 const category = ref<Category | null>(null)
 const isShowInputImage = ref<boolean>(false)
-const formattedDefaultParent = ref<OptionCategory | null>(null)
 
 const validationSchema = toTypedSchema(categorySchema)
 
@@ -121,7 +125,9 @@ const onSubmit = handleSubmit(async () => {
     delete category.value.image
   }
 
-  delete category.value?.parent
+  if(category.value?.masterCategory) {
+    category.value.parent = ''
+  }
 
   formData.append('category', JSON.stringify(category.value))
 
@@ -141,12 +147,12 @@ const onSubmit = handleSubmit(async () => {
 
     if (json.success) {
       drawerStore.closeDrawer()
-      categoryStore.updateCategorie()
-      toastHandler('Produit modifié avec succès', ToastType.SUCCESS)
+      categoryStore.loadCategories()
+      toastHandler('Catégorie modifiée avec succès', ToastType.SUCCESS)
     }
   } catch (error) {
     console.error(error)
-    toastHandler('Erreur lors de la modification du produit.', ToastType.ERROR)
+    toastHandler('Erreur lors de la modification de la catégorie.', ToastType.ERROR)
   }
 })
 
@@ -163,6 +169,7 @@ watch(isShowInputImage, () => {
     }
   }
 })
+
 onMounted(async () => {
   const responseCategory = await getCategoryById(drawerStore.updateId)
 
@@ -172,18 +179,11 @@ onMounted(async () => {
     ? {
         name: responseCategory.name,
         description: responseCategory.description,
-        idParent: responseCategory.parent?._id,
-        parent: responseCategory.parent,
+        masterCategory: responseCategory.masterCategory || false,
+        parent: responseCategory.parent || undefined,
         imageApi: responseCategory.imageApi
       }
     : null
-
-  if (responseCategory.parent) {
-    formattedDefaultParent.value = {
-      value: responseCategory.parent._id as string,
-      label: responseCategory.parent.name
-    }
-  }
 })
 </script>
 
