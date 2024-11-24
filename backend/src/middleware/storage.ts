@@ -2,7 +2,7 @@ import multer from "multer";
 
 export const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "public/images/product");
+    cb(null, "public/images");
   },
   filename: function (req, file, cb) {
     const extention = `.${file.mimetype.split("/")[1]}`;
