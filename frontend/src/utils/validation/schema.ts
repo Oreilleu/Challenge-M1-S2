@@ -19,6 +19,7 @@ import {
   categoryNameValidation,
   categoryDescriptionValidation,
   categoryParentValidation,
+  masterCategoryValidation,
   streetValidation,
   cityValidation,
   postalCodeValidation,
@@ -88,7 +89,8 @@ export const categorySchema = z.object({
   name: categoryNameValidation,
   description: categoryDescriptionValidation,
   image: imagesValidation.optional(),
-  parent: categoryParentValidation
+  parent: categoryParentValidation,
+  master: masterCategoryValidation
 })
 
 export const deliveryAddressSchema = z.object({
