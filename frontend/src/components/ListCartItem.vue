@@ -1,5 +1,5 @@
 <template>
-  <ul>
+  <ul v-if="cartStore.cart.length > 0">
     <li v-for="cart in cartStore.cart" :key="cart.product._id">
       <CartItemCard :cartItem="cart" />
     </li>
