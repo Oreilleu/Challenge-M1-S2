@@ -82,7 +82,7 @@
 import useDeliveryAddressStore from '@/utils/store/useDeliveryAddressStore'
 import DeliveryAddressCard from './DeliveryAddressCard.vue'
 import type { DeliveryAddress } from '@/utils/types/interfaces/delivery-address.interface'
-import { ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import ModalDeliveryAddress from './ModalDeliveryAddress.vue'
 import Modal from './Modal.vue'
 import FormInput from './FormInput.vue'
@@ -92,9 +92,8 @@ import { useForm } from 'vee-validate'
 import useCartStore from '@/utils/store/useCartStore'
 import toastHandler from '@/utils/toastHandler'
 import { ToastType } from '@/utils/types/toast-type.enum'
-
-// Dans une commande je met le panier, l'id du user et l'id de l'adresse de livraison et un status + l'adresse de facturation
-// La création de la commande se fait lorsque le paiement stripe est terminé
+import useAuthStore from '@/utils/store/useAuthStore'
+import { StepperCart } from '@/utils/types/stepper-cart.enum'
 
 type Props = {
   onValidDeliveryAddress: () => void
@@ -104,6 +103,7 @@ const { onValidDeliveryAddress } = defineProps<Props>()
 
 const deliveryAddressStore = useDeliveryAddressStore()
 const cartStore = useCartStore()
+const authStore = useAuthStore()
 
 const modelModalDeliveryAddress = ref(false)
 const modelModalBillingAddress = ref(false)
@@ -124,9 +124,6 @@ const onSubmitBillingAddress = handleSubmit((values) => {
 })
 
 const goToPayment = () => {
-  // Check si une adresse de livraison est sélectionnée
-  // S'il n'y a pas d'adresse de livraison sélectionnée, on affiche une erreur
-
   if (!cartStore.selectedAddressId) {
     toastHandler('Veuillez sélectionner une adresse de livraison', ToastType.WARNING)
     return
@@ -134,6 +131,19 @@ const goToPayment = () => {
 
   onValidDeliveryAddress()
 }
+
+onBeforeMount(() => {
+  if (!cartStore.cart.length) {
+    toastHandler('Votre panier est vide.', ToastType.WARNING)
+    cartStore.activeStep = StepperCart.CART
+  }
+
+  if (!authStore.isAuthenticatedUser) {
+    toastHandler('Vous devez être connecter..', ToastType.WARNING)
+    cartStore.activeStep = StepperCart.LOGIN
+    return
+  }
+})
 </script>
 
 <style scoped>

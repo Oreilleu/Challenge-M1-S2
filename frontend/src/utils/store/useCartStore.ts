@@ -11,13 +11,7 @@ const useCartStore = defineStore('cart', () => {
   const price = ref<number>(0)
   const billingAddress = ref<DeliveryAddress | null>(null)
   const selectedAddressId = ref<string>('')
-
-  const order = ref({
-    products: cart.value,
-    price: price.value,
-    billingAddress: null,
-    shippingAddress: null
-  })
+  const activeStep = ref<number>(0)
 
   const addProduct = (product: AggregateProductOnVariation, quantite?: number) => {
     if (outOfStock(product)) return
@@ -71,6 +65,7 @@ const useCartStore = defineStore('cart', () => {
   }
 
   const clearCart = () => {
+    localStorageHandler().remove(LocalStorageKeys.CART)
     cart.value = []
     price.value = 0
   }
@@ -96,9 +91,9 @@ const useCartStore = defineStore('cart', () => {
   })
 
   return {
+    activeStep,
     selectedAddressId,
     billingAddress,
-    order,
     cart,
     price,
     addProduct,

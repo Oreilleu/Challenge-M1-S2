@@ -14,6 +14,7 @@ import filterRouter from "./routes/filter";
 import checkAdmin from "./middleware/checkAdmin";
 import checkToken from "./middleware/auth";
 import deliveryAddressRouter from "./routes/delivery-address";
+import sessionCheckoutRouter from "./routes/session-checkout";
 const app = express();
 
 connectDb();
@@ -36,6 +37,7 @@ app.use("/api/product", checkToken, checkAdmin, productRouter);
 app.use("/api/variation", variationRouter);
 app.use("/api/filter", filterRouter);
 app.use("/api/category", categoryRoute());
+app.use("/api/checkout", checkToken, sessionCheckoutRouter);
 
 // Error server handler
 app.use(errorHandler);
