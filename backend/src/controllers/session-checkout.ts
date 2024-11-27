@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 export const createSession = async (req: Request, res: Response) => {
-  const { price, description, nameOrder } = req.body;
+  const { price, email, description, nameOrder } = req.body;
 
   if (!price || !description || !nameOrder) {
     res.status(400).send("Missing required parameters");
@@ -27,12 +27,15 @@ export const createSession = async (req: Request, res: Response) => {
         },
       ],
       mode: "payment",
+      customer_email: email,
       return_url: `${process.env.FRONT_URL}/cart?session_id={CHECKOUT_SESSION_ID}`,
     });
 
-    res.send({ clientSecret: session.client_secret });
+    res
+      .status(200)
+      .json({ success: true, clientSecret: session.client_secret });
   } catch (error: any) {
-    res.status(500).send({ error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 };
 
@@ -42,11 +45,13 @@ export const getSessionStatus = async (req: Request, res: Response) => {
       req.query.session_id
     );
 
-    res.send({
+    // Récupérer la facture de stripe
+
+    res.status(200).json({
       status: session.status,
       customer_email: session.customer_details.email,
     });
   } catch (error: any) {
-    res.status(500).send({ error: error.message });
+    res.status(500).json({ success: false, error: error.message });
   }
 };
