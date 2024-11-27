@@ -35,11 +35,6 @@ const orderSchema = new Schema({
     required: true,
     default: "pending",
   },
-  discount_amount:{
-    type: Schema.Types.ObjectId,
-    ref: "promoCode",
-    required: false,
-  }
 });
 
 const OrderModel = mongoose.model("Order", orderSchema);
