@@ -23,6 +23,19 @@
       <el-checkbox v-model="category.masterCategory" label="Catégorie principale"/>
     </div>
 
+    <!-- <FormInput
+      id="masterCategory"
+      name="masterCategory"
+      label="Categorie principale"
+      type="checkbox"
+      v-model="category.masterCategory"
+    /> -->
+
+    <!-- <Field name="masterCategory" v-model="category.masterCategory" type="checkbox"/> Catégorie Principale
+    <ErrorMessage name="masterCategory" /> -->
+
+  
+
     <FormInputSelect v-if="!category.masterCategory"
       id="parent"
       name="parent"
@@ -58,6 +71,7 @@ import FormInputSelect from '../FormInputSelect.vue'
 import FormInputFile from '../FormInputFile.vue'
 import useCategoryStore from '@/utils/store/useCategoryStore'
 import { v4 as uuidv4 } from 'uuid'
+import {Field} from 'vee-validate'
 
 const drawerStore = useDrawerStore()
 const categoryStore = useCategoryStore()
