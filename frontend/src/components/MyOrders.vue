@@ -93,11 +93,14 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { CalendarIcon, PackageIcon, EyeIcon, XIcon } from 'lucide-vue-next'
+import useOrderStore from '@/utils/store/useOrderStore'
 
 const selectedStatus = ref('')
 const dateRange = ref(null)
 const currentPage = ref(1)
 const pageSize = ref(5)
+
+const orderStore = useOrderStore() // Tu as les commandes de l'utilisateur dans orderStore.orders
 
 const orders = ref([
   {

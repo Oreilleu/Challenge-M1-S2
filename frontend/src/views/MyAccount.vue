@@ -12,7 +12,9 @@
       <div class="profile-section">
         <img
           src="https://static.vecteezy.com/system/resources/thumbnails/005/129/844/small_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg"
-          alt="Profile" class="avatar" />
+          alt="Profile"
+          class="avatar"
+        />
         <h2>Bonjour</h2>
         <p class="user-name">Fatoumata Diaby</p>
         <p class="client-id">N° client : CLIENT123</p>
@@ -20,8 +22,13 @@
       </div>
 
       <nav class="nav-menu">
-        <a v-for="item in menuItems" :key="item.id" href="#" @click.prevent="selectMenuItem(item)"
-          :class="['nav-item', { active: currentView === item.id }]">
+        <a
+          v-for="item in menuItems"
+          :key="item.id"
+          href="#"
+          @click.prevent="selectMenuItem(item)"
+          :class="['nav-item', { active: currentView === item.id }]"
+        >
           {{ item.label }}
         </a>
       </nav>
