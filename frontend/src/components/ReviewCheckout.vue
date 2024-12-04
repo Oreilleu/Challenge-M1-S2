@@ -48,7 +48,7 @@ const createOrder = async (statusCheckout: string) => {
       body: JSON.stringify({
         cart: cartStore.cart,
         totalPrice: cartStore.price,
-        addressId: localStorageHandler().get(LocalStorageKeys.SELECTED_ADDRESS_ID),
+        address: localStorageHandler().get(LocalStorageKeys.SELECTED_ADDRESS_ID),
         statusCheckout: statusCheckout,
         billingAddress: localStorageHandler().get(LocalStorageKeys.BILLING_ADDRESS) || null
       })
