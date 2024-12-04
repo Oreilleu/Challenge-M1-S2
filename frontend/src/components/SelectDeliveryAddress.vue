@@ -34,7 +34,7 @@
 
   <el-button
     v-if="cartStore.billingAddress"
-    @click="cartStore.billingAddress = null"
+    @click="removeBillingAddress"
     style="display: block; margin-top: 20px; margin-left: 0"
   >
     Mon adresse de facturation est identique à mon adresse de livraison
@@ -94,6 +94,8 @@ import toastHandler from '@/utils/toastHandler'
 import { ToastType } from '@/utils/types/toast-type.enum'
 import useAuthStore from '@/utils/store/useAuthStore'
 import { StepperCart } from '@/utils/types/stepper-cart.enum'
+import localStorageHandler from '@/utils/localStorageHandler'
+import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
 
 type Props = {
   onValidDeliveryAddress: () => void
@@ -115,13 +117,22 @@ const { handleSubmit, errors } = useForm<DeliveryAddress>({
 })
 
 const selectAddress = (adress: DeliveryAddress) => {
-  cartStore.selectedAddressId = adress._id || ''
+  if (!adress._id) return
+
+  cartStore.selectedAddressId = adress._id
+  localStorageHandler().set(LocalStorageKeys.SELECTED_ADDRESS_ID, adress._id)
 }
 
 const onSubmitBillingAddress = handleSubmit((values) => {
   cartStore.billingAddress = values
   modelModalBillingAddress.value = false
+  localStorageHandler().set(LocalStorageKeys.BILLING_ADDRESS, values)
 })
+
+const removeBillingAddress = () => {
+  cartStore.billingAddress = null
+  localStorageHandler().remove(LocalStorageKeys.BILLING_ADDRESS)
+}
 
 const goToPayment = () => {
   if (!cartStore.selectedAddressId) {

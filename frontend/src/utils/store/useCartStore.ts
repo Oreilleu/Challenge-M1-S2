@@ -81,6 +81,14 @@ const useCartStore = defineStore('cart', () => {
     return product.variations.quantite === 0
   }
 
+  const formatDescriptionCheckout = () => {
+    return cart.value
+      .map((cartItem) => {
+        return `${cartItem.product.name} x ${cartItem.quantite}`
+      })
+      .join(', ')
+  }
+
   onMounted(() => {
     const cartItems = localStorageHandler().get(LocalStorageKeys.CART)
     if (cartItems) {
@@ -100,7 +108,8 @@ const useCartStore = defineStore('cart', () => {
     updateQuantity,
     removeProduct,
     clearCart,
-    calculTotal
+    calculTotal,
+    formatDescriptionCheckout
   }
 })
 

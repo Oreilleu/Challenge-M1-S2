@@ -31,8 +31,10 @@ const initialize = async () => {
         },
         body: JSON.stringify({
           price: cartStore.price,
-          description: 'test',
-          nameOrder: 'Commande 1'
+          description: cartStore.formatDescriptionCheckout(),
+          email: localStorageHandler().get(LocalStorageKeys.USER).email,
+          nameOrder: 'Commande 1',
+          cart: cartStore.cart
         })
       }
     )
@@ -48,8 +50,7 @@ const initialize = async () => {
   }
 
   if (checkout.value) {
-    checkout.value.unmount()
-    checkout.value = null
+    checkout.value.destroy()
   }
 
   checkout.value = await stripe.initEmbeddedCheckout({

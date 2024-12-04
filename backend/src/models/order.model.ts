@@ -8,14 +8,14 @@ const orderSchema = new Schema({
     ref: "User",
     required: true,
   },
-  products: [
+  cart: [
     {
       product: {
         type: Schema.Types.ObjectId,
         ref: "Product",
         required: true,
       },
-      quantity: {
+      quantite: {
         type: Number,
         required: true,
       },
@@ -25,21 +25,30 @@ const orderSchema = new Schema({
     type: Number,
     required: true,
   },
-  bilingAddress: {
+  addressId: {
     type: Schema.Types.ObjectId,
     ref: "DeliveryAddress",
     required: true,
+  },
+  billingAddress: {
+    street: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
+    postalCode: {
+      type: String,
+    },
+    country: {
+      type: String,
+    },
   },
   status: {
     type: String,
     required: true,
     default: "pending",
   },
-  discount_amount:{
-    type: Schema.Types.ObjectId,
-    ref: "promoCode",
-    required: false,
-  }
 });
 
 const OrderModel = mongoose.model("Order", orderSchema);
