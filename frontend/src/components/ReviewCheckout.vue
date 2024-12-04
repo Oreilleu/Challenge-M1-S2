@@ -1,7 +1,7 @@
 <template>
   <h1>Review</h1>
 
-  <div v-if="isCompleteCheckout">
+  <div v-if="statusCheckout === 'complete'">
     <h2>Commande terminée</h2>
     <p>
       Votre commande a été finalisée avec succès. Vous recevrez un email de confirmation à l'adresse
@@ -9,7 +9,7 @@
     </p>
   </div>
 
-  <div v-if="!isCompleteCheckout">
+  <div v-if="statusCheckout !== 'complete'">
     <h2>Une erreur s'est produite</h2>
     <p>
       Une erreur s'est produite lors de la finalisation de votre commande. Veuillez réessayer ou
@@ -34,16 +34,29 @@ const router = useRouter()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 
-const isCompleteCheckout = ref(false)
+const statusCheckout = ref('')
 const emailCustomer = ref<string | null>(null)
 
-// Ici si la commande est finalisé, je supprime le session_id
-// + je créer la commande
-// + j'envoie un email de confirmation
-
-// Si la commande n'est pas complete, j'affiche le message d'erreur
-
-// Je renvoie une erreur dans le back quand je suis dans le catch et si je tombe dans ce catch je vide les strore et je redirige vers la panier
+const createOrder = async (statusCheckout: string) => {
+  try {
+    await fetch(`${import.meta.env.VITE_BASE_API_URL}/order/create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+      },
+      body: JSON.stringify({
+        cart: cartStore.cart,
+        totalPrice: cartStore.price,
+        addressId: localStorageHandler().get(LocalStorageKeys.SELECTED_ADDRESS_ID),
+        statusCheckout: statusCheckout,
+        billingAddress: localStorageHandler().get(LocalStorageKeys.BILLING_ADDRESS) || null
+      })
+    })
+  } catch (error) {
+    console.error('Error creating order', error)
+  }
+}
 
 onMounted(async () => {
   const sessionId = route.query.session_id
@@ -65,16 +78,10 @@ onMounted(async () => {
     const data: { status: string; customer_email: string } = await response.json()
 
     if (data.status === 'complete') {
-      isCompleteCheckout.value = true
+      statusCheckout.value = data.status
       emailCustomer.value = data.customer_email
-      // cree la commande
-      // envoyer un email avec la facture
-      cartStore.clearCart()
-      localStorageHandler().remove(LocalStorageKeys.CART)
-      localStorageHandler().remove(LocalStorageKeys.SELECTED_ADDRESS_ID)
-      localStorageHandler().remove(LocalStorageKeys.BILLING_ADDRESS)
     } else {
-      isCompleteCheckout.value = false
+      statusCheckout.value = data.status
       emailCustomer.value = null
     }
   } catch (error) {
@@ -82,8 +89,19 @@ onMounted(async () => {
       "Une erreur s'est produite lors de la finalisation de votre commande.",
       ToastType.ERROR
     )
+    statusCheckout.value = 'error'
     cartStore.activeStep = StepperCart.CART
     router.push('/cart')
+  } finally {
+    createOrder(statusCheckout.value)
+
+    if (statusCheckout.value === 'complete') {
+      cartStore.clearCart()
+      cartStore.selectedAddressId = ''
+      localStorageHandler().remove(LocalStorageKeys.CART)
+      localStorageHandler().remove(LocalStorageKeys.SELECTED_ADDRESS_ID)
+      localStorageHandler().remove(LocalStorageKeys.BILLING_ADDRESS)
+    }
   }
 })
 

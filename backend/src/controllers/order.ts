@@ -1,21 +1,25 @@
 import { Request, Response } from "express";
 import OrderModel from "../models/order.model";
+import { AuthenticatedRequest } from "../types/authenticated-request.interface";
 
-export const createOrder = async (req: Request, res: Response) => {
-  const { user, products, totalPrice, bilingAddress, status } = req.body;
+export const create = async (req: Request, res: Response) => {
+  const { user } = req as AuthenticatedRequest;
+  const { cart, totalPrice, addressId, billingAddress, statusCheckout } =
+    req.body;
 
-  if (!user || !products || !totalPrice || !bilingAddress || !status) {
-    res.status(400).send("Missing required parameters");
+  if (!user || !cart || !totalPrice || !statusCheckout) {
+    res.status(404).send("Bad request");
     return;
   }
 
   try {
     const order = await OrderModel.create({
-      user,
-      products,
+      user: user._id,
+      cart,
+      addressId,
       totalPrice,
-      bilingAddress,
-      status,
+      billingAddress,
+      status: statusCheckout,
     });
 
     res.status(201).json({
@@ -57,5 +61,3 @@ export const getOne = async (req: Request, res: Response) => {
     res.status(500).send({ error: error.message });
   }
 };
-
-// export const get
