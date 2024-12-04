@@ -25,7 +25,7 @@ const orderSchema = new Schema({
     type: Number,
     required: true,
   },
-  addressId: {
+  address: {
     type: Schema.Types.ObjectId,
     ref: "DeliveryAddress",
     required: true,
