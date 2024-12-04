@@ -33,7 +33,8 @@ const initialize = async () => {
           price: cartStore.price,
           description: cartStore.formatDescriptionCheckout(),
           email: localStorageHandler().get(LocalStorageKeys.USER).email,
-          nameOrder: 'Commande 1'
+          nameOrder: 'Commande 1',
+          cart: cartStore.cart
         })
       }
     )
