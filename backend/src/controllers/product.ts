@@ -65,41 +65,32 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
       ? undefined
       : searchOption;
 
-  const query = filterOptions
-    ? filterOptions.column === ColumnProduct.ALL
-      ? {
-          $or: [
-            {
-              [ColumnProduct.NAME]: {
-                $regex: filterOptions.searchInput,
-                $options: "i",
-              },
-            },
-            {
-              [ColumnProduct.MODEL]: {
-                $regex: filterOptions.searchInput,
-                $options: "i",
-              },
-            },
-            {
-              "category.name": {
-                $regex: filterOptions.searchInput,
-                $options: "i",
-              },
-            },
-          ],
-        }
-      : filterOptions.column === ColumnProduct.CATEGORY
-      ? {
-          "category.name": { $regex: filterOptions.searchInput, $options: "i" },
-        }
-      : {
-          [filterOptions.column]: {
-            $regex: filterOptions.searchInput,
-            $options: "i",
-          },
-        }
-    : {};
+  const buildQuery = (filterOptions: any) => {
+    if (!filterOptions) {
+      return {};
+    }
+
+    const { column, searchInput } = filterOptions;
+    const regex = { $regex: searchInput, $options: "i" };
+
+    if (column === ColumnProduct.ALL) {
+      return {
+        $or: [
+          { [ColumnProduct.NAME]: regex },
+          { [ColumnProduct.MODEL]: regex },
+          { "category.name": regex },
+        ],
+      };
+    }
+
+    if (column === ColumnProduct.CATEGORY) {
+      return { "category.name": regex };
+    }
+
+    return { [column]: regex };
+  };
+
+  const query = buildQuery(filterOptions);
 
   try {
     const paginates = await ProductModel.aggregate([
