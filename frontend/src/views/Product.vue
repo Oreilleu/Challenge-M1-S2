@@ -10,8 +10,9 @@
                 v-for="value in filters"
                 :key="value"
                 :label="{ name: name, value: value }"
-                >{{ value }}</el-checkbox
               >
+                {{ value }}
+              </el-checkbox>
             </el-checkbox-group>
           </div>
         </el-card>
@@ -25,7 +26,10 @@
           style="margin-bottom: 20px"
         />
         <section>
-          <ul class="listVariation">
+          <el-text v-if="!variationStore.paginateVariation?.paginates.length">
+            Pas de produit correspondant aux filtres actifs.
+          </el-text>
+          <ul v-if="variationStore.paginateVariation?.paginates.length" class="listVariation">
             <li
               v-for="(variation, indexVariation) in variationStore.paginateVariation?.paginates"
               :key="indexVariation"
@@ -81,7 +85,7 @@ watch(selectedFilters, () => {
 })
 
 watch(searchQuery, () => {
-  if (searchQuery.value.length < 3) {
+  if (searchQuery.value.length < 3 && selectedFilters.value.length === 0) {
     variationStore.updatePaginateVariations(paginationPage.value, VARIATION_PER_PAGE)
     return
   }

@@ -2,8 +2,10 @@ import { RequestHandler } from "express";
 import ProductModel from "../models/product.model";
 import { AggregateProductOnFilter } from "../types/aggregate-product-on-filter.interface";
 import { BodyPaginateVariation } from "../types/body-paginate-variation.interface";
+
 export const getPaginate: RequestHandler = async (req, res, next) => {
   const { page, limit, searchOption } = req.body as BodyPaginateVariation;
+
   if (!page || !limit) {
     res.status(400).json({
       success: false,
@@ -11,6 +13,7 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
     });
     return;
   }
+
   const parsedPage = parseInt(page);
   const parsedLimit = parseInt(limit);
 
@@ -21,26 +24,28 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
 
   const searchInput = searchOption?.searchInput || "";
   const filters = searchOption?.filters || [];
-  const query = (aggregateCondition: any) => {
-    if (aggregateCondition.length > 0) {
+
+  const query = (aggregateConditions: any) => {
+    if (aggregateConditions.length > 0) {
       if (searchInput) {
         return {
-          $and: [
-            ...aggregateCondition,
-            { name: { $regex: searchInput, $options: "i" } },
-          ],
+          $or: aggregateConditions.map((condition: any) => ({
+            $and: [condition, { name: { $regex: searchInput, $options: "i" } }],
+          })),
         };
       } else {
         return {
-          $or: aggregateCondition,
+          $or: aggregateConditions,
         };
       }
     }
+
     if (searchInput.length >= 3) {
       return { name: { $regex: searchInput, $options: "i" } };
     }
     return {};
   };
+
   try {
     const aggregateConditions = filters.map((filter: any) => ({
       "variations.filters.name": filter.name,
@@ -64,7 +69,8 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
       },
       { $skip: paginationOptions.skip },
       { $limit: paginationOptions.limit },
-    ]);
+    ]).sort({ createdAt: -1 });
+
     const count = await ProductModel.aggregate([
       { $unwind: "$variations" },
       { $unwind: "$variations.filters" },

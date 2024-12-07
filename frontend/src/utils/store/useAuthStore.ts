@@ -25,6 +25,9 @@ const useAuthStore = defineStore('auth', () => {
   const logout = () => {
     localStorageHandler().remove(LocalStorageKeys.AUTH_TOKEN)
     localStorageHandler().remove(LocalStorageKeys.USER)
+    localStorageHandler().remove(LocalStorageKeys.SELECTED_ADDRESS_ID)
+    localStorageHandler().remove(LocalStorageKeys.BILLING_ADDRESS)
+
     isAuthenticatedUser.value = false
     router.push('/login')
   }
