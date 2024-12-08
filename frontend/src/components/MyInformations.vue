@@ -31,9 +31,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { updateUserProfile } from '@/utils/api/user'
+import localStorageHandler from '@/utils/localStorageHandler';
+import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum';
 
 const form = ref({
   civility: '',
@@ -75,7 +77,7 @@ const handleSubmit = async () => {
       }
       form.value = userData
 
-      localStorage.setItem('user', JSON.stringify(userData))
+      localStorageHandler().set(LocalStorageKeys.USER, userData);
     } else {
       ElMessage.error(response.message || 'Échec de la mise à jour du profil')
     }
@@ -87,12 +89,10 @@ const handleSubmit = async () => {
   }
 }
 
-onMounted(() => {
-  const userData = localStorage.getItem('user');
-  if (userData) {
-    form.value = JSON.parse(userData);
-  }
-});
+const userData = localStorageHandler().get(LocalStorageKeys.USER);
+if (userData) {
+  form.value = userData;
+}
 
 </script>
 

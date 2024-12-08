@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { MenuIcon } from 'lucide-vue-next'
 import MyInformations from '@/components/MyInformations.vue'
 import MyOrders from '@/components/MyOrders.vue'
@@ -51,6 +51,8 @@ import MyAddresses from '@/components/MyAddresses.vue'
 import MyFavorites from '@/components/MyFavorites.vue'
 import MySettings from '@/components/MySettings.vue'
 import useAuthStore from '@/utils/store/useAuthStore'
+import localStorageHandler from '@/utils/localStorageHandler'
+import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
 
 const authStore = useAuthStore()
 
@@ -86,12 +88,10 @@ const logout = () => {
   authStore.logout()
 }
 
-onMounted(() => {
-  const userData = localStorage.getItem('user');
-  if (userData) {
-    user.value = JSON.parse(userData);
-  }
-});
+const userData = localStorageHandler().get(LocalStorageKeys.USER);
+if (userData) {
+  user.value = userData;
+}
 </script>
 
 <style>
