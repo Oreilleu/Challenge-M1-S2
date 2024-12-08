@@ -33,7 +33,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { fetchCurrentUser, updateUserProfile } from '@/utils/api/user'
+import { updateUserProfile } from '@/utils/api/user'
 
 const form = ref({
   civility: '',
@@ -44,25 +44,6 @@ const form = ref({
 })
 
 const isSubmitting = ref(false)
-
-const getUserData = async () => {
-  try {
-    const response = await fetchCurrentUser()
-    if (response.success && response.data) {
-      const userData = response.data
-      form.value = {
-        civility: userData.civility || '',
-        firstname: userData.firstname || '',
-        lastname: userData.lastname || '',
-        email: userData.email || '',
-        phone: userData.phone || ''
-      }
-    }
-  } catch (error) {
-    ElMessage.error('Impossible de récupérer les données utilisateur')
-    console.error('Erreur lors de la récupération des données utilisateur :', error)
-  }
-}
 
 const handleSubmit = async () => {
   // Validation basique des champs
@@ -85,14 +66,16 @@ const handleSubmit = async () => {
 
     if (response.success) {
       ElMessage.success('Profil mis à jour avec succès')
-      const userData = response.data
-      form.value = {
-        civility: userData.civility || '',
-        firstname: userData.firstname || '',
-        lastname: userData.lastname || '',
-        email: userData.email || '',
-        phone: userData.phone || ''
+      const userData = {
+        civility: response.data.civility || '',
+        firstname: response.data.firstname || '',
+        lastname: response.data.lastname || '',
+        email: response.data.email || '',
+        phone: response.data.phone || ''
       }
+      form.value = userData
+
+      localStorage.setItem('user', JSON.stringify(userData))
     } else {
       ElMessage.error(response.message || 'Échec de la mise à jour du profil')
     }
@@ -105,8 +88,12 @@ const handleSubmit = async () => {
 }
 
 onMounted(() => {
-  getUserData()
-})
+  const userData = localStorage.getItem('user');
+  if (userData) {
+    form.value = JSON.parse(userData);
+  }
+});
+
 </script>
 
 <style>

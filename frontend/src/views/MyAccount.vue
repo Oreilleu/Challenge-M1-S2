@@ -12,23 +12,20 @@
       <div class="profile-section">
         <img
           src="https://static.vecteezy.com/system/resources/thumbnails/005/129/844/small_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg"
-          alt="Profile"
-          class="avatar"
-        />
+          alt="Profile" class="avatar" />
         <h2>Bonjour</h2>
-        <p class="user-name">Fatoumata Diaby</p>
-        <p class="client-id">N° client : CLIENT123</p>
-        <el-button type="danger" class="logout-btn" @click="logout">ME DÉCONNECTER</el-button>
+        <p class="user-name">
+          <span v-if="user.civility === 'woman'">Mme</span>
+          <span v-else>Mr</span>
+          {{ " " + user.firstname + " " + user.lastname }}
+        </p>
+        <el-button v-if="!authStore.isAuthenticatedUser" type="danger" class="logout-btn" @click="logout">ME
+          DÉCONNECTER</el-button>
       </div>
 
       <nav class="nav-menu">
-        <a
-          v-for="item in menuItems"
-          :key="item.id"
-          href="#"
-          @click.prevent="selectMenuItem(item)"
-          :class="['nav-item', { active: currentView === item.id }]"
-        >
+        <a v-for="item in menuItems" :key="item.id" href="#" @click.prevent="selectMenuItem(item)"
+          :class="['nav-item', { active: currentView === item.id }]">
           {{ item.label }}
         </a>
       </nav>
@@ -46,13 +43,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { MenuIcon } from 'lucide-vue-next'
 import MyInformations from '@/components/MyInformations.vue'
 import MyOrders from '@/components/MyOrders.vue'
 import MyAddresses from '@/components/MyAddresses.vue'
 import MyFavorites from '@/components/MyFavorites.vue'
 import MySettings from '@/components/MySettings.vue'
+import useAuthStore from '@/utils/store/useAuthStore'
+
+const authStore = useAuthStore()
 
 const isMenuOpen = ref(false)
 const currentView = ref('my-account')
@@ -65,6 +65,14 @@ const menuItems = [
   { id: 'my-settings', label: 'Paramètres' }
 ]
 
+const user = ref({
+  civility: '',
+  firstname: '',
+  lastname: '',
+  email: '',
+  phone: ''
+})
+
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
 }
@@ -75,9 +83,15 @@ const selectMenuItem = (item) => {
 }
 
 const logout = () => {
-  // Logique de déconnexion à implémenter
-  console.log('Déconnexion')
+  authStore.logout()
 }
+
+onMounted(() => {
+  const userData = localStorage.getItem('user');
+  if (userData) {
+    user.value = JSON.parse(userData);
+  }
+});
 </script>
 
 <style>
