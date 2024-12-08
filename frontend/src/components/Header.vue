@@ -42,7 +42,7 @@
       >
         <el-button
           v-if="authStore.isAuthenticatedUser"
-          @click="goToMyAccount"
+          @click="authStore.isAdmin ? goToAdminPage() : goToMyAccount()"
           style="border: none; height: 100%"
         >
           <el-icon :size="20">
@@ -121,6 +121,10 @@ const openCartDrawer = () => {
 
 const goToMyAccount = () => {
   router.push('/my-account')
+}
+
+const goToAdminPage = () => {
+  router.push('/admin/products')
 }
 
 const rowStyle = computed(() => {

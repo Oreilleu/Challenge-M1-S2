@@ -1,9 +1,10 @@
 <template>
   <div class="container">
-    <img src="/logo.png" width="80px" height="80px" alt="logo" aria-hidden="true" />
-    <button @click="authStore.logout">Logout</button>
+    <el-link href="/" style="width: 80px; height: 80px">
+      <el-image src="/logo.png" fit="cover" />
+    </el-link>
+    <el-button @click="authStore.logout" type="primary"> Se déconnecter </el-button>
     <el-divider class="divider" />
-
     <el-menu class="menu">
       <el-sub-menu index="1">
         <template #title>
@@ -12,9 +13,9 @@
         <el-menu-item>
           <RouterLink to="/admin/products">Liste des produits</RouterLink>
         </el-menu-item>
-        <el-menu-item @click="drawerStore.openDrawer(DrawerType.CREATE_PRODUCT)"
-          >Créer un produit</el-menu-item
-        >
+        <el-menu-item @click="drawerStore.openDrawer(DrawerType.CREATE_PRODUCT)">
+          Créer un produit
+        </el-menu-item>
       </el-sub-menu>
       <el-sub-menu index="2">
         <template #title>
@@ -23,20 +24,31 @@
         <el-menu-item>
           <RouterLink to="/admin/categories">Liste des catégories</RouterLink>
         </el-menu-item>
-        <el-menu-item @click="drawerStore.openDrawer(DrawerType.CREATE_CATEGORY)"
-          >Créer une catégorie</el-menu-item
-        >
+        <el-menu-item @click="drawerStore.openDrawer(DrawerType.CREATE_CATEGORY)">
+          Créer une catégorie
+        </el-menu-item>
       </el-sub-menu>
       <el-sub-menu index="3">
+        <template #title>
+          <span>Commande</span>
+        </template>
+        <el-menu-item>
+          <RouterLink to="/admin/orders">Liste des commandes</RouterLink>
+        </el-menu-item>
+        <el-menu-item @click="drawerStore.openDrawer(DrawerType.CREATE_ORDER)">
+          Créer une commande
+        </el-menu-item>
+      </el-sub-menu>
+      <el-sub-menu index="4">
         <template #title>
           <span>Utilisateurs</span>
         </template>
         <el-menu-item>
           <RouterLink to="/admin/users">Liste des utilisateurs</RouterLink>
         </el-menu-item>
-        <el-menu-item @click="drawerStore.openDrawer(DrawerType.CREATE_USER)"
-          >Créer un utilisateurs</el-menu-item
-        >
+        <el-menu-item @click="drawerStore.openDrawer(DrawerType.CREATE_USER)">
+          Créer un utilisateurs
+        </el-menu-item>
       </el-sub-menu>
     </el-menu>
   </div>
