@@ -3,6 +3,7 @@ import { RequestHandler } from "express";
 import { AuthenticatedRequest } from "../types/authenticated-request.interface";
 import { ColumnUser } from "../types/column-user.interface";
 import UserModel from "../models/user.model";
+import { User } from "../types/user.interface";
 
 export const getOne: RequestHandler = (req, res, next) => {
   const { user } = req as AuthenticatedRequest;
@@ -138,6 +139,70 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
     res.status(500).json({
       success: false,
       message: (error as Error).message,
+    });
+  }
+};
+
+export const edit: RequestHandler = async (req, res, next) => {
+  const body: User = JSON.parse(req.body.user);
+  const { id } = req.params;
+
+  if (!id) {
+    res.status(400).json({
+      success: false,
+      message: "L'identifiant de l'utilisateur est requis",
+    });
+    return;
+  }
+
+  if (!body) {
+    res.status(400).json({
+      success: false,
+      message: "Les données de l'utilisateur sont requises",
+    });
+    return;
+  }
+  try {
+    const user = await UserModel.findByIdAndUpdate(id, body);
+
+    if (!user) {
+      res.status(400).json({
+        success: false,
+        message: "Utilisateur non trouvé",
+      });
+      return;
+    }
+    await user.save();
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: (error as Error).message,
+    });
+  }
+};
+
+export const remove: RequestHandler = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const user = await UserModel.findByIdAndDelete(id);
+
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: "Utilisateur non trouvé",
+      });
+      return;
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: (error as Error).message,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Utilisateur supprimé avec succès",
     });
   }
 };

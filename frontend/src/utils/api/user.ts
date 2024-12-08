@@ -3,7 +3,7 @@ import toastHandler from '../toastHandler'
 import { LocalStorageKeys } from '../types/local-storage-keys.enum'
 import { ToastType } from '../types/toast-type.enum'
 import type { PaginateUser } from '../types/interfaces/paginate-user.interface'
-import type { UserSearchOption } from '../types/interfaces/user-search-optiion.interface'
+import type { UserSearchOption } from '../types/interfaces/user-search-option.interface'
 import type { ResponseApi } from '../types/interfaces/response-api.interface'
 
 // TODO : faire un fetcher

@@ -81,9 +81,7 @@ const onChangeSearch = (e: string) => {
 }
 
 onMounted(() => {
-  const searchOption = createSearchOption()
-
-  userStore.updatePaginateUsers(page.value, NUMBER_ADMIN_USER_PER_PAGE, searchOption)
+  userStore.updatePaginateUsers(page.value, NUMBER_ADMIN_USER_PER_PAGE)
 })
 </script>
 
