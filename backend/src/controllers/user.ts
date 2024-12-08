@@ -77,31 +77,6 @@ export const isAdmin: RequestHandler = async (req, res, next) => {
   });
 };
 
-export const getCurrentUser: RequestHandler = async (req, res, next) => {
-  const { user } = req as AuthenticatedRequest;
-
-  if (!user) {
-    res.status(400).json({
-      success: false,
-      message: "Pas d'utilisateur authentifié",
-    });
-    return;
-  }
-
-  const foundUser = await UserModel.findById(user._id).select("-password");
-  if (!foundUser) {
-    res.status(400).json({
-      success: false,
-      message: "Utilisateur non trouvé",
-    });
-  }
-
-  res.status(200).json({
-    success: true,
-    data: foundUser,
-  });
-};
-
 export const updateProfile: RequestHandler = async (req, res, next) => {
   try {
     const { user } = req as AuthenticatedRequest;
