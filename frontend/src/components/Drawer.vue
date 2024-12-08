@@ -30,8 +30,10 @@ const handlerTitle = {
   [DrawerType.CREATE_PRODUCT]: 'Ajouter un produit',
   [DrawerType.CREATE_CATEGORY]: 'Ajouter une catégorie',
   [DrawerType.CREATE_USER]: 'Ajouter un utilisateur',
+  [DrawerType.CREATE_ORDER]: 'Ajouter une commande',
   [DrawerType.UPDATE_PRODUCT]: `Modifier le produit`,
   [DrawerType.UPDATE_CATEGORY]: `Modifier la catégorie`,
+  [DrawerType.UPDATE_ORDER]: `Modifier la commande`,
   [DrawerType.CART]: 'Panier',
   [DrawerType.NONE]: null
 }
@@ -42,6 +44,8 @@ const handlerForm = {
   [DrawerType.CREATE_USER]: FormAddUser,
   [DrawerType.UPDATE_PRODUCT]: FormUpdateProduct,
   [DrawerType.UPDATE_CATEGORY]: FormUpdateCategory,
+  [DrawerType.CREATE_ORDER]: null,
+  [DrawerType.UPDATE_ORDER]: null,
   [DrawerType.CART]: CartDrawer,
   [DrawerType.NONE]: null
 }
