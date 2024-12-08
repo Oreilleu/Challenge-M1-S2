@@ -2,27 +2,27 @@
   <div class="addresses-container">
     <h1 class="addresses-title">MES ADRESSES</h1>
 
-    <div class="addresses-actions">
+    <!-- <div class="addresses-actions">
       <el-button type="primary" @click="openAddressModal('new')" class="add-address-btn">
         <PlusIcon :size="16" class="button-icon" />
         Ajouter une adresse
       </el-button>
-    </div>
+    </div> -->
 
     <div class="addresses-grid">
-      <div v-for="(address, index) in addresses" :key="index" class="address-card">
+      <div v-for="(address, index) in deliveryAddressStore.deliveryAddress" :key="index" class="address-card">
         <div class="address-header">
           <span class="address-type">
             {{ address.type === 'billing' ? 'Adresse de facturation' : 'Adresse de livraison' }}
           </span>
           <div class="address-actions">
             <el-tooltip content="Modifier" placement="top">
-              <button class="action-btn edit-btn" @click="openAddressModal('edit', address)">
+              <button class="action-btn edit-btn" @click="openUpdateModal(address)">
                 <EditIcon :size="16" />
               </button>
             </el-tooltip>
             <el-tooltip content="Supprimer" placement="top">
-              <button class="action-btn delete-btn" @click="confirmDeleteAddress(index)">
+              <button class="action-btn delete-btn" @click="openDeleteModal(address)">
                 <TrashIcon :size="16" />
               </button>
             </el-tooltip>
@@ -39,153 +39,70 @@
       </div>
     </div>
 
+    <!-- Modal de suppression -->
+    <Modal :model-value="modelDeleteModal"
+      :title="'Suppression de l\'adresse de livraison : ' + selectedAddress?.city + ' - ' + selectedAddress?.street"
+      :display-footer="true" @close="modelDeleteModal = false" @confirm="deleteDeliveryAddress(selectedAddress?._id)" />
+
     <!-- Modal d'ajout/édition d'adresse -->
-    <el-dialog
-      v-model="addressModalVisible"
-      :title="modalMode === 'new' ? 'Ajouter une adresse' : 'Modifier l\'adresse'"
-      width="600px"
-    >
-      <el-form :model="currentAddress" label-position="top" class="address-form">
-        <div class="form-row">
-          <el-form-item label="Type d'adresse" required>
-            <el-radio-group v-model="currentAddress.type">
-              <el-radio label="delivery">Livraison</el-radio>
-              <el-radio label="billing">Facturation</el-radio>
-            </el-radio-group>
-          </el-form-item>
-        </div>
-
-        <div class="form-row">
-          <el-form-item label="Nom complet" required>
-            <el-input v-model="currentAddress.fullName" />
-          </el-form-item>
-        </div>
-
-        <div class="form-row">
-          <el-form-item label="Adresse" required>
-            <el-input v-model="currentAddress.street" />
-          </el-form-item>
-        </div>
-
-        <div class="form-row">
-          <el-form-item label="Complément d'adresse">
-            <el-input v-model="currentAddress.additionalInfo" />
-          </el-form-item>
-        </div>
-
-        <div class="form-row">
-          <el-form-item label="Code postal" required>
-            <el-input v-model="currentAddress.zipCode" />
-          </el-form-item>
-          <el-form-item label="Ville" required>
-            <el-input v-model="currentAddress.city" />
-          </el-form-item>
-        </div>
-
-        <div class="form-row">
-          <el-form-item label="Pays" required>
-            <el-select v-model="currentAddress.country" placeholder="Sélectionnez un pays">
-              <el-option label="France" value="France" />
-              <el-option label="Belgique" value="Belgique" />
-              <el-option label="Suisse" value="Suisse" />
-            </el-select>
-          </el-form-item>
-        </div>
-      </el-form>
-
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="addressModalVisible = false">Annuler</el-button>
-          <el-button type="primary" @click="saveAddress">Enregistrer</el-button>
-        </div>
-      </template>
-    </el-dialog>
+    <Modal :model-value="modelUpdateModal" :title="modalMode === 'new' ? 'Ajouter une adresse' : 'Modifier l\'adresse'"
+      @close="modelUpdateModal = false">
+      <FormUpdateDeliveryAddress :delivery-address="selectedAddress" :close-modal="closeUpdateModal" />
+    </Modal>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import { PlusIcon, EditIcon, TrashIcon } from 'lucide-vue-next'
-import { ElMessageBox } from 'element-plus'
+import { EditIcon, TrashIcon } from 'lucide-vue-next'
+import Modal from '@/components/Modal.vue'
+import useDeliveryAddressStore from '@/utils/store/useDeliveryAddressStore';
+import FormUpdateDeliveryAddress from './form/FormUpdateDeliveryAddress.vue';
+import { fetchDeleteDeliveryAddress } from '@/utils/api/delivery-address';
 
-const addresses = ref([
-  {
-    type: 'delivery',
-    fullName: 'Fatoumata Diaby',
-    street: '123 Rue de la République',
-    additionalInfo: 'Appartement 45',
-    zipCode: '75001',
-    city: 'Paris',
-    country: 'France'
-  },
-  {
-    type: 'billing',
-    fullName: 'Fatoumata Diaby',
-    street: '456 Avenue des Champs-Élysées',
-    additionalInfo: '',
-    zipCode: '75008',
-    city: 'Paris',
-    country: 'France'
-  }
-])
+const deliveryAddressStore = useDeliveryAddressStore()
 
-const addressModalVisible = ref(false)
+const modelDeleteModal = ref(false)
+const modelUpdateModal = ref(false)
 const modalMode = ref('new')
-const currentAddress = ref({
-  type: 'delivery',
-  fullName: '',
-  street: '',
-  additionalInfo: '',
-  zipCode: '',
-  city: '',
-  country: 'France'
-})
+const selectedAddress = ref(null)
 
 const openAddressModal = (mode, address = null) => {
   modalMode.value = mode
-  addressModalVisible.value = true
-
-  if (mode === 'edit' && address) {
-    currentAddress.value = { ...address }
-  } else {
-    currentAddress.value = {
-      type: 'delivery',
-      fullName: '',
-      street: '',
-      additionalInfo: '',
-      zipCode: '',
-      city: '',
-      country: 'France'
-    }
+  selectedAddress.value = address || {
+    type: 'delivery',
+    fullName: '',
+    street: '',
+    additionalInfo: '',
+    zipCode: '',
+    city: '',
+    country: 'France'
   }
+  modelUpdateModal.value = true
 }
 
-const saveAddress = () => {
-  if (modalMode.value === 'new') {
-    addresses.value.push({ ...currentAddress.value })
-  } else {
-    const index = addresses.value.findIndex(
-      (addr) => addr.fullName === currentAddress.value.fullName
-    )
-    if (index !== -1) {
-      addresses.value[index] = { ...currentAddress.value }
-    }
-  }
-  addressModalVisible.value = false
+const openUpdateModal = (address) => {
+  openAddressModal('edit', address)
 }
 
-const confirmDeleteAddress = (index) => {
-  ElMessageBox.confirm('Voulez-vous vraiment supprimer cette adresse ?', 'Confirmation', {
-    confirmButtonText: 'Supprimer',
-    cancelButtonText: 'Annuler',
-    type: 'warning'
-  })
-    .then(() => {
-      addresses.value.splice(index, 1)
-    })
-    .catch(() => {
-      // Annulation
-    })
+const closeUpdateModal = () => {
+  modelUpdateModal.value = false
+}
+
+const openDeleteModal = (address) => {
+  selectedAddress.value = address
+  modelDeleteModal.value = true
+}
+
+const deleteDeliveryAddress = async (id) => {
+  const isDeleted = await fetchDeleteDeliveryAddress(id)
+
+  if (isDeleted) {
+    deliveryAddressStore.updateDeliveryAddress()
+    modelDeleteModal.value = false
+  } else {
+    toastHandler("Erreur lors de la suppression de l'adresse de livraison", ToastType.ERROR)
+  }
 }
 </script>
 
