@@ -100,6 +100,7 @@ export const getAll = async (req: Request, res: Response) => {
 
   try {
     let orders;
+
     if (user.isAdmin) {
       orders = await OrderModel.find().populate("address");
     } else {
