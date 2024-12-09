@@ -1,5 +1,6 @@
 import localStorageHandler from '../localStorageHandler'
 import toastHandler from '../toastHandler'
+import type { ResponseApi } from '../types/interfaces/response-api.interface'
 import type { UpdateUserProfile } from '../types/interfaces/user.interface'
 import { LocalStorageKeys } from '../types/local-storage-keys.enum'
 import { ToastType } from '../types/toast-type.enum'
@@ -36,11 +37,11 @@ export const fetchIsAdminUser = async () => {
   const token = localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)
 
   if (!token) {
-    return
+    return false
   }
 
   try {
-    const res = await fetch(`${import.meta.env.VITE_BASE_API_URL}/user/is-admin`, {
+    const res: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/user/is-admin`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
@@ -49,14 +50,15 @@ export const fetchIsAdminUser = async () => {
 
     if (!res.ok) {
       toastHandler('Accès refusé', ToastType.ERROR)
-      return
+      return false
     }
 
-    const data = await res.json()
-    return data
+    const json: ResponseApi<boolean> = await res.json()
+
+    return json.data || false
   } catch (error) {
     toastHandler("Une erreur s'est produite", ToastType.ERROR)
-    return
+    return false
   }
 }
 

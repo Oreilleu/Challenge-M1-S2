@@ -24,6 +24,8 @@
 import type { AggregateProductOnVariation } from '@/utils/types/interfaces/aggregate-product-on-variation.interface'
 import { formatImageUrl } from '../utils/formatImageUrl'
 import useCartStore from '@/utils/store/useCartStore'
+import toastHandler from '@/utils/toastHandler'
+import { ToastType } from '@/utils/types/toast-type.enum'
 
 const cartStore = useCartStore()
 
@@ -33,5 +35,6 @@ const { product } = defineProps<{
 
 const addToCart = () => {
   cartStore.addProduct(product)
+  toastHandler('Le produit a bien été ajouté au panier.', ToastType.SUCCESS)
 }
 </script>
