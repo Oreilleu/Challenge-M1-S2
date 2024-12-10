@@ -1,10 +1,10 @@
 <template>
   <div class="addresses-container">
-    <h1 class="addresses-title">MES ADRESSES</h1>
+    <h1>Mes adresses</h1>
 
-    <el-text v-if="!deliveryAddressStore.deliveryAddress.length"
-      >Vous n'avez pas d'adresse de livraison enregistré.</el-text
-    >
+    <el-text v-if="!deliveryAddressStore.deliveryAddress.length">
+      Vous n'avez pas d'adresse de livraison enregistré.
+    </el-text>
 
     <div class="addresses-actions">
       <el-button type="primary" class="add-address-btn" @click="openAddDeliveryAddressModal()">
@@ -112,16 +112,6 @@ const deleteDeliveryAddress = async (id: string) => {
 </script>
 
 <style scoped>
-.addresses-container {
-  padding: 20px;
-}
-
-.addresses-title {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-  color: #333;
-}
-
 .addresses-actions {
   display: flex;
   margin: 20px 0;

@@ -8,4 +8,5 @@ export interface Order {
   address: DeliveryAddress | string
   billingAddress?: DeliveryAddress
   status: string
+  createdAt: string
 }

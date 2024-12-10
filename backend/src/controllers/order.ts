@@ -71,7 +71,10 @@ export const create = async (req: Request, res: Response) => {
   try {
     const order = await OrderModel.create({
       user: user._id,
-      cart,
+      cart: cart.map((item: any) => ({
+        product: item.product,
+        quantite: item.quantite,
+      })),
       address: addressId,
       totalPrice,
       billingAddress,
@@ -100,7 +103,6 @@ export const getAll = async (req: Request, res: Response) => {
 
   try {
     let orders;
-
     if (user.isAdmin) {
       orders = await OrderModel.find().populate("address");
     } else {

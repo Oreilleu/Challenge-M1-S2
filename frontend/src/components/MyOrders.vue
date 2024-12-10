@@ -1,77 +1,15 @@
 <template>
   <div class="orders-container">
-    <h1 class="orders-title">MES COMMANDES</h1>
+    <h1>Mes commandes</h1>
 
-    <div class="orders-filter">
-      <div class="filter-row">
-        <el-select v-model="selectedStatus" placeholder="Tous les statuts" class="status-select">
-          <el-option label="Tous les statuts" value="" />
-          <el-option label="En cours" value="in-progress" />
-          <el-option label="Livrée" value="delivered" />
-          <el-option label="Annulée" value="cancelled" />
-        </el-select>
-        <div class="date-range">
-          <el-date-picker
-            v-model="dateRange"
-            type="daterange"
-            range-separator="Au"
-            start-placeholder="Date de début"
-            end-placeholder="Date de fin"
-          />
-        </div>
-      </div>
-    </div>
+    <el-text v-if="!orderStore.orders.length">Vous n'avez pas encore passé de commande.</el-text>
 
-    <div class="orders-list">
-      <div v-for="order in filteredOrders" :key="order.id" class="order-card">
-        <div class="order-header">
-          <div class="order-info">
-            <span class="order-number">Commande #{{ order.id }}</span>
-            <span :class="['order-status', getStatusClass(order.status)]">
-              {{ getStatusLabel(order.status) }}
-            </span>
-          </div>
-          <div class="order-date">
-            <CalendarIcon :size="16" class="icon-calendar" />
-            {{ formatDate(order.date) }}
-          </div>
-        </div>
-
-        <div class="order-items">
-          <div v-for="item in order.items" :key="item.productId" class="order-item">
-            <div class="item-content">
-              <img :src="item.image" :alt="item.name" class="item-image" />
-              <div class="item-details">
-                <span class="item-name">{{ item.name }}</span>
-                <span class="item-quantity">Quantité : {{ item.quantity }}</span>
-              </div>
-            </div>
-            <span class="item-price">{{ formatPrice(item.price) }}</span>
-          </div>
-        </div>
-
-        <div class="order-summary">
-          <div class="order-total">
-            <span>Total TTC</span>
-            <strong>{{ formatPrice(order.total) }}</strong>
-          </div>
-          <div class="order-actions">
-            <el-button type="primary" size="small" @click="viewOrderDetails(order.id)">
-              <EyeIcon :size="16" class="button-icon" />
-              <span class="button-text">Détails</span>
-            </el-button>
-            <el-button
-              v-if="order.status === 'in-progress'"
-              type="danger"
-              size="small"
-              @click="cancelOrder(order.id)"
-            >
-              <XIcon :size="16" class="button-icon" />
-              <span class="button-text">Annuler</span>
-            </el-button>
-          </div>
-        </div>
-      </div>
+    <div v-if="orderStore.orders.length > 0">
+      <ul v-for="order in orderStore.orders" :key="order._id">
+        <li>
+          <OrderCard :order="order" />
+        </li>
+      </ul>
     </div>
 
     <div v-if="filteredOrders.length === 0" class="no-orders">
@@ -87,20 +25,36 @@
         layout="prev, pager, next"
       />
     </div>
+
+    <!-- <div v-if="filteredOrders.length === 0" class="no-orders">
+      <PackageIcon :size="48" class="icon-no-orders" />
+      <p>Vous n'avez pas encore de commandes.</p>
+    </div> -->
+
+    <!-- <div class="orders-pagination">
+      <el-pagination
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :total="totalOrders"
+        layout="prev, pager, next"
+      />
+    </div> -->
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
-import { CalendarIcon, PackageIcon, EyeIcon, XIcon } from 'lucide-vue-next'
+import { PackageIcon } from 'lucide-vue-next'
 import useOrderStore from '@/utils/store/useOrderStore'
+// @ts-ignore
+import OrderCard from './OrderCard.vue'
 
 const selectedStatus = ref('')
 const dateRange = ref(null)
 const currentPage = ref(1)
 const pageSize = ref(5)
 
-const orderStore = useOrderStore() // Tu as les commandes de l'utilisateur dans orderStore.orders
+const orderStore = useOrderStore()
 
 const orders = ref([
   {
@@ -133,13 +87,12 @@ const totalOrders = computed(() => orders.value.length)
 const filteredOrders = computed(() => {
   return orders.value.filter((order) => {
     const statusMatch = !selectedStatus.value || order.status === selectedStatus.value
-    const dateMatch =
-      !dateRange.value || (order.date >= dateRange.value[0] && order.date <= dateRange.value[1])
+    const dateMatch = !dateRange.value || true
     return statusMatch && dateMatch
   })
 })
 
-const formatDate = (date) => {
+const formatDate = (date: any) => {
   return new Date(date).toLocaleDateString('fr-FR', {
     day: '2-digit',
     month: '2-digit',
@@ -147,32 +100,32 @@ const formatDate = (date) => {
   })
 }
 
-const formatPrice = (price) => {
+const formatPrice = (price: any) => {
   return new Intl.NumberFormat('fr-FR', {
     style: 'currency',
     currency: 'EUR'
   }).format(price)
 }
 
-const getStatusLabel = (status) => {
+const getStatusLabel = (status: any) => {
   const statusLabels = {
     'in-progress': 'En cours',
     delivered: 'Livrée',
     cancelled: 'Annulée'
   }
-  return statusLabels[status] || status
+  return status
 }
 
-const getStatusClass = (status) => {
+const getStatusClass = (status: any) => {
   return `status-${status}`
 }
 
-const viewOrderDetails = (orderId) => {
+const viewOrderDetails = (orderId: any) => {
   // Logique pour afficher les détails de la commande
   console.log(`Voir détails commande ${orderId}`)
 }
 
-const cancelOrder = (orderId) => {
+const cancelOrder = (orderId: any) => {
   // Logique pour annuler une commande
   console.log(`Annuler commande ${orderId}`)
 }
@@ -180,16 +133,9 @@ const cancelOrder = (orderId) => {
 
 <style scoped>
 .orders-container {
-  padding: 15px;
+  /* padding: 15px; */
   max-width: 1200px;
   margin: 0 auto;
-}
-
-.orders-title {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-  color: #333;
-  text-align: center;
 }
 
 .orders-filter {
@@ -236,7 +182,7 @@ const cancelOrder = (orderId) => {
 
 .status-in-progress {
   background-color: #e6f2ff;
-  color: #1890ff;
+  color: var(--);
 }
 
 .status-delivered {
@@ -393,10 +339,6 @@ const cancelOrder = (orderId) => {
   .item-image {
     width: 50px;
     height: 50px;
-  }
-
-  .orders-title {
-    font-size: 1.2rem;
   }
 }
 </style>

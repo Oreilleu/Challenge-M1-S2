@@ -12,20 +12,33 @@
       <div class="profile-section">
         <img
           src="https://static.vecteezy.com/system/resources/thumbnails/005/129/844/small_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg"
-          alt="Profile" class="avatar" />
+          alt="Profile"
+          class="avatar"
+        />
         <h2>Bonjour</h2>
         <p class="user-name">
           <span v-if="user.civility === 'woman'">Mme</span>
           <span v-else>Mr</span>
-          {{ " " + user.firstname + " " + user.lastname }}
+          {{ ' ' + user.firstname + ' ' + user.lastname }}
         </p>
-        <el-button v-if="!authStore.isAuthenticatedUser" type="danger" class="logout-btn" @click="logout">ME
-          DÉCONNECTER</el-button>
+        <el-button
+          v-if="authStore.isAuthenticatedUser"
+          type="danger"
+          class="logout-btn"
+          @click="logout"
+        >
+          Me déconnecter
+        </el-button>
       </div>
 
       <nav class="nav-menu">
-        <a v-for="item in menuItems" :key="item.id" href="#" @click.prevent="selectMenuItem(item)"
-          :class="['nav-item', { active: currentView === item.id }]">
+        <a
+          v-for="item in menuItems"
+          :key="item.id"
+          href="#"
+          @click.prevent="selectMenuItem(item)"
+          :class="['nav-item', { active: currentView === item.id }]"
+        >
           {{ item.label }}
         </a>
       </nav>
@@ -36,8 +49,6 @@
       <MyInformations v-if="currentView === 'my-account'" />
       <MyOrders v-else-if="currentView === 'my-orders'" />
       <MyAddresses v-else-if="currentView === 'my-adress'" />
-      <MyFavorites v-else-if="currentView === 'my-favorites'" />
-      <MySettings v-else-if="currentView === 'my-settings'" />
     </main>
   </div>
 </template>
@@ -48,8 +59,6 @@ import { MenuIcon } from 'lucide-vue-next'
 import MyInformations from '@/components/MyInformations.vue'
 import MyOrders from '@/components/MyOrders.vue'
 import MyAddresses from '@/components/MyAddresses.vue'
-import MyFavorites from '@/components/MyFavorites.vue'
-import MySettings from '@/components/MySettings.vue'
 import useAuthStore from '@/utils/store/useAuthStore'
 import localStorageHandler from '@/utils/localStorageHandler'
 import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
@@ -62,9 +71,7 @@ const currentView = ref('my-account')
 const menuItems = [
   { id: 'my-account', label: 'Mes informations' },
   { id: 'my-orders', label: 'Mes commandes' },
-  { id: 'my-adress', label: 'Mes adresses' },
-  { id: 'my-favorites', label: 'Mes favories' },
-  { id: 'my-settings', label: 'Paramètres' }
+  { id: 'my-adress', label: 'Mes adresses' }
 ]
 
 const user = ref({
@@ -88,16 +95,15 @@ const logout = () => {
   authStore.logout()
 }
 
-const userData = localStorageHandler().get(LocalStorageKeys.USER);
+const userData = localStorageHandler().get(LocalStorageKeys.USER)
 if (userData) {
-  user.value = userData;
+  user.value = userData
 }
 </script>
 
-<style>
+<style scoped>
 .app-container {
   display: flex;
-  /* min-height: 100vh; */
   height: 100%;
   position: relative;
 }
@@ -115,7 +121,6 @@ if (userData) {
   width: 280px;
   background-color: #f5f5f5;
   padding: 2rem;
-  height: 100%;
   position: relative;
   overflow-y: auto;
 }
@@ -167,7 +172,7 @@ if (userData) {
 
 .main-content {
   flex: 1;
-  padding: 2rem;
+  padding: 10px 15px;
   /* margin-left: 280px; */
 }
 
