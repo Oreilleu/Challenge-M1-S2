@@ -28,6 +28,12 @@ import useDeliveryAddressStore from '@/utils/store/useDeliveryAddressStore'
 import toastHandler from '@/utils/toastHandler'
 import { ToastType } from '@/utils/types/toast-type.enum'
 
+type Props = {
+  onValid?: () => void
+}
+
+const { onValid } = defineProps<Props>()
+
 const deliveryAddressStore = useDeliveryAddressStore()
 
 const validationSchema = toTypedSchema(deliveryAddressSchema)
@@ -63,6 +69,7 @@ const onSubmit = handleSubmit(async (values) => {
 
   toastHandler('Adresse ajoutée avec succès', ToastType.SUCCESS)
   deliveryAddressStore.updateDeliveryAddress()
+  onValid?.()
 })
 </script>
 

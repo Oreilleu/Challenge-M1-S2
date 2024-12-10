@@ -16,7 +16,7 @@ const filterSchema = new mongoose.Schema({
   },
 });
 
-const variationSchema = new mongoose.Schema({
+export const variationSchema = new mongoose.Schema({
   imagesApi: { type: [imageSchema], required: true },
   price: {
     type: Number,

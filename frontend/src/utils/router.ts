@@ -17,8 +17,9 @@ import TermsOfService from '@/views/TermsOfService.vue'
 // @ts-ignore
 import FAQ from '@/views/FAQ.vue'
 import Cart from '@/views/Cart.vue'
-import MyAccount from '@/views/MyAccount.vue'
 import AdminOrders from '@/views/AdminOrders.vue'
+// @ts-ignore
+import MyAccount from '@/views/MyAccount.vue'
 
 const redirectToHomeIfUserAuthenticated = async () => {
   const isAuthenticatedUser = await isAuthenticated()

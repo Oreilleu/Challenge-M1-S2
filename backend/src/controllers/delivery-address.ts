@@ -44,8 +44,21 @@ export const create = async (req: Request, res: Response) => {
 };
 
 export const getAll = async (req: Request, res: Response) => {
+  const { user } = req as AuthenticatedRequest;
+
+  if (!user) {
+    res.status(404).send("Bad request");
+    return;
+  }
+
   try {
-    const deliveryAddresses = await DeliveryAddressModel.find();
+    let deliveryAddresses;
+
+    if (user.isAdmin) {
+      deliveryAddresses = await DeliveryAddressModel.find();
+    } else {
+      deliveryAddresses = await DeliveryAddressModel.find({ idUser: user._id });
+    }
 
     res.status(200).json({
       success: true,

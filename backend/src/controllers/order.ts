@@ -71,7 +71,10 @@ export const create = async (req: Request, res: Response) => {
   try {
     const order = await OrderModel.create({
       user: user._id,
-      cart,
+      cart: cart.map((item: any) => ({
+        product: item.product,
+        quantite: item.quantite,
+      })),
       address: addressId,
       totalPrice,
       billingAddress,
