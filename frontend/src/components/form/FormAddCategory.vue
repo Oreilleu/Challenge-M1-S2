@@ -19,24 +19,7 @@
       v-model="category.description"
     />
 
-    <div class="my-2">
-      <el-checkbox v-model="category.masterCategory" label="Catégorie principale"/>
-    </div>
-
-    <!-- <FormInput
-      id="masterCategory"
-      name="masterCategory"
-      label="Categorie principale"
-      type="checkbox"
-      v-model="category.masterCategory"
-    /> -->
-
-    <!-- <Field name="masterCategory" v-model="category.masterCategory" type="checkbox"/> Catégorie Principale
-    <ErrorMessage name="masterCategory" /> -->
-
-  
-
-    <FormInputSelect v-if="!category.masterCategory"
+    <FormInputSelect
       id="parent"
       name="parent"
       label="Catégorie parente"
@@ -71,7 +54,6 @@ import FormInputSelect from '../FormInputSelect.vue'
 import FormInputFile from '../FormInputFile.vue'
 import useCategoryStore from '@/utils/store/useCategoryStore'
 import { v4 as uuidv4 } from 'uuid'
-import {Field} from 'vee-validate'
 
 const drawerStore = useDrawerStore()
 const categoryStore = useCategoryStore()
@@ -81,7 +63,7 @@ const category: Category = reactive({
   name: '',
   description: '',
   image: { files: {} as FileList },
-  masterCategory: false,
+  masterCategory: true,
   parent: undefined
 })
 
@@ -109,8 +91,8 @@ const onSubmit = handleSubmit(async (values) => {
   values.nameImage = nameImage
   delete values.image
 
-  if(values.masterCategory) {
-    values.parent = undefined
+  if(values.parent) {
+    values.masterCategory = false
   }
 
   formData.append('category', JSON.stringify(values))
