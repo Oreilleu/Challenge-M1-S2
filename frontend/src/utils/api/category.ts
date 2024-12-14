@@ -76,12 +76,15 @@ export const fetchDeleteCategory = async (id: string | undefined) => {
       }
     })
 
+    const json: ResponseApi<Category> = await res.json()
+
     if (!res.ok) {
-      toastHandler('Erreur lors de la suppression de la catégorie.', ToastType.ERROR)
+      toastHandler(
+        json.message || 'Erreur lors de la suppression de la catégories.', 
+        ToastType.ERROR
+      )
       return false
     }
-
-    const json: ResponseApi<Category> = await res.json()
 
     if (!json.success) {
       toastHandler(
@@ -119,18 +122,18 @@ export const getCategoryById = async (id: string | null) => {
     const json: ResponseApi<Category> = await res.json()
 
     if (!json.success) {
-      toastHandler(json.message || 'Erreur lors de la récupération du produit', ToastType.ERROR)
+      toastHandler(json.message || 'Erreur lors de la récupération de la catégorie', ToastType.ERROR)
       return {} as Category
     }
 
     if (!json.data) {
-      toastHandler('Erreur lors de la récupération du produit', ToastType.ERROR)
+      toastHandler('Erreur lors de la récupération de la catégorie', ToastType.ERROR)
       return {} as Category
     }
 
     return json.data
   } catch (error) {
-    toastHandler('Erreur lors de la récupération du produit', ToastType.ERROR)
+    toastHandler('Erreur lors de la récupération de la catégorie', ToastType.ERROR)
     return {} as Category
   }
 }
