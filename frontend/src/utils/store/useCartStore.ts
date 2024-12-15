@@ -4,19 +4,14 @@ import type { AggregateProductOnVariation } from '../types/interfaces/aggregate-
 import type { CartItem } from '../types/interfaces/cart-item.interface'
 import { LocalStorageKeys } from '../types/local-storage-keys.enum'
 import localStorageHandler from '../localStorageHandler'
+import type { DeliveryAddress } from '../types/interfaces/delivery-address.interface'
 
 const useCartStore = defineStore('cart', () => {
   const cart = ref<CartItem[]>([])
-  const price = ref(0)
-
-  onMounted(() => {
-    const cartItems = localStorageHandler().get(LocalStorageKeys.CART)
-    if (cartItems) {
-      cart.value = cartItems
-    }
-
-    calculTotal()
-  })
+  const price = ref<number>(0)
+  const billingAddress = ref<DeliveryAddress | null>(null)
+  const selectedAddressId = ref<string>('')
+  const activeStep = ref<number>(0)
 
   const addProduct = (product: AggregateProductOnVariation, quantite?: number) => {
     if (outOfStock(product)) return
@@ -70,6 +65,7 @@ const useCartStore = defineStore('cart', () => {
   }
 
   const clearCart = () => {
+    localStorageHandler().remove(LocalStorageKeys.CART)
     cart.value = []
     price.value = 0
   }
@@ -85,7 +81,36 @@ const useCartStore = defineStore('cart', () => {
     return product.variations.quantite === 0
   }
 
-  return { cart, price, addProduct, updateQuantity, removeProduct, clearCart, calculTotal }
+  const formatDescriptionCheckout = () => {
+    return cart.value
+      .map((cartItem) => {
+        return `${cartItem.product.name} x ${cartItem.quantite}`
+      })
+      .join(', ')
+  }
+
+  onMounted(() => {
+    const cartItems = localStorageHandler().get(LocalStorageKeys.CART)
+    if (cartItems) {
+      cart.value = cartItems
+    }
+
+    calculTotal()
+  })
+
+  return {
+    activeStep,
+    selectedAddressId,
+    billingAddress,
+    cart,
+    price,
+    addProduct,
+    updateQuantity,
+    removeProduct,
+    clearCart,
+    calculTotal,
+    formatDescriptionCheckout
+  }
 })
 
 export default useCartStore

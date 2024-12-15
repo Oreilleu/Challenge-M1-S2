@@ -17,6 +17,8 @@ import TermsOfService from '@/views/TermsOfService.vue'
 // @ts-ignore
 import FAQ from '@/views/FAQ.vue'
 import Cart from '@/views/Cart.vue'
+import AdminOrders from '@/views/AdminOrders.vue'
+// @ts-ignore
 import MyAccount from '@/views/MyAccount.vue'
 
 const redirectToHomeIfUserAuthenticated = async () => {
@@ -45,7 +47,7 @@ const redirectToLoginIfUserUnauthenticated = async () => {
 const isAdminPage = async () => {
   const isAdminUser = await fetchIsAdminUser()
 
-  if (!isAdminUser.data) {
+  if (!isAdminUser) {
     return { name: 'Home' }
   }
 }
@@ -113,7 +115,13 @@ const routes = [
   {
     path: '/my-account',
     name: 'MyAccount',
-    component: MyAccount
+    component: MyAccount,
+    beforeEnter: redirectToLoginIfUserUnauthenticated
+  },
+  {
+    path: '/products',
+    name: 'Product',
+    component: Product
   },
 
   //backoffice routes prefix /admin
@@ -130,20 +138,15 @@ const routes = [
     beforeEnter: isAdminPage
   },
   {
-    path: '/admin/users',
-    name: 'AdminUsers',
-    component: AdminUsers,
+    path: '/admin/orders',
+    name: 'AdminOrders',
+    component: AdminOrders,
     beforeEnter: isAdminPage
   },
   {
-    path: '/products',
-    name: 'Product',
-    component: Product
-  },
-  {
-    path: '/admin/categories',
-    name: 'AdminCategories',
-    component: AdminCategories,
+    path: '/admin/users',
+    name: 'AdminUsers',
+    component: AdminUsers,
     beforeEnter: isAdminPage
   }
 ]

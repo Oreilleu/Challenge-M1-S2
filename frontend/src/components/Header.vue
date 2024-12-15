@@ -42,7 +42,7 @@
       >
         <el-button
           v-if="authStore.isAuthenticatedUser"
-          @click="goToMyAccount"
+          @click="authStore.isAdmin ? goToAdminPage() : goToMyAccount()"
           style="border: none; height: 100%"
         >
           <el-icon :size="20">
@@ -63,8 +63,8 @@
           <li>
             <RouterLink to="/products" class="nav-link">Tous les produits</RouterLink>
           </li>
-          <li v-for="category in categoryStore.categories" :key="category._id">
-            <RouterLink :to="`/${category.name}`" class="nav-link">{{ category.name }}</RouterLink>
+          <li v-for="category in categoryStore.formattedOptionsMasterCategories" :key="category.value">
+            <RouterLink :to="`/${category.label}`" class="nav-link">{{ category.label }}</RouterLink>
           </li>
         </ul>
       </div>
@@ -121,6 +121,10 @@ const openCartDrawer = () => {
 
 const goToMyAccount = () => {
   router.push('/my-account')
+}
+
+const goToAdminPage = () => {
+  router.push('/admin/products')
 }
 
 const rowStyle = computed(() => {

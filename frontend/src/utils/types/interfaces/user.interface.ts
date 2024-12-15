@@ -8,3 +8,11 @@ export interface User {
   password: string
   phone: string
 }
+
+export interface UpdateUserProfile {
+  civility: string
+  firstname: string
+  lastname: string
+  email: string
+  phone: string
+}

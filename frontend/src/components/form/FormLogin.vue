@@ -55,11 +55,11 @@ import type { ResultAuth } from '@/utils/types/interfaces/result-auth.interface'
 import useAuthStore from '@/utils/store/useAuthStore'
 
 type Props = {
-  nextStep?: () => void
+  onValidLogin?: () => void
   redirectTo?: string
 }
 
-const { nextStep, redirectTo } = defineProps<Props>()
+const { onValidLogin, redirectTo } = defineProps<Props>()
 
 const isSubmitting = ref(false)
 const authStore = useAuthStore()
@@ -102,7 +102,7 @@ const submitForm = async () => {
 
     authStore.signIn(data.jwt, data.user, redirectTo)
 
-    nextStep && nextStep()
+    onValidLogin && onValidLogin()
   } catch (error) {
     toastHandler("Une erreur s'est produite, veuillez réessayer.", ToastType.ERROR)
   } finally {
@@ -127,6 +127,7 @@ form {
   box-shadow:
     0 4px 6px rgba(0, 0, 0, 0.05),
     0 1px 3px rgba(0, 0, 0, 0.03);
+  margin: 30px auto;
 }
 
 .el-button {

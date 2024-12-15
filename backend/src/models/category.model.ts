@@ -29,7 +29,7 @@ const categorySchema = new Schema({
   masterCategory:{
     type: Boolean,
     required: true, 
-    default: false
+    default: true
   },
   imageApi: { type: imageSchema, required: true },
 });

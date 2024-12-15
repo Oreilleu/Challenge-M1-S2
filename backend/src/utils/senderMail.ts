@@ -17,7 +17,8 @@ export const sendEmail = async (
   from: string,
   to: string,
   subject: string,
-  html: string
+  html: string,
+  attachments?: { filename: string; content: Buffer }[]
 ) => {
   try {
     await transporter.sendMail({
@@ -25,6 +26,7 @@ export const sendEmail = async (
       to,
       subject,
       html,
+      attachments,
     });
   } catch (error) {
     throw new Error("Error lors de l'envoie de l'email.");

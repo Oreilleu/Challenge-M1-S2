@@ -19,11 +19,7 @@
       v-model="category.description"
     />
 
-    <div class="my-2">
-      <el-checkbox v-model="category.masterCategory" label="Catégorie principale"/>
-    </div>
-
-    <FormInputSelect v-if="!category.masterCategory"
+    <FormInputSelect
       id="parent"
       name="parent"
       label="Catégorie parente"
@@ -67,7 +63,7 @@ const category: Category = reactive({
   name: '',
   description: '',
   image: { files: {} as FileList },
-  masterCategory: false,
+  masterCategory: true,
   parent: undefined
 })
 
@@ -95,8 +91,8 @@ const onSubmit = handleSubmit(async (values) => {
   values.nameImage = nameImage
   delete values.image
 
-  if(values.masterCategory) {
-    values.parent = undefined
+  if(values.parent) {
+    values.masterCategory = false
   }
 
   formData.append('category', JSON.stringify(values))

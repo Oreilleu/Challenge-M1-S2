@@ -10,7 +10,7 @@
     </Table>
     <Modal
         :model-value="!!categoryToDelete"
-        :title="'Suppression du produit : ' + categoryToDelete?.name"
+        :title="'Êtes-vous sur de vouloir supprimer la catégorie : ' + categoryToDelete?.name"
         :displayFooter="true"
         @close="categoryToDelete = null"
         @confirm="deleteCategory(categoryToDelete?._id)"
@@ -52,10 +52,10 @@ const deleteCategory = async (idCategory: string | undefined) => {
   const isDeleted = await fetchDeleteCategory(idCategory)
 
   if (isDeleted) {
-    toastHandler('Produit supprimé avec succès', ToastType.SUCCESS)
+    toastHandler('Catégorie supprimé avec succès', ToastType.SUCCESS)
     categoryStore.loadCategories();
-  } else {
-    toastHandler('Erreur lors de la suppression du produit', ToastType.ERROR)
+    categoryToDelete.value = null
+    return
   }
   categoryToDelete.value = null
 }

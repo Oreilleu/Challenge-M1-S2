@@ -19,13 +19,6 @@
       v-model="category.description"
     />
 
-    <!--
-      Une catégorie principale ne peut pas avoir de catégorie parente. Gérer ce cas
-    -->
-    <div class="my-2">
-      <el-checkbox v-if="category.masterCategory" v-model="category.masterCategory" label="Catégorie principale"/>
-    </div>
-
     <FormInputSelect v-if="!category.masterCategory"
       id="parent"
       name="parent"
