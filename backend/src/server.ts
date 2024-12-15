@@ -11,7 +11,6 @@ import productRouter from "./routes/product";
 import categoryRoute from "./routes/category";
 import variationRouter from "./routes/variation";
 import filterRouter from "./routes/filter";
-import checkAdmin from "./middleware/checkAdmin";
 import checkToken from "./middleware/auth";
 import deliveryAddressRouter from "./routes/delivery-address";
 import sessionCheckoutRouter from "./routes/session-checkout";
@@ -34,7 +33,8 @@ app.use(express.static("public"));
 app.use("/api/", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/delivery-adress", checkToken, deliveryAddressRouter);
-app.use("/api/product", checkToken, checkAdmin, productRouter);
+
+app.use("/api/product", productRouter);
 app.use("/api/variation", variationRouter);
 app.use("/api/filter", filterRouter);
 app.use("/api/category", categoryRoute());
