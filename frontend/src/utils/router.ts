@@ -3,7 +3,8 @@ import VerifyAccount from '@/views/VerifyAccount.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { isAuthenticated } from './isAuthenticatedUser'
 import AdminProducts from '@/views/backOffice/product/AdminProducts.vue'
-import AdminUsers from '@/views/AdminUsers.vue'
+import AdminUsers from '@/views/backOffice/User/AdminUsers.vue'
+import ProductsByCategory from '@/views/ProductsByCategory.vue'
 import { fetchIsAdminUser, fetchIsVerifiedUser } from './api/user'
 import Register from '@/views/Register.vue'
 import Home from '@/views/Home.vue'
@@ -17,7 +18,7 @@ import TermsOfService from '@/views/TermsOfService.vue'
 // @ts-ignore
 import FAQ from '@/views/FAQ.vue'
 import Cart from '@/views/Cart.vue'
-import AdminOrders from '@/views/AdminOrders.vue'
+import AdminOrders from '@/views/backOffice/AdminOrders.vue'
 // @ts-ignore
 import MyAccount from '@/views/MyAccount.vue'
 
@@ -122,6 +123,12 @@ const routes = [
     path: '/products',
     name: 'Product',
     component: Product
+  },
+
+  {
+    path: '/category/:id',
+    name: 'ProductByCategory',
+    component: ProductsByCategory
   },
 
   //backoffice routes prefix /admin

@@ -6,6 +6,7 @@ import path from "path";
 import fs from "fs";
 import { ColumnProduct } from "../types/column-product.interface";
 import { BodyPaginateProduct } from "../types/body-paginate-product.interface";
+import CategoryModel from "../models/category.model";
 
 export const getOne: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
@@ -148,6 +149,39 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
     });
   }
 };
+
+export const getByCategory: RequestHandler = async (req, res, next) => {
+  const idMasterCategory  = req.params.id;
+
+  if (!idMasterCategory) {
+    res.status(400).json({
+      success: false,
+      message: "Catégorie non trouvé",
+    });
+    return;
+  }
+
+  try {
+
+    const categories = await CategoryModel.find({ parent: idMasterCategory }).lean();
+
+    const products = await ProductModel.find({ idCategory: { $in: categories.map((category) => category._id) } })
+      .populate("idCategory")
+      .lean<Product>();
+
+    res.status(200).json({
+      success: true,
+      data: products,
+    });
+  } catch (error) {
+    console.error("Erreur pour récupérer les produits par catégorie.", error);
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de la récupération des produits par catégorie.",
+    });
+  }
+};
+
 
 export const create: RequestHandler = async (req, res, next) => {
   const body: Product = JSON.parse(req.body.product);

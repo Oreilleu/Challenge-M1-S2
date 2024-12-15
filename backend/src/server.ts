@@ -34,7 +34,7 @@ app.use(express.static("public"));
 app.use("/api/", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/delivery-adress", checkToken, deliveryAddressRouter);
-app.use("/api/product", checkToken, checkAdmin, productRouter);
+app.use("/api/product", productRouter);
 app.use("/api/variation", variationRouter);
 app.use("/api/filter", filterRouter);
 app.use("/api/category", categoryRoute());

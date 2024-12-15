@@ -64,7 +64,7 @@
             <RouterLink to="/products" class="nav-link">Tous les produits</RouterLink>
           </li>
           <li v-for="category in categoryStore.formattedOptionsMasterCategories" :key="category.value">
-            <RouterLink :to="`/${category.label}`" class="nav-link">{{ category.label }}</RouterLink>
+            <RouterLink :to="`/category/${category.value}`" class="nav-link">{{ category.label }}</RouterLink>
           </li>
         </ul>
       </div>
@@ -75,8 +75,8 @@
         <li>
           <RouterLink to="/products" class="nav-link">Tous les produits</RouterLink>
         </li>
-        <li v-for="category in categoryStore.categories" :key="category._id">
-          <RouterLink :to="`/${category.name}`" class="nav-link">{{ category.name }}</RouterLink>
+        <li v-for="category in categoryStore.formattedOptionsMasterCategories" :key="category.value">
+            <RouterLink :to="`/category/${category.value}`" class="nav-link">{{ category.label }}</RouterLink>
         </li>
       </ul>
     </div>
