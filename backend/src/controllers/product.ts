@@ -153,6 +153,24 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
 export const getByCategory: RequestHandler = async (req, res, next) => {
   const idMasterCategory  = req.params.id;
 
+  const { page, limit, searchOption } = req.body as BodyPaginateProduct;
+
+  if (!page || !limit) {
+    res.status(400).json({
+      success: false,
+      message: "La numéro de page et le nombre d'élément par page est requis",
+    });
+    return;
+  }
+
+  const parsedPage = parseInt(page);
+  const parsedLimit = parseInt(limit);
+
+  const paginationOptions = {
+    skip: parsedPage === 1 ? 0 : parsedPage * parsedLimit - parsedLimit,
+    limit: parsedLimit,
+  };
+
   if (!idMasterCategory) {
     res.status(400).json({
       success: false,
@@ -167,11 +185,15 @@ export const getByCategory: RequestHandler = async (req, res, next) => {
 
     const products = await ProductModel.find({ idCategory: { $in: categories.map((category) => category._id) } })
       .populate("idCategory")
+      .skip(paginationOptions.skip)
+      .limit(paginationOptions.limit)
       .lean<Product>();
+
+    const count = await ProductModel.countDocuments({ idCategory: { $in: categories.map((category) => category._id) } });
 
     res.status(200).json({
       success: true,
-      data: products,
+      data: { paginates : products, count: count }
     });
   } catch (error) {
     console.error("Erreur pour récupérer les produits par catégorie.", error);

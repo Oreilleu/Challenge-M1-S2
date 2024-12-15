@@ -37,36 +37,41 @@ export const fetchProducts = async () => {
   }
 }
 
-export const fetchProductsByCategories = async (id: string) => {
+export const fetchProductsByCategories = async (id: string,   page: number,
+  limit: number,
+  searchOption?: ProductSearchOption
+) => {
+
   try {
     const response: Response = await fetch(
       `${import.meta.env.VITE_BASE_API_URL}/product/get-by-category/${id}`,
       {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
-        }
+        },
+        body: JSON.stringify({ page, limit, searchOption })
       }
     )
 
-    const json: ResponseApi<Array<Product>> = await response.json()
+    const json: ResponseApi<PaginateProduct> = await response.json()
 
     if (!json.success) {
       toastHandler(
         json.message || 'Une erreur est survenue lors de la récupération des produits',
         ToastType.ERROR
       )
-      return []
+      return {} as PaginateProduct
     }
 
-    return json.data || []
-  }
-  catch (error: any) {
+    return json.data || ({} as PaginateProduct)
+  } catch (error: any) {
     toastHandler(
       error.message || 'Une erreur est survenue lors de la récupération des produits',
       ToastType.ERROR
     )
-    return []
+    return {} as PaginateProduct
   }
 }
 
