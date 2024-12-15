@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <el-row :gutter="20">
       <el-col :span="5">
         <el-card>
@@ -103,6 +103,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+
 .listVariation {
   display: flex;
   flex-wrap: wrap;

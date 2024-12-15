@@ -1,14 +1,13 @@
 <template>
-  <el-card shadow="hover" style="width: 320px">
+  <el-card shadow="hover" style="width: 300px; padding: 10px; margin-bottom: 20px; cursor: pointer;">
     <el-image
-      style="width: 100%; height: 200px"
+      style="width: 100%; height: 200px; margin-bottom: 10px;"
       fit="cover"
       :src="formatImageUrl((product.variations.imagesApi || [])[0].path || '')"
       alt="product image"
     ></el-image>
-    <span>{{ product.name }}</span>
-    <p><strong>Price:</strong> ${{ product.variations.price }}</p>
-    <p><strong>Quantity:</strong> {{ product.variations.quantite }}</p>
+    <span><strong>{{ product.name }}</strong></span>
+    <p>${{ product.variations.price }}</p>
     <p v-if="product.variations.quantite > 0" style="color: green">
       <strong>Disponibilité:</strong> Disponible
     </p>

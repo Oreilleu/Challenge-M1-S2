@@ -1,5 +1,5 @@
 <template>
-  <header v-if="!isAdminPage(route.fullPath)">
+  <header v-if="!isAdminPage(route.fullPath)" style="margin-bottom: 50px">
     <el-row :style="rowStyle">
       <el-col :span="breakpointStore.isMobile ? 24 : 'auto'" :style="colLogoStyle">
         <el-button @click="toggleMenu" :style="buttonMenuStyle">
