@@ -8,7 +8,9 @@
           </el-icon>
         </el-button>
         <div class="container-logo">
-          <el-image src="/logo.png" fit="cover" />
+          <a href="/">
+            <el-image src="/logo.png" fit="cover" />
+          </a>
         </div>
       </el-col>
 
