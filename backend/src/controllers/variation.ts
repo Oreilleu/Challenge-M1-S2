@@ -47,7 +47,6 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
   let mongoSubCategoriesFilter: Category[] = [];
 
   if (hasMasterCategory) {
-    console.log("idMasterCategory", idMasterCategory);
     try {
       mongoCategories = await CategoryModel.find({
         parent: idMasterCategory,
@@ -90,7 +89,6 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
   }
 
   if (!hasMasterCategory && !hasSubCategories) {
-    console.log("renvoie toute les sous catégorie");
     try {
       mongoCategories = await CategoryModel.find({
         masterCategory: false,
