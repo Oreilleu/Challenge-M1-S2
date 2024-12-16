@@ -19,18 +19,14 @@
       v-model="category.description"
     />
 
-    <div class="my-2">
-      <el-checkbox v-model="category.masterCategory" label="Catégorie principale"/>
-    </div>
-
-    <FormInputSelect v-if="!category.masterCategory"
+    <FormInputSelect
       id="parent"
       name="parent"
       label="Catégorie parente"
       labelDefaultOption="Sélectionnez une option"
       v-model="category.parent"
       :options="categoryStore.formattedOptionsMasterCategories"
-      :disabledDefaultOption=true
+      :disabledDefaultOption="true"
     />
 
     <FormInputFile id="image" name="image" label="Image de la catégorie" v-model="category.image" />
@@ -62,15 +58,13 @@ import { v4 as uuidv4 } from 'uuid'
 const drawerStore = useDrawerStore()
 const categoryStore = useCategoryStore()
 
-
 const category: Category = reactive({
   name: '',
   description: '',
   image: { files: {} as FileList },
-  masterCategory: false,
+  masterCategory: true,
   parent: undefined
 })
-
 
 const validationSchema = toTypedSchema(categorySchema)
 
@@ -95,8 +89,8 @@ const onSubmit = handleSubmit(async (values) => {
   values.nameImage = nameImage
   delete values.image
 
-  if(values.masterCategory) {
-    values.parent = undefined
+  if (values.parent) {
+    values.masterCategory = false
   }
 
   formData.append('category', JSON.stringify(values))
@@ -115,6 +109,8 @@ const onSubmit = handleSubmit(async (values) => {
     if (json.success) {
       drawerStore.closeDrawer()
       categoryStore.loadCategories()
+      categoryStore.loadSubCategories()
+      categoryStore.loadMasterCategories()
       toastHandler('Catégorie ajoutée avec succès', ToastType.SUCCESS)
     } else {
       toastHandler(json.message || "Erreur lors de l'ajout de la catégorie", ToastType.ERROR)

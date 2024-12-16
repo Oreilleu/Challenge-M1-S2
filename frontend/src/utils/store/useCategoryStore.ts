@@ -38,17 +38,25 @@ const useCategoryStore = defineStore('category', () => {
   }
 
   onMounted(() => {
-    if(!categories.value.length){
+    if (!categories.value.length) {
       loadCategories()
-      loadSubCategories()
-
     }
-    if(!masterCategories.value.length){
+    if (!subCategories.value.length) {
+      loadSubCategories()
+    }
+    if (!masterCategories.value.length) {
       loadMasterCategories()
     }
   })
 
-  return { categories, formattedOptionsSubCategories, formattedOptionsMasterCategories, loadCategories}
+  return {
+    categories,
+    formattedOptionsSubCategories,
+    formattedOptionsMasterCategories,
+    loadCategories,
+    loadSubCategories,
+    loadMasterCategories
+  }
 })
 
 export default useCategoryStore

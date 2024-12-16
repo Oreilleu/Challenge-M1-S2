@@ -12,6 +12,7 @@ import multer from "multer";
 import { storage } from "../middleware/storage";
 import checkToken from "../middleware/auth";
 import checkAdmin from "../middleware/checkAdmin";
+import checkChildren from "../middleware/deleteCategoryParent";
 
 const upload = multer({ storage });
 
@@ -42,7 +43,7 @@ const categoryRoute = () => {
     updateCategory
   );
 
-  router.delete("/:id", checkToken, checkAdmin, deleteCategory);
+  router.delete("/:id", checkToken, checkAdmin, checkChildren, deleteCategory);
 
   return router;
 };
