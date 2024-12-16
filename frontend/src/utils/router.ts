@@ -20,6 +20,7 @@ import Cart from '@/views/Cart.vue'
 import AdminOrders from '@/views/backOffice/AdminOrders.vue'
 // @ts-ignore
 import MyAccount from '@/views/MyAccount.vue'
+import ProductDetails from '@/views/ProductDetails.vue'
 
 const redirectToHomeIfUserAuthenticated = async () => {
   const isAuthenticatedUser = await isAuthenticated()
@@ -122,6 +123,11 @@ const routes = [
     path: '/category/:id',
     name: 'ProductByCategory',
     component: ProductsByCategory
+  },
+  {
+    path: '/product-details/:productId',
+    name: 'ProductDetails',
+    component: ProductDetails
   },
 
   //backoffice routes prefix /admin

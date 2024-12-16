@@ -7,27 +7,17 @@
             <Menu />
           </el-icon>
         </el-button>
-        <div class="container-logo">
+        <RouterLink to="/" class="container-logo">
           <el-image src="/logo.png" fit="cover" />
-        </div>
+        </RouterLink>
       </el-col>
 
-      <el-col
-        :span="breakpointStore.isMobile ? (authStore.isAuthenticatedUser ? 14 : 16) : 'auto'"
-        style="display: flex; align-items: center; gap: 10px"
-      >
-        <RouterLink
-          v-if="route.path !== '/register' && !authStore.isAuthenticatedUser"
-          to="/register"
-          class="link"
-        >
+      <el-col :span="breakpointStore.isMobile ? (authStore.isAuthenticatedUser ? 14 : 16) : 'auto'"
+        style="display: flex; align-items: center; gap: 10px">
+        <RouterLink v-if="route.path !== '/register' && !authStore.isAuthenticatedUser" to="/register" class="link">
           S'inscrire
         </RouterLink>
-        <RouterLink
-          v-if="route.path !== '/login' && !authStore.isAuthenticatedUser"
-          to="/login"
-          class="link"
-        >
+        <RouterLink v-if="route.path !== '/login' && !authStore.isAuthenticatedUser" to="/login" class="link">
           Se connecter
         </RouterLink>
 
@@ -36,15 +26,10 @@
         </el-button>
       </el-col>
 
-      <el-col
-        :span="breakpointStore.isMobile ? (authStore.isAuthenticatedUser ? 10 : 8) : 'auto'"
-        style="text-align: right"
-      >
-        <el-button
-          v-if="authStore.isAuthenticatedUser"
-          @click="authStore.isAdmin ? goToAdminPage() : goToMyAccount()"
-          style="border: none; height: 100%"
-        >
+      <el-col :span="breakpointStore.isMobile ? (authStore.isAuthenticatedUser ? 10 : 8) : 'auto'"
+        style="text-align: right">
+        <el-button v-if="authStore.isAuthenticatedUser" @click="authStore.isAdmin ? goToAdminPage() : goToMyAccount()"
+          style="border: none; height: 100%">
           <el-icon :size="20">
             <User />
           </el-icon>
@@ -91,12 +76,8 @@
       </ul>
     </div>
 
-    <Drawer
-      :size="breakpointStore.isTablet || breakpointStore.isMobile ? '100%' : '50%'"
-      v-model="drawerStore.isOpen"
-      direction="ltr"
-      :drawerContent="drawerStore.opennedDrawer"
-    />
+    <Drawer :size="breakpointStore.isTablet || breakpointStore.isMobile ? '100%' : '50%'" v-model="drawerStore.isOpen"
+      direction="ltr" :drawerContent="drawerStore.opennedDrawer" />
   </header>
 </template>
 
