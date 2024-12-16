@@ -6,6 +6,7 @@ import path from "path";
 import fs from "fs";
 import { ColumnProduct } from "../types/column-product.interface";
 import { BodyPaginateProduct } from "../types/body-paginate-product.interface";
+import CategoryModel from "../models/category.model";
 
 export const getOne: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
@@ -114,7 +115,7 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
       {
         $limit: paginationOptions.limit,
       },
-    ]);
+    ]).sort({ createdAt: -1 });
 
     const count = await ProductModel.aggregate([
       {
