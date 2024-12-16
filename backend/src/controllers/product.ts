@@ -115,7 +115,7 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
       {
         $limit: paginationOptions.limit,
       },
-    ]);
+    ]).sort({ createdAt: -1 });
 
     const count = await ProductModel.aggregate([
       {
@@ -151,7 +151,7 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
 };
 
 export const getByCategory: RequestHandler = async (req, res, next) => {
-  const idMasterCategory  = req.params.id;
+  const idMasterCategory = req.params.id;
 
   if (!idMasterCategory) {
     res.status(400).json({
@@ -162,10 +162,13 @@ export const getByCategory: RequestHandler = async (req, res, next) => {
   }
 
   try {
+    const categories = await CategoryModel.find({
+      parent: idMasterCategory,
+    }).lean();
 
-    const categories = await CategoryModel.find({ parent: idMasterCategory }).lean();
-
-    const products = await ProductModel.find({ idCategory: { $in: categories.map((category) => category._id) } })
+    const products = await ProductModel.find({
+      idCategory: { $in: categories.map((category) => category._id) },
+    })
       .populate("idCategory")
       .lean<Product>();
 
@@ -181,7 +184,6 @@ export const getByCategory: RequestHandler = async (req, res, next) => {
     });
   }
 };
-
 
 export const create: RequestHandler = async (req, res, next) => {
   const body: Product = JSON.parse(req.body.product);

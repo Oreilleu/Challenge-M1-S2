@@ -61,10 +61,15 @@
       <div class="container">
         <ul class="nav-links">
           <li>
-            <RouterLink to="/products" class="nav-link">Tous les produits</RouterLink>
+            <el-button @click="selectCategory(null)" class="nav-link">Tous les produits</el-button>
           </li>
-          <li v-for="category in categoryStore.formattedOptionsMasterCategories" :key="category.value">
-            <RouterLink :to="`/category/${category.value}`" class="nav-link">{{ category.label }}</RouterLink>
+          <li
+            v-for="category in categoryStore.formattedOptionsMasterCategories"
+            :key="category.value"
+          >
+            <el-button @click="selectCategory(category)" class="nav-link">
+              {{ category.label }}
+            </el-button>
           </li>
         </ul>
       </div>
@@ -73,10 +78,15 @@
     <div v-if="isMenuOpen" class="mobile-menu">
       <ul class="mobile-menu-links">
         <li>
-          <RouterLink to="/products" class="nav-link">Tous les produits</RouterLink>
+          <el-button @click="selectCategory(null)" class="nav-link">Tous les produits</el-button>
         </li>
-        <li v-for="category in categoryStore.formattedOptionsMasterCategories" :key="category.value">
-            <RouterLink :to="`/category/${category.value}`" class="nav-link">{{ category.label }}</RouterLink>
+        <li
+          v-for="category in categoryStore.formattedOptionsMasterCategories"
+          :key="category.value"
+        >
+          <el-button @click="selectCategory" class="nav-link">
+            {{ category.label }}
+          </el-button>
         </li>
       </ul>
     </div>
@@ -101,6 +111,9 @@ import useDrawerStore from '@/utils/store/useDrawerStore'
 import { DrawerType } from '@/utils/types/drawer-type.enum'
 import Drawer from './Drawer.vue'
 import useBreakpointStore from '@/utils/store/useBreakpointStore'
+import type { OptionCategory } from '@/utils/types/interfaces/option-category.interface'
+import useVariationStore from '@/utils/store/useVariationStore'
+import { VARIATION_PER_PAGE } from '@/utils/const'
 
 const isMenuOpen = ref(false)
 const route = useRoute()
@@ -110,6 +123,7 @@ const drawerStore = useDrawerStore()
 const authStore = useAuthStore()
 const categoryStore = useCategoryStore()
 const breakpointStore = useBreakpointStore()
+const variationStore = useVariationStore()
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
@@ -125,6 +139,15 @@ const goToMyAccount = () => {
 
 const goToAdminPage = () => {
   router.push('/admin/products')
+}
+
+const selectCategory = (category: OptionCategory | null) => {
+  variationStore.selectedCategory = category
+
+  variationStore.updatePaginateVariations({
+    page: 1,
+    limit: VARIATION_PER_PAGE
+  })
 }
 
 const rowStyle = computed(() => {
@@ -164,6 +187,7 @@ const buttonMenuStyle = computed(() => {
   font-size: 14px;
   color: #4b5563;
   display: block;
+  border: none;
 }
 
 .nav-link:hover {

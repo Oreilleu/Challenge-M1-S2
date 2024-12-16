@@ -1,16 +1,18 @@
 import localStorageHandler from '../localStorageHandler'
 import toastHandler from '../toastHandler'
+import type { PaginateVariationParams } from '../types/interfaces/paginate-variation-params.interface'
 import type { PaginateVariation } from '../types/interfaces/paginate-variation.interface'
 import type { ResponseApi } from '../types/interfaces/response-api.interface'
-import type { VariationSearchOption } from '../types/interfaces/variation-search-option.interface'
 import { LocalStorageKeys } from '../types/local-storage-keys.enum'
 import { ToastType } from '../types/toast-type.enum'
 
-export const fetchPaginateVariations = async (
-  page: number,
-  limit: number,
-  searchOption?: VariationSearchOption
-) => {
+export const fetchPaginateVariations = async ({
+  page,
+  limit,
+  idMasterCategory,
+  idSubCategories,
+  searchOption
+}: PaginateVariationParams) => {
   try {
     const response: Response = await fetch(
       `${import.meta.env.VITE_BASE_API_URL}/variation/get-paginate`,
@@ -20,12 +22,11 @@ export const fetchPaginateVariations = async (
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
         },
-        body: JSON.stringify({ page, limit, searchOption })
+        body: JSON.stringify({ page, limit, idMasterCategory, idSubCategories, searchOption })
       }
     )
 
     const json: ResponseApi<PaginateVariation> = await response.json()
-
     if (!json.success) {
       toastHandler(
         json.message || 'Une erreur est survenue lors de la récupération des produits',
