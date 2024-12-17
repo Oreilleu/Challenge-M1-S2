@@ -6,7 +6,6 @@ import path from "path";
 import fs from "fs";
 import { ColumnProduct } from "../types/column-product.interface";
 import { BodyPaginateProduct } from "../types/body-paginate-product.interface";
-import CategoryModel from "../models/category.model";
 
 export const getOne: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
@@ -272,7 +271,10 @@ export const edit: RequestHandler = async (req, res, next) => {
   });
 
   try {
-    const product = await ProductModel.findByIdAndUpdate(id, body);
+    const product = await ProductModel.findByIdAndUpdate(id, body, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!product) {
       res.status(400).json({
@@ -307,12 +309,18 @@ export const edit: RequestHandler = async (req, res, next) => {
       success: true,
       message: "Produit modifié avec succès",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erreur pour modifier un produit", error);
-    res.status(500).json({
-      success: false,
-      message: "Erreur lors de la modification du produit",
-    });
+
+    if (error.code === 11000) {
+      res.status(400).json({
+        success: false,
+        message: "Un produit avec ce nom existe déja.",
+      });
+      return;
+    }
+
+    next(error);
   }
 };
 

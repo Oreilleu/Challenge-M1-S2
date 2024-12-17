@@ -5,6 +5,7 @@ import type { CartItem } from '../types/interfaces/cart-item.interface'
 import { LocalStorageKeys } from '../types/local-storage-keys.enum'
 import localStorageHandler from '../localStorageHandler'
 import type { DeliveryAddress } from '../types/interfaces/delivery-address.interface'
+import { formattedNameProduct } from '../formattedNameProduct'
 
 const useCartStore = defineStore('cart', () => {
   const cart = ref<CartItem[]>([])
@@ -16,7 +17,11 @@ const useCartStore = defineStore('cart', () => {
   const addProduct = (product: AggregateProductOnVariation, quantite?: number) => {
     if (outOfStock(product)) return
 
-    const productAlreadyInCart = cart.value.find((p) => p.product._id === product._id)
+    const productName = formattedNameProduct(product)
+
+    const productAlreadyInCart = cart.value.find(
+      (p) => formattedNameProduct(p.product) === productName
+    )
 
     if (productAlreadyInCart) {
       const newQuantite = quantite || productAlreadyInCart.quantite + 1
@@ -44,7 +49,9 @@ const useCartStore = defineStore('cart', () => {
   const updateQuantity = (product: AggregateProductOnVariation, quantite: number) => {
     if (outOfStock(product)) return
 
-    const productInCart = cart.value.find((p) => p.product._id === product._id)
+    const productName = formattedNameProduct(product)
+
+    const productInCart = cart.value.find((p) => formattedNameProduct(p.product) === productName)
 
     if (!productInCart) return
 
@@ -56,7 +63,8 @@ const useCartStore = defineStore('cart', () => {
   }
 
   const removeProduct = (product: AggregateProductOnVariation) => {
-    const index = cart.value.findIndex((p) => p.product._id === product._id)
+    const productName = formattedNameProduct(product)
+    const index = cart.value.findIndex((p) => formattedNameProduct(p.product) === productName)
     cart.value.splice(index, 1)
 
     calculTotal()

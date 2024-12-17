@@ -77,6 +77,8 @@ export const imagesValidation = z.object({
     })
 })
 
+export const suffixValidation = z.string().min(1, { message: 'Le suffixe est requis' })
+
 export const variationPriceValidation = z
   .number({ message: 'Le prix est requis' })
   .min(1, { message: 'Le prix doit être supérieur à 1 euros' })

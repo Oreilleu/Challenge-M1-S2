@@ -54,6 +54,15 @@
 
     <ul v-if="product.variations" class="list-variation">
       <li v-for="(variation, index) in product.variations" :key="index" class="item-variation">
+        <FormInput
+          :id="`variations[${index}].suffix`"
+          :name="`variations[${index}].suffix`"
+          label="Suffix nom du produit"
+          placeholder="Suffix nom du produit"
+          type="text"
+          v-model="variation.suffix"
+        />
+
         <div v-if="isVariationFromResponse(variation)" class="container-carrousel">
           <h3 v-if="!isInputImageDisplay(variation._id)" class="title-previous-images">
             Images déjà enregistrées :
@@ -381,6 +390,8 @@ const onSubmit = handleSubmit(async () => {
       drawerStore.closeDrawer()
       productStore.updatePaginateProducts(1, NUMBER_ADMIN_PRODUCT_PER_PAGE)
       toastHandler('Produit modifié avec succès', ToastType.SUCCESS)
+    } else {
+      toastHandler(json.message || "Erreur lors de l'ajout du produit", ToastType.ERROR)
     }
   } catch (error) {
     console.error(error)
@@ -390,6 +401,7 @@ const onSubmit = handleSubmit(async () => {
 
 const addVariationToDisplay = () => {
   product.value?.variations.push({
+    suffix: '',
     images: { files: {} as FileList },
     price: 1,
     quantite: 1,
