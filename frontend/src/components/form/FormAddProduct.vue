@@ -57,6 +57,15 @@
         :key="indexVariation"
         class="item-variation"
       >
+        <FormInput
+          :id="`variations[${indexVariation}].suffix`"
+          :name="`variations[${indexVariation}].suffix`"
+          label="Suffix nom du produit"
+          placeholder="Suffix nom du produit"
+          type="text"
+          v-model="variation.suffix"
+        />
+
         <FormInputFile
           :id="`variations[${indexVariation}].images`"
           :name="`variations[${indexVariation}].images`"
@@ -187,6 +196,7 @@ const product: Product = reactive({
   idCategory: undefined,
   variations: [
     {
+      suffix: '',
       images: { files: {} as FileList },
       nameImages: [] as string[],
       price: 1,
@@ -203,6 +213,7 @@ const product: Product = reactive({
 
 const addVariation = () => {
   product.variations.push({
+    suffix: '',
     images: { files: {} as FileList },
     price: 1,
     quantite: 1,

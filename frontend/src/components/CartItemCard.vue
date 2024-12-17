@@ -20,7 +20,7 @@
         :span="16"
         style="display: flex; flex-direction: column; justify-content: space-between"
       >
-        {{ cartItem.product.name }}
+        {{ formattedNameProduct(cartItem.product) }}
         <p>Prix: {{ cartItem.product.variations.price }} €</p>
         <p>Quantité:</p>
         <el-input-number v-model="quantite" :min="1" :max="100" @change="changeQuantite" />
@@ -31,6 +31,7 @@
 
 <script setup lang="ts">
 import { formatImageUrl } from '@/utils/formatImageUrl'
+import { formattedNameProduct } from '@/utils/formattedNameProduct'
 import useCartStore from '@/utils/store/useCartStore'
 import type { CartItem } from '@/utils/types/interfaces/cart-item.interface'
 import { X } from 'lucide-vue-next'

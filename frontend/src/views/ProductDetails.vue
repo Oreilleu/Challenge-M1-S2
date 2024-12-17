@@ -28,11 +28,21 @@
           <div class="variations">
             <h3>Variations disponibles</h3>
             <div class="variation-grid">
-              <div v-for="(variation, index) in product.variations" :key="index" class="variation-card" :class="{
-                'variation-selected': activeVariation?.price === variation.price
-              }" @click="selectVariation(index)">
-                <el-image :src="formatImageUrl((variation.imagesApi || [])[0].path || '')" alt="variation image"
-                  fit="cover" style="width: 100px; height: 100px"></el-image>
+              <div
+                v-for="(variation, index) in product.variations"
+                :key="index"
+                class="variation-card"
+                :class="{
+                  'variation-selected': activeVariation?.price === variation.price
+                }"
+                @click="selectVariation(index)"
+              >
+                <el-image
+                  :src="formatImageUrl((variation.imagesApi || [])[0].path || '')"
+                  alt="variation image"
+                  fit="cover"
+                  style="width: 100px; height: 100px"
+                ></el-image>
                 <div class="variation-details">
                   <p>
                     <strong>Couleur :</strong>
@@ -52,7 +62,11 @@
                 {{ (activeVariation?.quantite ?? 0) > 0 ? 'Disponible' : 'Indisponible' }}
               </span>
             </p>
-            <el-button :disabled="(activeVariation?.quantite ?? 0) <= 0" type="primary" @click="addToCart">
+            <el-button
+              :disabled="(activeVariation?.quantite ?? 0) <= 0"
+              type="primary"
+              @click="addToCart"
+            >
               Ajouter au panier
             </el-button>
           </div>
@@ -106,6 +120,7 @@ const selectVariation = (index: number) => {
 }
 
 const addToCart = () => {
+  console.log('Ajout au panier', activeVariation.value)
   if (activeVariation.value) {
     const productCart: AggregateProductOnVariation = {
       _id: product?.value?._id || '',
