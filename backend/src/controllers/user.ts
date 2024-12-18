@@ -1,6 +1,8 @@
 import { RequestHandler } from "express";
 import { AuthenticatedRequest } from "../types/authenticated-request.interface";
 import UserModel from "../models/user.model";
+import DeliverAdressModel from "../models/delivery-address.model";
+import OrderModel from "../models/order.model";
 
 export const getOne: RequestHandler = (req, res, next) => {
   const { user } = req as AuthenticatedRequest;
@@ -78,26 +80,24 @@ export const isAdmin: RequestHandler = async (req, res, next) => {
 };
 
 export const updateProfile: RequestHandler = async (req, res, next) => {
+  const { user } = req as AuthenticatedRequest;
+  const { civility, firstname, lastname, email, phone } = req.body;
+
+  if (!user) {
+    res.status(400).json({
+      success: false,
+    });
+    return;
+  }
+
+  if (!civility || !firstname || !lastname || !email || !phone) {
+    res.status(400).json({
+      success: false,
+    });
+    return;
+  }
+
   try {
-    const { user } = req as AuthenticatedRequest;
-    if (!user) {
-      res.status(401).json({
-        success: false,
-        message: "Pas d'utilisateur authentifié",
-      });
-      return;
-    }
-
-    const { civility, firstname, lastname, email, phone } = req.body;
-
-    if (!civility || !firstname || !lastname || !email || !phone) {
-      res.status(400).json({
-        success: false,
-        message: "Tous les champs sont requis",
-      });
-      return;
-    }
-
     const updatedUser = await UserModel.findByIdAndUpdate(
       user._id,
       { civility, firstname, lastname, email, phone },
@@ -107,21 +107,101 @@ export const updateProfile: RequestHandler = async (req, res, next) => {
     if (!updatedUser) {
       res.status(404).json({
         success: false,
-        message: "Utilisateur non trouvé",
       });
       return;
     }
 
     res.status(200).json({
       success: true,
-      message: "Profil mis à jour avec succès",
       data: updatedUser,
     });
   } catch (error) {
     console.error("Erreur lors de la mise à jour du profil :", error);
     res.status(500).json({
       success: false,
-      message: "Une erreur interne s'est produite",
+    });
+  }
+};
+
+export const remove: RequestHandler = async (req, res, next) => {
+  const { user } = req as AuthenticatedRequest;
+
+  if (!user) {
+    res.status(400).json({
+      success: false,
+    });
+    return;
+  }
+
+  if (user.isAdmin) {
+    res.status(400).json({
+      success: false,
+    });
+    return;
+  }
+
+  try {
+    const deletedUser = await UserModel.findByIdAndDelete(user._id);
+
+    if (!deletedUser) {
+      res.status(400).json({
+        success: false,
+      });
+      return;
+    }
+
+    await DeliverAdressModel.deleteMany({
+      idUser: user._id,
+    });
+
+    await OrderModel.updateMany(
+      {
+        user: user._id,
+      },
+      {
+        user: null,
+        address: null,
+        billingAddress: null,
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+    });
+  }
+};
+
+export const adminRemove: RequestHandler = async (req, res, next) => {
+  const { ids } = req.body as { ids: string[] };
+  const { user } = req as AuthenticatedRequest;
+
+  if (!user || !user.isAdmin) {
+    res.status(400).json({
+      success: false,
+    });
+    return;
+  }
+
+  try {
+    const deletedUsers = await UserModel.deleteMany({ _id: { $in: ids } });
+
+    if (!deletedUsers) {
+      res.status(400).json({
+        success: false,
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
     });
   }
 };

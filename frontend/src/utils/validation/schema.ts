@@ -99,3 +99,11 @@ export const deliveryAddressSchema = z.object({
   postalCode: postalCodeValidation,
   country: countryValidation
 })
+
+export const updateUserSchema = z.object({
+  email: emailValidation,
+  firstname: firstnameValidation,
+  lastname: lastnameValidation,
+  civility: civilityValidation,
+  phone: phoneValidation
+})

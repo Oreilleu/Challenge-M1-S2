@@ -21,6 +21,7 @@
       <el-pagination
         v-model:current-page="currentPage"
         v-model:page-size="pageSize"
+        :hide-on-single-page="true"
         :total="orderStore.orders.length"
         layout="prev, pager, next"
       />

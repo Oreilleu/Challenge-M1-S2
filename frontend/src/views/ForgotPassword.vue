@@ -1,24 +1,26 @@
 <template>
-  <div class="container">
-    <h2>Réinitialiser le mot de passe</h2>
-    <Form :validation-schema="validationSchema" @submit="submitForm">
-      <FormInput
-        id="email"
-        name="email"
-        label="Entrez votre email :"
-        placeholder="Email"
-        v-model="forgotPasswordForm.email"
-        type="email"
-      />
+  <div class="page">
+    <div class="container">
+      <h2>Réinitialiser le mot de passe</h2>
+      <Form :validation-schema="validationSchema" @submit="submitForm">
+        <FormInput
+          id="email"
+          name="email"
+          label="Entrez votre email :"
+          placeholder="Email"
+          v-model="forgotPasswordForm.email"
+          type="email"
+        />
 
-      <el-button
-        type="primary"
-        native-type="submit"
-        :disabled="isSubmitting || !forgotPasswordForm.email"
-      >
-        Envoyer le lien de réinitialisation
-      </el-button>
-    </Form>
+        <el-button
+          type="primary"
+          native-type="submit"
+          :disabled="isSubmitting || !forgotPasswordForm.email"
+        >
+          Envoyer le lien de réinitialisation
+        </el-button>
+      </Form>
+    </div>
   </div>
 </template>
 
@@ -73,15 +75,26 @@ const submitForm = async () => {
 </script>
 
 <style scoped>
+.page {
+  background: var(--lightgray);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .container {
   max-width: 600px;
   width: 80%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   padding: 20px 40px 40px 40px;
-  background: var(--lightgray);
+  background: white;
+  border-radius: 10px;
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 h2 {
