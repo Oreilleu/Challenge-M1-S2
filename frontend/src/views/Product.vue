@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row :gutter="20">
+    <el-row style="justify-content: space-between">
       <el-col :span="5">
         <el-card>
           <div v-for="(filters, name) in variationStore.paginateVariation?.filters" :key="name">
@@ -33,7 +33,7 @@
         </el-card>
       </el-col>
 
-      <el-col :span="19">
+      <el-col :span="18">
         <section>
           <h2>
             {{ variationStore.selectedCategory?.label || 'Tous les produits' }}
