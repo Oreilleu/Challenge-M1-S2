@@ -2,10 +2,13 @@
   <div>
     <h1>Mes Informations</h1>
     <FormUpdateUser />
-    <el-button type="primary" style="display: block; width: 280px; margin-top: 10px">
-      <RouterLink to="forgot-password" style="color: white; text-decoration: none">
-        Modifier mon mot de passe
-      </RouterLink>
+    <el-button
+      @click="changePassword"
+      type="primary"
+      style="display: block; width: 280px; margin-top: 10px"
+      :loading="isLoadingSendEmailChangePassword"
+    >
+      Modifier mon mot de passe
     </el-button>
     <el-button
       @click="modalDeleteModel = true"
@@ -36,12 +39,29 @@ import Modal from './Modal.vue'
 import toastHandler from '@/utils/toastHandler'
 import { ToastType } from '@/utils/types/toast-type.enum'
 import useAuthStore from '@/utils/store/useAuthStore'
-import { fetchDeleteAccount } from '@/utils/api/user'
+import { fetchDeleteAccount, fetchSendEmailChangePassword } from '@/utils/api/user'
 import useOrderStore from '@/utils/store/useOrderStore'
 
 const modalDeleteModel = ref(false)
 const authStore = useAuthStore()
 const orderStore = useOrderStore()
+const isLoadingSendEmailChangePassword = ref(false)
+
+const changePassword = async () => {
+  isLoadingSendEmailChangePassword.value = true
+  const isEmailSend = await fetchSendEmailChangePassword()
+
+  if (isEmailSend) {
+    toastHandler(
+      'Un email de réinitialisation de mot de passe vous a été envoyé.',
+      ToastType.SUCCESS
+    )
+  } else {
+    toastHandler("Une erreur s'est produite lors de l'envoi de l'email.", ToastType.ERROR)
+  }
+
+  isLoadingSendEmailChangePassword.value = false
+}
 
 const deleteAccount = async () => {
   const isDeletedAccount = await fetchDeleteAccount()

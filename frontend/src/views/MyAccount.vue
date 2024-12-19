@@ -47,8 +47,8 @@
     <!-- Contenu dynamique -->
     <main class="main-content">
       <MyInformations v-if="currentView === 'my-account'" />
-      <MyOrders v-else-if="currentView === 'my-orders'" />
-      <MyAddresses v-else-if="currentView === 'my-adress'" />
+      <MyOrders v-if="currentView === 'my-orders'" />
+      <MyAddresses v-if="currentView === 'my-adress'" />
     </main>
   </div>
 </template>
