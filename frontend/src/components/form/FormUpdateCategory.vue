@@ -19,7 +19,8 @@
       v-model="category.description"
     />
 
-    <FormInputSelect v-if="!category.masterCategory"
+    <FormInputSelect
+      v-if="!category.masterCategory"
       id="parent"
       name="parent"
       label="Catégorie parente"
@@ -27,7 +28,7 @@
       v-model="category.parent"
       :default-selected-value="category.parent || 'Pas de catégorie parente'"
       :options="categoryStore.formattedOptionsMasterCategories"
-      :disabledDefaultOption=true
+      :disabledDefaultOption="true"
     />
 
     <el-image
@@ -117,7 +118,7 @@ const onSubmit = handleSubmit(async () => {
     delete category.value.image
   }
 
-  if(category.value?.masterCategory) {
+  if (category.value?.masterCategory) {
     category.value.parent = ''
   }
 

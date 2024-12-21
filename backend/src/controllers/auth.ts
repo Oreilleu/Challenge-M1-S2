@@ -274,28 +274,22 @@ export const forgotPassword: RequestHandler = async (req, res, next) => {
 
     if (!user) {
       res.status(400).json({
+        success: false,
         message:
           "Erreur lors de la réinitialisation du mot de passe. Veuillez réessayer.",
       });
       return;
     }
 
-    try {
-      await sendEmail(
-        config.mailer.noreply,
-        email,
-        "Réinitialisation du mot de passe",
-        await resetPasswordTemplate(email)
-      );
-    } catch (error) {
-      res.status(500).json({
-        sucess: false,
-        message: "Erreur interne du serveur. Veuillez réessayer plus tard",
-      });
-      return;
-    }
+    await sendEmail(
+      config.mailer.noreply,
+      email,
+      "Réinitialisation du mot de passe",
+      await resetPasswordTemplate(email)
+    );
 
     res.status(200).json({
+      success: true,
       message:
         "Un lien de réinitialisation a été envoyé à votre adresse email.",
     });

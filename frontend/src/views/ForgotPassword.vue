@@ -2,76 +2,78 @@
   <div class="page">
     <div class="container">
       <h2>Réinitialiser le mot de passe</h2>
-      <Form :validation-schema="validationSchema" @submit="submitForm">
+      <el-form @submit="onSubmit">
         <FormInput
           id="email"
           name="email"
           label="Entrez votre email :"
           placeholder="Email"
-          v-model="forgotPasswordForm.email"
           type="email"
         />
 
         <el-button
           type="primary"
           native-type="submit"
-          :disabled="isSubmitting || !forgotPasswordForm.email"
+          :disabled="isSubmitting || Object.keys(errors).length > 0"
         >
           Envoyer le lien de réinitialisation
         </el-button>
-      </Form>
+      </el-form>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { forgotPasswordFormSchema } from '@/utils/validation/schema'
-import { reactive, ref } from 'vue'
 import toastHandler from '@/utils/toastHandler'
 import { ToastType } from '@/utils/types/toast-type.enum'
 import FormInput from '@/components/FormInput.vue'
-import { Form } from 'vee-validate'
+import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import type { ResponseApi } from '@/utils/types/interfaces/response-api.interface'
 
-const isSubmitting = ref(false)
-
-const forgotPasswordForm = reactive({
-  email: ''
-})
-
 const validationSchema = toTypedSchema(forgotPasswordFormSchema)
 
-const submitForm = async () => {
+const { handleSubmit, errors, isSubmitting } = useForm({
+  validationSchema,
+  initialValues: {
+    email: ''
+  }
+})
+
+const onSubmit = handleSubmit(async (values) => {
   isSubmitting.value = true
   try {
-    const ResponseForgotPasswordForm = await fetch(
-      `${import.meta.env.VITE_BASE_API_URL}/forgot-password`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(forgotPasswordForm)
-      }
-    )
+    const res = await fetch(`${import.meta.env.VITE_BASE_API_URL}/forgot-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: values.email })
+    })
 
-    const { errors }: ResponseApi<null> = await ResponseForgotPasswordForm.json()
-
-    if (!ResponseForgotPasswordForm.ok) {
-      if (ResponseForgotPasswordForm.status === 400 && errors) {
-        toastHandler(errors[0] || "Une erreur s'est produite, veuillez réessayer.", ToastType.ERROR)
-      }
-      throw new Error()
+    if (!res.ok) {
+      toastHandler("Une erreur s'est produite, veuillez réessayer.", ToastType.ERROR)
+      return
     }
 
-    toastHandler('Un email de réinitialisation vous a été envoyé.', ToastType.SUCCESS)
+    const { success, errors }: ResponseApi<null> = await res.json()
+
+    if (res.status === 400 && errors) {
+      toastHandler(errors[0] || "Une erreur s'est produite, veuillez réessayer.", ToastType.ERROR)
+    }
+
+    if (success) {
+      toastHandler('Un email de réinitialisation vous a été envoyé.', ToastType.SUCCESS)
+    } else {
+      toastHandler("Une erreur s'est produite, veuillez réessayer.", ToastType.ERROR)
+    }
   } catch (error) {
     toastHandler("Une erreur s'est produite, veuillez réessayer.", ToastType.ERROR)
   } finally {
     isSubmitting.value = false
   }
-}
+})
 </script>
 
 <style scoped>
@@ -98,7 +100,6 @@ const submitForm = async () => {
 }
 
 h2 {
-  background: var(--lightgray);
   text-align: center;
   text-transform: uppercase;
   margin-bottom: 20px;

@@ -131,3 +131,39 @@ export const fetchDeleteAccount = async () => {
     return false
   }
 }
+
+export const fetchSendEmailChangePassword = async () => {
+  const token = localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)
+
+  if (!token) {
+    toastHandler('Vous devez être connecté.', ToastType.ERROR)
+    return false
+  }
+
+  try {
+    const res: Response = await fetch(
+      `${import.meta.env.VITE_BASE_API_URL}/user/change-my-password`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
+
+    if (!res.ok) {
+      return false
+    }
+
+    const json: ResponseApi<null> = await res.json()
+
+    if (json.success) {
+      return true
+    } else {
+      return false
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'envoi de l'email de changement de mot de passe :", error)
+    return false
+  }
+}

@@ -3,6 +3,9 @@ import { AuthenticatedRequest } from "../types/authenticated-request.interface";
 import UserModel from "../models/user.model";
 import DeliverAdressModel from "../models/delivery-address.model";
 import OrderModel from "../models/order.model";
+import { config } from "../config";
+import resetPasswordTemplate from "../utils/template-email/resetPasswordTemplate";
+import { sendEmail } from "../utils/senderMail";
 
 export const getOne: RequestHandler = (req, res, next) => {
   const { user } = req as AuthenticatedRequest;
@@ -77,6 +80,36 @@ export const isAdmin: RequestHandler = async (req, res, next) => {
     success: true,
     data: isAdmin,
   });
+};
+
+export const sendEmailChangePassword: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  const { user } = req as AuthenticatedRequest;
+
+  if (!user) {
+    res.status(400).json({
+      success: false,
+    });
+    return;
+  }
+
+  try {
+    await sendEmail(
+      config.mailer.noreply,
+      user.email,
+      "Changement de votre mot de passe",
+      await resetPasswordTemplate(user.email)
+    );
+
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const updateProfile: RequestHandler = async (req, res, next) => {
