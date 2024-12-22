@@ -80,7 +80,7 @@ export const fetchDeleteCategory = async (id: string | undefined) => {
 
     if (!res.ok) {
       toastHandler(
-        json.message || 'Erreur lors de la suppression de la catégories.', 
+        json.message || 'Erreur lors de la suppression de la catégorie.', 
         ToastType.ERROR
       )
       return false

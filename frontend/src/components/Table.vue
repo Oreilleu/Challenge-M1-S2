@@ -1,7 +1,7 @@
 <template>
-  <section style="width:80%; margin-left:100px; margin-top:50px">
+  <section style="width:80%; margin:50px 0">
   <h1>{{ title }}</h1>
-  <el-table :data="tableData" :empty-text="emptyText" style="width:100%; margin-top:40px"> 
+  <el-table :data="tableData" :empty-text="emptyText" style="width:100%; margin-top:40px" @selection-change="handleSelectionChange">
     <el-table-column type="selection" width="55" />
     <template v-for="value in filteredHeaderTable" :key="value">
         <el-table-column sortable :prop="value" :label="value" width="180"/>
@@ -14,15 +14,17 @@
     </el-table-column>
   </el-table>
   <div style="display:flex; justify-content: right; margin-top: 50px;">
-    <el-button type="danger" @click="deleteData">Supprimer les données</el-button>
     <el-button type="primary" @click="exportData">Exporter en csv</el-button>
+    <el-button type="danger" @click="deleteSelectedRows">Supprimer les données</el-button>
   </div>
 </section>
 </template>
 
 <script setup lang="ts">
 
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import toastHandler from '@/utils/toastHandler'
+import { ToastType } from '@/utils/types/toast-type.enum'
 
 type Props = {
   tableData: any[];
@@ -30,8 +32,15 @@ type Props = {
   title: string;
 }
 
+const selectedRows = ref<string[]>([]);
+
+const handleSelectionChange = (selection: any[]) => {
+  selectedRows.value = selection.map((row) => row._id);
+  console.log(selectedRows.value);
+}
+
 const props = defineProps<Props>();
-const emit = defineEmits(['openDrawerUpdate','displayModalDelete', 'deleteData']);
+const emit = defineEmits(['openDrawerUpdate','displayModalDelete', 'deleteSelectedData', 'exportData']);
 
 const filteredHeaderTable = computed(() => {
   if(props.tableData.length === 0) return [];
@@ -62,11 +71,21 @@ const displayModal = (row:any) => {
 }
 
 const exportData = () =>{
-  console.log("ok");
+  if(selectedRows.value.length === 0){
+    toastHandler('Veuillez selectionner des données à exporter', ToastType.ERROR);
+    return;
+  }
+  console.log('exporting data');
 }
 
-const deleteData = () => {
-  console.log("ok");
+const deleteSelectedRows = () => {
+
+  if(selectedRows.value.length === 0){
+    toastHandler('Veuillez selectionner des données à supprimer', ToastType.ERROR);
+    return;
+  }
+
+  emit('deleteSelectedData', selectedRows.value);
 }
 
 </script>

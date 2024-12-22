@@ -8,8 +8,8 @@
     ></el-image>
     <span><strong>{{ product.name }}</strong></span>
     <p>${{ product.variations.price }}</p>
-    <p v-if="product.variations.quantite > 0" style="color: green">
-      <strong>Disponibilité:</strong> Disponible
+    <p v-if="product.variations.quantite > 0" style="color: green; margin-bottom: 1em;">
+      Disponible
     </p>
     <p v-else style="color: red">
       <strong>Disponibilité:</strong> Indisponible

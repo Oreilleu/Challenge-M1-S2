@@ -6,6 +6,7 @@
       empty-text="Aucune catégorie trouvée"
       @openDrawerUpdate="openDrawerUpdate"
       @displayModalDelete="displayModalDelete"
+      @deleteSelectedData="deleteSelectedCategories"
     >
     </Table>
     <Modal
@@ -58,5 +59,16 @@ const deleteCategory = async (idCategory: string | undefined) => {
     return
   }
   categoryToDelete.value = null
+}
+
+const deleteSelectedCategories = async (ids: string[]) => {
+  
+  for (const id of ids) {
+    const isDeleted = await fetchDeleteCategory(id)
+    if(isDeleted){
+      toastHandler('Catégorie supprimé avec succès', ToastType.SUCCESS)
+    }
+  }
+  categoryStore.loadCategories();
 }
 </script>
