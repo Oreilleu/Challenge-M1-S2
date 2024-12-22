@@ -4,24 +4,23 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- develop
+  - develop
 
 pool:
   vmImage: ubuntu-latest
 
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '20.x'
-  displayName: 'Install Node.js'
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "20.x"
+    displayName: "Install Node.js"
 
-- script: |
-    cd backend
-    npm ci
-    npm run build
-  displayName: 'Install dependancies'
+  - script: |
+      cd backend
+      npm ci
+    displayName: "Install dependancies"
 
-- script: |
-    cd backend
-    npm run build --if-present
-  displayName: 'Build'
+  - script: |
+      cd backend
+      npm run build --if-present
+    displayName: "Build"
