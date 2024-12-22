@@ -70,12 +70,50 @@ const displayModal = (row:any) => {
   emit('displayModalDelete', row);
 }
 
-const exportData = () =>{
+const exportData = async () =>{
   if(selectedRows.value.length === 0){
     toastHandler('Veuillez selectionner des données à exporter', ToastType.ERROR);
     return;
   }
-  console.log('exporting data');
+  
+  if(!(window as any).showSaveFilePicker){
+    toastHandler('Votre navigateur ne supporte pas cette fonctionnalité', ToastType.ERROR);
+    return;
+  }
+
+  try{
+    const headers = filteredHeaderTable.value.join(';');
+    const rows = selectedRows.value.map((id) => {
+      const row = props.tableData.find((row) => row._id === id);
+      return filteredHeaderTable.value.map((key) => row[key]).join(';');
+    });
+    const csv = [headers, ...rows].join('\n');
+
+    const date = new Date();
+    const minutes = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
+    const dateString = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}-${date.getHours()}h${minutes}`;
+    const fileName = `export-${dateString}.csv`;
+
+    const fileHandle = await (window as any).showSaveFilePicker({
+      suggestedName: fileName,
+      types: [
+        {
+          description: 'Fichier CSV',
+          accept: {
+            'text/csv': ['.csv'],
+          },
+        },
+      ],
+    });
+
+    const writable = await fileHandle.createWritable();
+    await writable.write(new TextEncoder().encode(csv));
+    await writable.close();
+    toastHandler('Données exportées avec succès', ToastType.SUCCESS);
+  }
+  catch(err){
+    toastHandler('Erreur lors de l\'exportation des données', ToastType.ERROR);
+  }
 }
 
 const deleteSelectedRows = () => {
