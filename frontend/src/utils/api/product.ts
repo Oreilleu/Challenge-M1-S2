@@ -4,7 +4,7 @@ import { LocalStorageKeys } from '../types/local-storage-keys.enum'
 import type { Product } from '../types/interfaces/product.interface'
 import type { ResponseApi } from '../types/interfaces/response-api.interface'
 import { ToastType } from '../types/toast-type.enum'
-import type { PaginateProduct } from '../types/interfaces/pagiante-product.interface'
+import type { PaginateProduct } from '../types/interfaces/paginate-product.interface'
 import type { ColumnProduct } from '../types/column-product.enum'
 import type { ProductSearchOption } from '../types/interfaces/product-search-option.interface'
 
@@ -75,41 +75,41 @@ export const fetchPaginatedProducts = async (
   }
 }
 
-export const fetchProductsBySearchInput = async (
-  searchInput: string,
-  column: ColumnProduct,
-  page: number,
-  limit: number
-) => {
-  try {
-    const response: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/product/search`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
-      },
-      body: JSON.stringify({ searchInput, column, page, limit })
-    })
+// export const fetchProductsBySearchInput = async (
+//   searchInput: string,
+//   column: ColumnProduct,
+//   page: number,
+//   limit: number
+// ) => {
+//   try {
+//     const response: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/product/search`, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//         Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+//       },
+//       body: JSON.stringify({ searchInput, column, page, limit })
+//     })
 
-    const json: ResponseApi<PaginateProduct> = await response.json()
+//     const json: ResponseApi<PaginateProduct> = await response.json()
 
-    if (!json.success) {
-      toastHandler(
-        json.message || 'Une erreur est survenue lors de la récupération des produits',
-        ToastType.ERROR
-      )
-      return {} as PaginateProduct
-    }
+//     if (!json.success) {
+//       toastHandler(
+//         json.message || 'Une erreur est survenue lors de la récupération des produits',
+//         ToastType.ERROR
+//       )
+//       return {} as PaginateProduct
+//     }
 
-    return json.data || ({} as PaginateProduct)
-  } catch (error: any) {
-    toastHandler(
-      error.message || 'Une erreur est survenue lors de la récupération des produits',
-      ToastType.ERROR
-    )
-    return {} as PaginateProduct
-  }
-}
+//     return json.data || ({} as PaginateProduct)
+//   } catch (error: any) {
+//     toastHandler(
+//       error.message || 'Une erreur est survenue lors de la récupération des produits',
+//       ToastType.ERROR
+//     )
+//     return {} as PaginateProduct
+//   }
+// }
 
 export const fetchProductById = async (id: string | null) => {
   if (!id) {
