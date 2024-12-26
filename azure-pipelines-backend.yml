@@ -24,3 +24,8 @@ steps:
       cd backend
       npm run build --if-present
     displayName: "Build"
+
+  - script: |
+      cd backend
+      npm run test
+    displayName: "Run tests"
