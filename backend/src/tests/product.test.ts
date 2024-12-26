@@ -140,8 +140,7 @@ describe("Product Routes", () => {
         __dirname,
         "../../public/images/product/test-image.jpg"
       );
-
-      const dir = join(__dirname, "../public/images/product");
+      const dir = path.dirname(pathImage);
 
       if (!existsSync(dir)) {
         mkdirSync(dir, { recursive: true });
