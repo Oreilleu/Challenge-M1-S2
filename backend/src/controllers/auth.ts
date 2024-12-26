@@ -11,7 +11,7 @@ import {
   REGEX_PASSWORD_VALIDATION,
   REGEX_PHONE_VALIDATION,
 } from "../utils/const";
-import { Request, RequestHandler } from "express";
+import { RequestHandler } from "express";
 import activationAccountTemplate from "../utils/template-email/activationAccountTemplate";
 import resetPasswordTemplate from "../utils/template-email/resetPasswordTemplate";
 import { config } from "../config";
@@ -126,7 +126,9 @@ export const register: RequestHandler = async (req, res, next) => {
         )
       );
     } catch (error) {
-      console.error("Erreur lors de l'envoie de l'email d'activation", error);
+      if (process.env.NODE_ENV !== "test") {
+        console.error("Erreur lors de l'envoie de l'email d'activation", error);
+      }
     }
 
     res.status(201).json({
