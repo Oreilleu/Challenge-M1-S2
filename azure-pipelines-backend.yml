@@ -32,3 +32,5 @@ steps:
       cd backend
       npm run test
     displayName: "Run tests"
+    env:
+      STRIPE_SECRET_KEY: $(STRIPE_SECRET_KEY)
