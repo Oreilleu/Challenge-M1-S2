@@ -1,4 +1,4 @@
-import path from "path";
+import path, { join } from "path";
 import request from "supertest";
 import ProductModel from "../models/product.model";
 import app from "../server";
@@ -6,7 +6,7 @@ import CategoryModel from "../models/category.model";
 import UserModel from "../models/user.model";
 import { generateJsonWebToken } from "../utils/jsonWebtoken";
 import { ExpiresIn } from "../types/expires-in.enum";
-import { unlinkSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, unlinkSync, writeFileSync } from "fs";
 
 describe("Product Routes", () => {
   beforeEach(async () => {
@@ -141,7 +141,13 @@ describe("Product Routes", () => {
         "../../public/images/product/test-image.jpg"
       );
 
-      writeFileSync(pathImage, "test");
+      const dir = join(__dirname, "../public/images/product");
+
+      if (!existsSync(dir)) {
+        mkdirSync(dir, { recursive: true });
+      }
+
+      writeFileSync(pathImage, "test-image.jpg");
 
       try {
         const res = await request(app)
