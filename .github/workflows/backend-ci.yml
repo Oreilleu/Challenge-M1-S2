@@ -10,8 +10,12 @@ on:
     branches: ["develop"]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
+
+    env:
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
 
     strategy:
       matrix:
