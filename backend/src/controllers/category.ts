@@ -5,7 +5,16 @@ import path from "path";
 import fs from "fs";
 
 const createCategory = async (req: Request, res: Response) => {
-  const category: Category = JSON.parse(req.body.category);
+  const category: Category | undefined =
+    req.body.category && JSON.parse(req.body.category);
+
+  if (!category) {
+    res.status(400).json({
+      success: false,
+    });
+    return;
+  }
+
   const image = req.file as Express.Multer.File;
 
   if (!image || !category) {
@@ -36,7 +45,10 @@ const createCategory = async (req: Request, res: Response) => {
       data: newCategory,
     });
   } catch (error) {
-    console.error("Erreur pour créer une catégorie", error);
+    if (process.env.NODE_ENV !== "test") {
+      console.error("Erreur pour créer une catégorie", error);
+    }
+
     res.status(500).json({
       success: false,
       message: (error as Error).message,
@@ -47,14 +59,17 @@ const createCategory = async (req: Request, res: Response) => {
 const getCategories = async (req: Request, res: Response) => {
   try {
     const categories = await CategoryModel.find()
-    .populate("parent")
-    .sort({ name: 1 });
+      .populate("parent")
+      .sort({ name: 1 });
+
     res.status(200).json({
       success: true,
       data: categories,
     });
   } catch (error) {
-    console.error("Erreur pour récupérer les catégories", error);
+    if (process.env.NODE_ENV !== "test") {
+      console.error("Erreur pour récupérer les catégories", error);
+    }
     res.status(500).json({
       success: false,
       message: (error as Error).message,
@@ -72,16 +87,18 @@ const getSubCategories = async (req: Request, res: Response) => {
       data: categories,
     });
   } catch (error) {
-    console.error("Erreur pour récupérer les sous-catégories", error);
+    if (process.env.NODE_ENV !== "test") {
+      console.error("Erreur pour récupérer les sous-catégories", error);
+    }
     res.status(500).json({
       success: false,
       message: (error as Error).message,
     });
   }
-}
+};
 
 const getMasterCategories = async (req: Request, res: Response) => {
-  try{
+  try {
     const categories = await CategoryModel.find({
       masterCategory: true,
     }).sort({ name: 1 });
@@ -96,7 +113,7 @@ const getMasterCategories = async (req: Request, res: Response) => {
       message: (error as Error).message,
     });
   }
-}
+};
 
 const getCategoryById = async (req: Request, res: Response) => {
   const id = req.params.id;
@@ -115,7 +132,16 @@ const getCategoryById = async (req: Request, res: Response) => {
 };
 
 const updateCategory = async (req: Request, res: Response) => {
-  const body: Category = JSON.parse(req.body.category);
+  const body: Category | undefined =
+    req.body.category && JSON.parse(req.body.category);
+
+  if (!body) {
+    res.status(400).json({
+      success: false,
+    });
+    return;
+  }
+
   const id = req.params.id;
   const image = req.file as Express.Multer.File;
 
@@ -126,7 +152,7 @@ const updateCategory = async (req: Request, res: Response) => {
     };
   }
 
-  if(body.masterCategory && body.parent) {
+  if (body.masterCategory && body.parent) {
     res.status(400).json({
       success: false,
       message: "Une catégorie principale ne peut pas être une sous-catégorie",
@@ -183,7 +209,7 @@ const deleteCategory = async (req: Request, res: Response) => {
       .replace("/src/controllers", "");
 
     fs.unlink(imagePath, (err) => {
-      if (err) {
+      if (err && process.env.NODE_ENV !== "test") {
         console.error(
           `Erreur pour supprimer l'image : ${category.imageApi.name}`,
           err
