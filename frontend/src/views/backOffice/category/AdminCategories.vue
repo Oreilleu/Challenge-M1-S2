@@ -2,11 +2,16 @@
   <AdminLayout>
     <Table 
       title="Liste des catégories" 
-      :table-data="categoryStore.categories" 
+      :table-data="categoryStore.paginatedCategories.data"
       empty-text="Aucune catégorie trouvée"
+      :currentPage="currentPage"
+      :pageSize="pageSize"
+      :totalItems="categoryStore.paginatedCategories.total"
       @openDrawerUpdate="openDrawerUpdate"
       @displayModalDelete="displayModalDelete"
       @deleteSelectedData="deleteSelectedCategories"
+      @changePage="HandleChangePage"
+      @changeSizePage="HandleChangeSizePage"
     >
     </Table>
     <Modal
@@ -21,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import AdminLayout from '@/components/AdminLayout.vue'
 import type { Category } from '@/utils/types/interfaces/category.interface'
 import { DrawerType } from '@/utils/types/drawer-type.enum'
@@ -35,7 +40,28 @@ import Table from '@/components/Table.vue'
 
 const categoryStore = useCategoryStore()
 const drawerStore = useDrawerStore()
+const currentPage = ref<number>(1)
+const pageSize = ref<number>(10)
+
 const categoryToDelete = ref<Category | null>(null)
+
+const loadPaginatedCategories = () => {
+  categoryStore.loadPaginatedCategories(currentPage.value, pageSize.value)
+  console.log('Current page:', currentPage.value);
+  console.log('Page size:', pageSize.value);
+  console.log('Categories:', categoryStore.paginatedCategories.data);
+
+}
+
+const HandleChangePage = (page: number) => {
+  currentPage.value = page
+  loadPaginatedCategories()
+}
+
+const HandleChangeSizePage = (size: number) => {
+  pageSize.value = size
+  loadPaginatedCategories()
+}
 
 const openDrawerUpdate = (category: Category) => {
   if (!category?._id) {
@@ -69,6 +95,10 @@ const deleteSelectedCategories = async (ids: string[]) => {
       toastHandler('Catégorie supprimé avec succès', ToastType.SUCCESS)
     }
   }
-  categoryStore.loadCategories();
+  loadPaginatedCategories();
 }
+
+onMounted(() => {
+  loadPaginatedCategories()
+});
 </script>

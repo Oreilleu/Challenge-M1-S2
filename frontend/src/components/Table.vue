@@ -13,6 +13,18 @@
       </template>
     </el-table-column>
   </el-table>
+
+  <el-pagination
+      background
+      layout="total, sizes, prev, pager, next, jumper"
+      :current-page="currentPage"
+      :page-size="pageSize"
+      :total="totalItems"
+      @current-change="changePage"
+      @size-change="changeSizePage"
+      style="margin-top: 20px; text-align: right;"
+    />
+
   <div style="display:flex; justify-content: right; margin-top: 50px;">
     <el-button type="primary" @click="exportData">Exporter en csv</el-button>
     <el-button type="danger" @click="deleteSelectedRows">Supprimer les données</el-button>
@@ -22,7 +34,7 @@
 
 <script setup lang="ts">
 
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import toastHandler from '@/utils/toastHandler'
 import { ToastType } from '@/utils/types/toast-type.enum'
 
@@ -30,20 +42,27 @@ type Props = {
   tableData: any[];
   emptyText: string;
   title: string;
+  currentPage: number;
+  pageSize: number;
+  totalItems: number;
 }
 
+
+
+const props = defineProps<Props>();
 const selectedRows = ref<string[]>([]);
+
+const emit = defineEmits(['openDrawerUpdate','displayModalDelete', 'deleteSelectedData', 'changePage', 'changeSizePage']);
+
+console.log('Props:', props);
 
 const handleSelectionChange = (selection: any[]) => {
   selectedRows.value = selection.map((row) => row._id);
   console.log(selectedRows.value);
 }
 
-const props = defineProps<Props>();
-const emit = defineEmits(['openDrawerUpdate','displayModalDelete', 'deleteSelectedData', 'exportData']);
-
 const filteredHeaderTable = computed(() => {
-  if(props.tableData.length === 0) return [];
+  if(!props.tableData || props.tableData.length === 0) return [];
   const excludedKeys = ['_id', '__v'];
   const keys = Object.keys(props.tableData[0]);
   return keys.filter(
@@ -62,12 +81,34 @@ const filteredHeaderTable = computed(() => {
 
 });
 
+watch(() => props.tableData, (newValue) => {
+  console.log('Table data:', newValue);
+});
+
 const openDrawer = (row: any) => {
   emit('openDrawerUpdate', row);
 }
 
 const displayModal = (row:any) => {
   emit('displayModalDelete', row);
+}
+
+const changePage = (page: number) => {
+  emit('changePage', page);
+}
+
+const changeSizePage = (size: number) => {
+  emit('changeSizePage', size);
+}
+
+const deleteSelectedRows = () => {
+
+  if(selectedRows.value.length === 0){
+    toastHandler('Veuillez selectionner des données à supprimer', ToastType.ERROR);
+    return;
+  }
+
+  emit('deleteSelectedData', selectedRows.value);
 }
 
 const exportData = async () =>{
@@ -114,16 +155,6 @@ const exportData = async () =>{
   catch(err){
     toastHandler('Erreur lors de l\'exportation des données', ToastType.ERROR);
   }
-}
-
-const deleteSelectedRows = () => {
-
-  if(selectedRows.value.length === 0){
-    toastHandler('Veuillez selectionner des données à supprimer', ToastType.ERROR);
-    return;
-  }
-
-  emit('deleteSelectedData', selectedRows.value);
 }
 
 </script>

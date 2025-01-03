@@ -54,7 +54,7 @@ const useCategoryStore = defineStore('category', () => {
     if(!categories.value.length){
       loadCategories()
       loadSubCategories()
-      loadPaginatedCategories(1, 10);
+      loadPaginatedCategories(1, 10, '');
     }
     if(!masterCategories.value.length){
       loadMasterCategories()
