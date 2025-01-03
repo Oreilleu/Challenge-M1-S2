@@ -24,22 +24,22 @@ export const fetchCategories = async () => {
   }
 }
 
-export const fetchPaginatedCategories = async (page: number, limit: number, searchInput?: string ) => {
+export const fetchPaginatedCategories = async (page: number, limit: number, searchInput?: string ):  Promise<PaginateResponse<Category>> => {
   try {
-    const response: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/category/paginated-categories?page=${page}&limit=${limit}&search=${searchInput}`);
+    const response: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/category/paginated-categories?page=${page}&limit=${limit}&search=${searchInput || ''}`);
+    const json : PaginateResponse<Category> = await response.json();
 
-    const json: ResponseApi<PaginateResponse<Category>> = await response.json()
-
-    if (!json.success) {
+    if (!json.success || !json.data) {
       return {
         data: [],
+        success: false,
         page: 1,
         limit: 10,
         total: 0
       };
     }
 
-    return json.data || ({} as PaginateResponse<Category>)
+    return json;
   } catch (error) {
     console.error(error)
     toastHandler('Erreur lors de la récupération des catégories.', ToastType.ERROR)
@@ -49,9 +49,10 @@ export const fetchPaginatedCategories = async (page: number, limit: number, sear
       limit: 10,
       total: 0,
       data: [],
+      success: false
     };
   }
-}
+};
 
 export const fetchSubCategories = async () => {
   try {

@@ -41,15 +41,13 @@ import Table from '@/components/Table.vue'
 const categoryStore = useCategoryStore()
 const drawerStore = useDrawerStore()
 const currentPage = ref<number>(1)
-const pageSize = ref<number>(10)
+const pageSize = ref<number>(20)
+const searchInput = ref('')
 
 const categoryToDelete = ref<Category | null>(null)
 
 const loadPaginatedCategories = () => {
-  categoryStore.loadPaginatedCategories(currentPage.value, pageSize.value)
-  console.log('Current page:', currentPage.value);
-  console.log('Page size:', pageSize.value);
-  console.log('Categories:', categoryStore.paginatedCategories.data);
+  categoryStore.loadPaginatedCategories(currentPage.value, pageSize.value, searchInput.value)
 
 }
 
@@ -80,7 +78,7 @@ const deleteCategory = async (idCategory: string | undefined) => {
 
   if (isDeleted) {
     toastHandler('Catégorie supprimé avec succès', ToastType.SUCCESS)
-    categoryStore.loadCategories();
+    loadPaginatedCategories();
     categoryToDelete.value = null
     return
   }
@@ -98,7 +96,7 @@ const deleteSelectedCategories = async (ids: string[]) => {
   loadPaginatedCategories();
 }
 
-onMounted(() => {
-  loadPaginatedCategories()
+onMounted( () => {
+  loadPaginatedCategories();
 });
 </script>

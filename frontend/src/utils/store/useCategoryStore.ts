@@ -10,6 +10,7 @@ const useCategoryStore = defineStore('category', () => {
   const categories = ref<Category[]>([])
   const masterCategories = ref<Category[]>([])
   const paginatedCategories = ref<PaginateResponse<Category>>({
+    success: false,
     data: [],
     page: 1,
     limit: 10,
@@ -45,9 +46,7 @@ const useCategoryStore = defineStore('category', () => {
   }
 
   const loadPaginatedCategories = async (page: number, limit: number, searchInput?: string) => {
-    const result = await fetchPaginatedCategories(page, limit, searchInput || '');
-    paginatedCategories.value = result;
-    console.log('Paginated Categories value: ', paginatedCategories.value);
+    paginatedCategories.value = await fetchPaginatedCategories(page, limit, searchInput || '');
   }
 
   onMounted(() => {

@@ -139,7 +139,7 @@ const onSubmit = handleSubmit(async () => {
 
     if (json.success) {
       drawerStore.closeDrawer()
-      categoryStore.loadCategories()
+      categoryStore.loadPaginatedCategories(1, 20)
       toastHandler('Catégorie modifiée avec succès', ToastType.SUCCESS)
     }
   } catch (error) {

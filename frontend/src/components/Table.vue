@@ -15,14 +15,13 @@
   </el-table>
 
   <el-pagination
-      background
       layout="total, sizes, prev, pager, next, jumper"
       :current-page="currentPage"
       :page-size="pageSize"
       :total="totalItems"
       @current-change="changePage"
       @size-change="changeSizePage"
-      style="margin-top: 20px; text-align: right;"
+      style="margin-top: 30px; display: flex; justify-content: center;"
     />
 
   <div style="display:flex; justify-content: right; margin-top: 50px;">
@@ -48,13 +47,10 @@ type Props = {
 }
 
 
-
 const props = defineProps<Props>();
 const selectedRows = ref<string[]>([]);
 
 const emit = defineEmits(['openDrawerUpdate','displayModalDelete', 'deleteSelectedData', 'changePage', 'changeSizePage']);
-
-console.log('Props:', props);
 
 const handleSelectionChange = (selection: any[]) => {
   selectedRows.value = selection.map((row) => row._id);
