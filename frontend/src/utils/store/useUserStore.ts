@@ -12,7 +12,8 @@ const useUserStore = defineStore('user', () => {
     numberUserPerPage: number,
     searchOption?: UserSearchOption
   ) => {
-    paginateUser.value = await fetchPaginatedUsers(page, numberUserPerPage, searchOption)
+    const result = await fetchPaginatedUsers(page, numberUserPerPage, searchOption)
+    paginateUser.value = result
   }
 
   const clearPaginate = () => {

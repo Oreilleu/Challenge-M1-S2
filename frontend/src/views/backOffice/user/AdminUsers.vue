@@ -3,13 +3,13 @@
     <section class="page">
       <h1>Liste des utilisateurs</h1>
       <el-table
-        :data="userStore.paginateUser?.paginates"
+        :data="userStore.paginateUser?.users || []"
         :empty-text="'Aucun utilisateur trouvé'"
         style="width: auto; overflow: auto"
       >
         <el-table-column prop="email" label="Email"></el-table-column>
-        <el-table-column prop="firstName" label="Prénom"></el-table-column>
-        <el-table-column prop="lastName" label="Nom"></el-table-column>
+        <el-table-column prop="firstname" label="Prénom"></el-table-column>
+        <el-table-column prop="lastname" label="Nom"></el-table-column>
         <el-table-column>
           <template #header>
             <el-input
@@ -27,10 +27,10 @@
               />
             </el-select>
           </template>
-          <!-- <template #default="scope">
-          <el-button type="primary" @click="openDrawerUpdate(scope.row._id)">Editer</el-button>
-          <el-button type="danger" @click="displayModalDelete(scope.row)">Supprimer</el-button>
-        </template> -->
+          <template #default="scope">
+            <el-button type="primary" @click="openDrawerUpdate(scope.row._id)">Editer</el-button>
+            <el-button type="danger" @click="displayModalDelete(scope.row)">Supprimer</el-button>
+          </template>
         </el-table-column>
       </el-table>
 
@@ -49,9 +49,13 @@
 import AdminLayout from '@/components/AdminLayout.vue'
 import { ref, onMounted } from 'vue'
 import type { User } from '@/utils/types/interfaces/user.interface'
+import useDrawerStore from '@/utils/store/useDrawerStore'
 import useUserStore from '@/utils/store/useUserStore'
+import toastHandler from '@/utils/toastHandler'
+import { DrawerType } from '@/utils/types/drawer-type.enum'
 import { NUMBER_ADMIN_USER_PER_PAGE, OPTION_USER_SEARCH_COLUMN } from '@/utils/const'
 
+const drawerStore = useDrawerStore()
 const userStore = useUserStore()
 const page = ref(1)
 const searchInput = ref('')
@@ -78,6 +82,14 @@ const onChangeSearch = (e: string) => {
   const searchOption = createSearchOption()
 
   userStore.updatePaginateUsers(page.value, NUMBER_ADMIN_USER_PER_PAGE, searchOption)
+}
+
+const openDrawerUpdate = (id: string | undefined) => {
+  if (!id) {
+    toastHandler('Aucun utilisateur sélectionné', ToastType.ERROR)
+    return
+  }
+  drawerStore.openDrawer(DrawerType.UPDATE_USER, id)
 }
 
 onMounted(() => {
