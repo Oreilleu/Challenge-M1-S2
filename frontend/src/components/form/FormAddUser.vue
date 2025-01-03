@@ -142,12 +142,7 @@ const submitForm = async () => {
       throw new Error()
     }
 
-    localStorageHandler().set(LocalStorageKeys.AUTH_TOKEN, data.jwt)
-    localStorageHandler().set(LocalStorageKeys.USER, data.user)
-
     toastHandler('Votre compte a bien été créer.', ToastType.SUCCESS)
-
-    router.push('/')
   } catch (error) {
     toastHandler("Une erreur s'est produite, veuillez réessayer.", ToastType.ERROR)
   } finally {
