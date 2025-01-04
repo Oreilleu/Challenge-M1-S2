@@ -12,6 +12,7 @@
       @deleteSelectedData="deleteSelectedCategories"
       @changePage="HandleChangePage"
       @changeSizePage="HandleChangeSizePage"
+      @search="HandleSearch"
     >
     </Table>
     <Modal
@@ -43,11 +44,12 @@ const drawerStore = useDrawerStore()
 const currentPage = ref<number>(1)
 const pageSize = ref<number>(20)
 const searchInput = ref('')
+const searchOption = ref('name')
 
 const categoryToDelete = ref<Category | null>(null)
 
 const loadPaginatedCategories = () => {
-  categoryStore.loadPaginatedCategories(currentPage.value, pageSize.value, searchInput.value)
+  categoryStore.loadPaginatedCategories(currentPage.value, pageSize.value, searchInput.value, searchOption.value)
 
 }
 
@@ -58,6 +60,15 @@ const HandleChangePage = (page: number) => {
 
 const HandleChangeSizePage = (size: number) => {
   pageSize.value = size
+  loadPaginatedCategories()
+}
+
+const HandleSearch = (search: string, searchKey: string) => {
+  if (searchKey === '') {
+    searchOption.value = 'name'
+  }
+  searchInput.value = search
+  searchOption.value = searchKey
   loadPaginatedCategories()
 }
 

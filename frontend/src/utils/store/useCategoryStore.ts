@@ -45,8 +45,8 @@ const useCategoryStore = defineStore('category', () => {
     })
   }
 
-  const loadPaginatedCategories = async (page: number, limit: number, searchInput?: string) => {
-    paginatedCategories.value = await fetchPaginatedCategories(page, limit, searchInput || '');
+  const loadPaginatedCategories = async (page: number, limit: number, searchInput?: string, searchKey?: string) => {
+    paginatedCategories.value = await fetchPaginatedCategories(page, limit, searchInput || '', searchKey || '')
   }
 
   onMounted(() => {

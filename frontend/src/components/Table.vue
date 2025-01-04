@@ -7,6 +7,23 @@
         <el-table-column sortable :prop="value" :label="value" width="180"/>
     </template>
     <el-table-column align="right">
+      <template #header>
+        <el-input
+          v-model="searchInput"
+          placeholder="Rechercher"
+          style="margin-bottom: 5px; width: 200px"
+          @input="handleSearch"
+        />
+        <el-select v-model="searchColumn" placeholder="Sélectionner une colonne" style="width: 200px">
+          <el-option
+            v-for="item in filteredHeaderTable"
+            :key="item"
+            :label="item"
+            :value="item"
+          />
+        </el-select>
+        
+      </template>
       <template #default="scope">
         <el-button type="primary" @click="openDrawer(scope.row)">Editer</el-button>
         <el-button type="danger" @click="displayModal(scope.row)">Supprimer</el-button>
@@ -49,8 +66,10 @@ type Props = {
 
 const props = defineProps<Props>();
 const selectedRows = ref<string[]>([]);
+const searchInput = ref('');
+const searchColumn = ref('');
 
-const emit = defineEmits(['openDrawerUpdate','displayModalDelete', 'deleteSelectedData', 'changePage', 'changeSizePage']);
+const emit = defineEmits(['openDrawerUpdate','displayModalDelete', 'deleteSelectedData', 'changePage', 'changeSizePage', 'search']);
 
 const handleSelectionChange = (selection: any[]) => {
   selectedRows.value = selection.map((row) => row._id);
@@ -97,6 +116,10 @@ const changeSizePage = (size: number) => {
   emit('changeSizePage', size);
 }
 
+const handleSearch = () => {
+  emit('search', searchInput.value, searchColumn.value);
+}
+ 
 const deleteSelectedRows = () => {
 
   if(selectedRows.value.length === 0){
