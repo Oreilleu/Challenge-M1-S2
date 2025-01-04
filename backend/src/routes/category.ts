@@ -7,6 +7,7 @@ import {
   getCategoryById,
   updateCategory,
   deleteCategory,
+  getPaginatedCategories,
 } from "../controllers/category";
 import multer from "multer";
 import { storage } from "../middleware/storage";
@@ -20,6 +21,8 @@ const categoryRoute = () => {
   const router = Router();
 
   router.get("/", getCategories);
+  
+  router.get("/paginated-categories", getPaginatedCategories);
 
   router.get("/sub-categories", getSubCategories);
 

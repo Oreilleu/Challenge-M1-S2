@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import CategoryModel from "../models/category.model";
+import { paginateData } from "../utils/paginate";
 import { Category } from "../types/category.interface";
 import path from "path";
 import fs from "fs";
@@ -59,9 +60,8 @@ const createCategory = async (req: Request, res: Response) => {
 const getCategories = async (req: Request, res: Response) => {
   try {
     const categories = await CategoryModel.find()
-      .populate("parent")
-      .sort({ name: 1 });
-
+    .populate("parent", "name")
+    .sort({ name: 1 });
     res.status(200).json({
       success: true,
       data: categories,
@@ -76,6 +76,27 @@ const getCategories = async (req: Request, res: Response) => {
     });
   }
 };
+
+const getPaginatedCategories = async (req: Request, res: Response) => {
+  try{
+    const categories = await CategoryModel.find()
+    .populate("parent", "name")
+    .sort({ name: 1 });
+    
+    const result = paginateData(req, categories);
+    res.status(200).json({
+      success: true,
+      ...result,
+    });
+  }
+  catch(error){
+    console.error("Erreur pour récupérer les catégories paginées", error);
+    res.status(500).json({
+      success: false,
+      message: (error as Error).message,
+    });
+  }
+}
 
 const getSubCategories = async (req: Request, res: Response) => {
   try {
@@ -232,6 +253,7 @@ const deleteCategory = async (req: Request, res: Response) => {
 export {
   createCategory,
   getCategories,
+  getPaginatedCategories,
   getSubCategories,
   getMasterCategories,
   getCategoryById,
