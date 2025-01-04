@@ -180,29 +180,3 @@ export const edit: RequestHandler = async (req, res, next) => {
     });
   }
 };
-
-export const remove: RequestHandler = async (req, res, next) => {
-  const { id } = req.params;
-
-  try {
-    const user = await UserModel.findByIdAndDelete(id);
-
-    if (!user) {
-      res.status(404).json({
-        success: false,
-        message: "Utilisateur non trouvé",
-      });
-      return;
-    }
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: (error as Error).message,
-    });
-
-    res.status(200).json({
-      success: true,
-      message: "Utilisateur supprimé avec succès",
-    });
-  }
-};

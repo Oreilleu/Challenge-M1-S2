@@ -84,10 +84,7 @@
 import { reactive, ref } from 'vue'
 import FormInput from '@/components/FormInput.vue'
 import toastHandler from '@/utils/toastHandler'
-import localStorageHandler from '@/utils/localStorageHandler'
-import { useRouter } from 'vue-router'
 import { ToastType } from '@/utils/types/toast-type.enum'
-import { LocalStorageKeys } from '@/utils/types/local-storage-keys.enum'
 import { Field, Form } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { registerFormSchema } from '@/utils/validation/schema'
@@ -96,14 +93,13 @@ import type { ResponseApi } from '@/utils/types/interfaces/response-api.interfac
 import type { ResultAuth } from '@/utils/types/interfaces/result-auth.interface'
 
 const isSubmitting = ref(false)
-const router = useRouter()
 
 const registerForm: RegisterForm = reactive({
   email: '',
   password: '',
   confirmPassword: '',
   civility: 'man',
-  firstname: 'first',
+  firstname: '',
   lastname: '',
   phone: ''
 })

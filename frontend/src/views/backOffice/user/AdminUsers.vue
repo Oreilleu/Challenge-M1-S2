@@ -28,7 +28,7 @@
             </el-select>
           </template>
           <template #default="scope">
-            <el-button type="primary" @click="openDrawerUpdate(scope.row._id)">Editer</el-button>
+            <!-- <el-button type="primary" @click="openDrawerUpdate(scope.row._id)">Editer</el-button> -->
             <el-button type="danger" @click="displayModalDelete(scope.row)">Supprimer</el-button>
           </template>
         </el-table-column>
@@ -84,13 +84,13 @@ const onChangeSearch = (e: string) => {
   userStore.updatePaginateUsers(page.value, NUMBER_ADMIN_USER_PER_PAGE, searchOption)
 }
 
-const openDrawerUpdate = (id: string | undefined) => {
-  if (!id) {
-    toastHandler('Aucun utilisateur sélectionné', ToastType.ERROR)
-    return
-  }
-  drawerStore.openDrawer(DrawerType.UPDATE_USER, id)
-}
+// const openDrawerUpdate = (id: string | undefined) => {
+//   if (!id) {
+//     toastHandler('Aucun utilisateur sélectionné', ToastType.ERROR)
+//     return
+//   }
+//   drawerStore.openDrawer(DrawerType.UPDATE_USER, id)
+// }
 
 onMounted(() => {
   userStore.updatePaginateUsers(page.value, NUMBER_ADMIN_USER_PER_PAGE)
