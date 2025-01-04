@@ -74,9 +74,6 @@ const getPaginatedCategories = async (req: Request, res: Response) => {
       success: true,
       ...result,
     });
-
-    console.log('Result', result);
-
   }
   catch(error){
     console.error("Erreur pour récupérer les catégories paginées", error);

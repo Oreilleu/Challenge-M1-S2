@@ -1,25 +1,32 @@
 import {Request} from 'express';
 
-const searchData = (data: any[], search: string) => {
-    return data.filter(item => 
-        Object.values(item).some(value =>{
+const searchData = (data: any[], search: string, searchKey?: string) => {
+    return data.filter((item) => {
+        if(searchKey) {
+            const value = item[searchKey];
             if(typeof value === 'string'){
-                return value.toString().toLowerCase().includes(search.toLowerCase());
-            } else if(typeof value === 'object' && value !== null){
-                return Object.values(value).some((v: any) => v.toString().toLowerCase().includes(search.toLowerCase())
-            );
+                return value.toLowerCase().includes(search.toLowerCase());
             }
-            return false
-        })
-    );
+            return false;
+        } else {
+            return Object.values(item).some((val) => {
+                if(typeof val === 'string') {
+                    return val.toLowerCase().includes(search.toLowerCase());
+                }
+                return false;
+            });
+        }
+    });
 }
 
 export const paginateData = (req: Request, data: any[]) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const search = req.query.search as string || '';
+    const searchKey = req.query.searchKey as string || '';
 
-    const filterData = searchData(data, search);
+
+    const filterData = searchData(data, search, searchKey);
 
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
