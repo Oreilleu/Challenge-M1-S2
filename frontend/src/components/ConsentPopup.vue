@@ -58,7 +58,7 @@
     </Transition>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 
@@ -131,8 +131,6 @@ const saveCookiePreferences = () => {
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
     z-index: 9999;
     padding: 1rem;
 }
@@ -143,6 +141,7 @@ const saveCookiePreferences = () => {
     background: white;
     padding: 2rem;
     border-radius: 12px;
+    border: 1px solid rgb(193, 193, 193);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -207,7 +206,7 @@ const saveCookiePreferences = () => {
 
 .btn {
     padding: 0.75rem 1.5rem;
-    border-radius: 8px;
+    border-radius: 4px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
