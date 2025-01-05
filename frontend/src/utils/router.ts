@@ -26,6 +26,8 @@ import ConditionUsers from '@/views/ConditionUsers.vue'
 import PrivacyPolicy from '@/views/PrivacyPolicy.vue'
 import DataRegister from '@/views/DataRegister.vue'
 import DataUsers from '@/views/DataUsers.vue'
+import PlanSite from '@/views/PlanSite.vue'
+import Store from '@/views/Store.vue'
 // import PlanSite from '@/views/PlanSite.vue'
 // import Store from '@/views/Store.vue'
 
@@ -188,17 +190,17 @@ const routes = [
     path: '/privacy-policy',
     name: 'PrivacyPolicy',
     component: PrivacyPolicy
+  },
+  {
+    path: '/plan-site',
+    name: 'PlanSite',
+    component: PlanSite
+  },
+  {
+    path: '/store',
+    name: 'Store',
+    component: Store
   }
-  // {
-  //   path: '/plan-site',
-  //   name: 'PlanSite',
-  //   component: PlanSite
-  // },
-  // {
-  //   path: '/store',
-  //   name: 'Store',
-  //   component: Store
-  // }
 ]
 
 const router = createRouter({

@@ -16,10 +16,16 @@
                 <div>
                     <h2 class="text-xl font-semibold text-gray-800 mb-2">Accueil</h2>
                     <ul class="text-gray-600 list-disc list-inside">
-                        <li><router-link to="/" class="text-blue-600 hover:underline">Accueil</router-link></li>
-                        <li><router-link to="/qui-sommes-nous" class="text-blue-600 hover:underline">Qui
-                                sommes-nous</router-link></li>
-                        <li><router-link to="/faq" class="text-blue-600 hover:underline">FAQ</router-link></li>
+                        <li>
+                            <RouterLink to="/" class="text-blue-600 hover:underline">Accueil</RouterLink>
+                        </li>
+                        <li>
+                            <RouterLink to="/qui-sommes-nous" class="text-blue-600 hover:underline">Qui
+                                sommes-nous</RouterLink>
+                        </li>
+                        <li>
+                            <RouterLink to="/faq" class="text-blue-600 hover:underline">FAQ</RouterLink>
+                        </li>
                     </ul>
                 </div>
 
@@ -27,10 +33,14 @@
                 <div>
                     <h2 class="text-xl font-semibold text-gray-800 mb-2">Produits</h2>
                     <ul class="text-gray-600 list-disc list-inside">
-                        <li><router-link to="/products" class="text-blue-600 hover:underline">Tous les
-                                produits</router-link></li>
-                        <li><router-link to="/product-details/:productId" class="text-blue-600 hover:underline">Détails
-                                du produit</router-link></li>
+                        <li>
+                            <RouterLink to="/products" class="text-blue-600 hover:underline">Tous les
+                                produits</RouterLink>
+                        </li>
+                        <li>
+                            <RouterLink to="/product-details/:productId" class="text-blue-600 hover:underline">Détails
+                                du produit</RouterLink>
+                        </li>
                     </ul>
                 </div>
 
@@ -38,11 +48,15 @@
                 <div>
                     <h2 class="text-xl font-semibold text-gray-800 mb-2">Compte</h2>
                     <ul class="text-gray-600 list-disc list-inside">
-                        <li><router-link to="/register" class="text-blue-600 hover:underline">Créer un
-                                compte</router-link></li>
-                        <li><router-link to="/login" class="text-blue-600 hover:underline">Se connecter</router-link>
+                        <li>
+                            <RouterLink to="/register" class="text-blue-600 hover:underline">Créer un
+                                compte</RouterLink>
                         </li>
-                        <li><router-link to="/my-account" class="text-blue-600 hover:underline">Mon compte</router-link>
+                        <li>
+                            <RouterLink to="/login" class="text-blue-600 hover:underline">Se connecter</RouterLink>
+                        </li>
+                        <li>
+                            <RouterLink to="/my-account" class="text-blue-600 hover:underline">Mon compte</RouterLink>
                         </li>
                     </ul>
                 </div>
@@ -51,14 +65,22 @@
                 <div>
                     <h2 class="text-xl font-semibold text-gray-800 mb-2">Backoffice</h2>
                     <ul class="text-gray-600 list-disc list-inside">
-                        <li><router-link to="/admin/products" class="text-blue-600 hover:underline">Gérer les
-                                produits</router-link></li>
-                        <li><router-link to="/admin/categories" class="text-blue-600 hover:underline">Gérer les
-                                catégories</router-link></li>
-                        <li><router-link to="/admin/orders" class="text-blue-600 hover:underline">Gérer les
-                                commandes</router-link></li>
-                        <li><router-link to="/admin/users" class="text-blue-600 hover:underline">Gérer les
-                                utilisateurs</router-link></li>
+                        <li>
+                            <RouterLink to="/admin/products" class="text-blue-600 hover:underline">Gérer les
+                                produits</RouterLink>
+                        </li>
+                        <li>
+                            <RouterLink to="/admin/categories" class="text-blue-600 hover:underline">Gérer les
+                                catégories</RouterLink>
+                        </li>
+                        <li>
+                            <RouterLink to="/admin/orders" class="text-blue-600 hover:underline">Gérer les
+                                commandes</RouterLink>
+                        </li>
+                        <li>
+                            <RouterLink to="/admin/users" class="text-blue-600 hover:underline">Gérer les
+                                utilisateurs</RouterLink>
+                        </li>
                     </ul>
                 </div>
 
@@ -66,14 +88,22 @@
                 <div>
                     <h2 class="text-xl font-semibold text-gray-800 mb-2">Informations légales</h2>
                     <ul class="text-gray-600 list-disc list-inside">
-                        <li><router-link to="/cgv" class="text-blue-600 hover:underline">Conditions Générales de
-                                Vente</router-link></li>
-                        <li><router-link to="/condition-users" class="text-blue-600 hover:underline">Conditions
-                                Générales d'Utilisation</router-link></li>
-                        <li><router-link to="/privacy-policy" class="text-blue-600 hover:underline">Politique de
-                                Confidentialité</router-link></li>
-                        <li><router-link to="/data-users" class="text-blue-600 hover:underline">Utilisation des
-                                données</router-link></li>
+                        <li>
+                            <RouterLink to="/cgv" class="text-blue-600 hover:underline">Conditions Générales de
+                                Vente</RouterLink>
+                        </li>
+                        <li>
+                            <RouterLink to="/condition-users" class="text-blue-600 hover:underline">Conditions
+                                Générales d'Utilisation</RouterLink>
+                        </li>
+                        <li>
+                            <RouterLink to="/privacy-policy" class="text-blue-600 hover:underline">Politique de
+                                Confidentialité</RouterLink>
+                        </li>
+                        <li>
+                            <RouterLink to="/data-users" class="text-blue-600 hover:underline">Utilisation des
+                                données</RouterLink>
+                        </li>
                     </ul>
                 </div>
 
@@ -81,15 +111,22 @@
                 <div>
                     <h2 class="text-xl font-semibold text-gray-800 mb-2">Support</h2>
                     <ul class="text-gray-600 list-disc list-inside">
-                        <li><router-link to="/faq" class="text-blue-600 hover:underline">FAQ</router-link></li>
-                        <li><router-link to="/contact"
-                                class="text-blue-600 hover:underline">Contactez-nous</router-link></li>
+                        <li>
+                            <RouterLink to="/faq" class="text-blue-600 hover:underline">FAQ</RouterLink>
+                        </li>
+                        <li>
+                            <RouterLink to="/contact" class="text-blue-600 hover:underline">Contactez-nous</RouterLink>
+                        </li>
                     </ul>
                 </div>
             </div>
         </div>
     </section>
 </template>
+
+<script setup lang="ts">
+
+</script>
 
 
 <style scoped>
