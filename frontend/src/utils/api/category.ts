@@ -26,7 +26,14 @@ export const fetchCategories = async () => {
 
 export const fetchPaginatedCategories = async (page: number, limit: number, searchInput?: string, searchKey?: string ):  Promise<PaginateResponse<Category>> => {
   try {
-    const response: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/category/paginated-categories?page=${page}&limit=${limit}&search=${searchInput || ''}&searchKey=${searchKey || ''}`);
+    const response: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/category/paginated-categories?page=${page}&limit=${limit}&search=${searchInput || ''}&searchKey=${searchKey || ''}`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+      }
+    }
+    );
     const json : PaginateResponse<Category> = await response.json();
 
     if (!json.success || !json.data) {
