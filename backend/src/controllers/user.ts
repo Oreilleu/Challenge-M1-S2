@@ -6,6 +6,8 @@ import OrderModel from "../models/order.model";
 import { config } from "../config";
 import resetPasswordTemplate from "../utils/template-email/resetPasswordTemplate";
 import { sendEmail } from "../utils/senderMail";
+import { paginateData } from "../utils/paginate";
+import {Request, Response} from "express";
 
 export const getOne: RequestHandler = (req, res, next) => {
   const { user } = req as AuthenticatedRequest;
@@ -23,6 +25,24 @@ export const getOne: RequestHandler = (req, res, next) => {
     data: { ...user },
   });
 };
+
+export const getPaginatedUsers = async (req: Request, res: Response) => {
+  try{
+    const users = await UserModel.find().lean();
+    const result = paginateData(req, users);
+
+    res.status(200).json({
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des utilisateurs :", error);
+    res.status(500).json({
+      success: false,
+      message: (error as Error).message,
+    });
+  }
+}
 
 export const isVerified: RequestHandler = async (req, res, next) => {
   const { user } = req as AuthenticatedRequest;
