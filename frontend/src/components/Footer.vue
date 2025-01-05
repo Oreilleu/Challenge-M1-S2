@@ -9,53 +9,30 @@
               <a href="/qui-sommes-nous" class="footer-link">Qui sommes-nous</a>
             </li>
             <li>
-              <RouterLink to="/nos-magasins" class="footer-link">Nos magasins</RouterLink>
+              <RouterLink to="/store" class="footer-link">Nos magasins</RouterLink>
             </li>
             <li>
               <a href="/faq" class="footer-link">FAQ</a>
             </li>
-            <li>
-              <RouterLink to="/blog" class="footer-link">Blog</RouterLink>
-            </li>
           </ul>
         </div>
 
-        <!-- Service Client -->
-        <div>
-          <h4 class="footer-heading">Service Client</h4>
-          <ul class="footer-list">
-            <li>
-              <RouterLink to="/centre-aide" class="footer-link">Centre d'aide</RouterLink>
-            </li>
-            <li>
-              <RouterLink to="/retours-garanties" class="footer-link"
-                >Retours & Garanties</RouterLink
-              >
-            </li>
-            <li>
-              <RouterLink to="/mode-livraison" class="footer-link">Mode de livraison</RouterLink>
-            </li>
-          </ul>
-        </div>
 
         <!-- Informations Légales -->
         <div>
           <h4 class="footer-heading">Condition général</h4>
           <ul class="footer-list">
             <li>
-              <a href="/cgv" class="footer-link">CGV</a>
+              <RouterLink to="/condition-users" class="footer-link">Conditions Générales d'Utilisation (CGU)
+              </RouterLink>
             </li>
             <li>
-              <RouterLink to="/mentions-legales" class="footer-link">Mentions légales</RouterLink>
+              <RouterLink to="/condition-sale" class="footer-link">Conditions Générales de Vente (CGV)</RouterLink>
             </li>
             <li>
-              <RouterLink to="/politique-confidentialite" class="footer-link"
-                >Politique de confidentialité</RouterLink
-              >
+              <RouterLink to="/data-register" class="footer-link">Registre des Données</RouterLink>
             </li>
-            <li>
-              <RouterLink to="/cookies" class="footer-link">Cookies</RouterLink>
-            </li>
+
           </ul>
         </div>
 
@@ -69,7 +46,7 @@
             </li>
             <li class="footer-contact">
               <Mail class="icon-small" />
-              <span>support@example.com</span>
+              <span>support@fanstech.com</span>
             </li>
             <li class="footer-contact">
               <Clock class="icon-small" />
@@ -128,11 +105,10 @@
       <!-- Bottom Bar -->
       <div class="footer-bottom">
         <p class="footer-bottom-text">
-          © {{ new Date().getFullYear() }} Votre Entreprise. Tous droits réservés.
+          © {{ new Date().getFullYear() }} FANStech. Tous droits réservés.
         </p>
         <div class="footer-bottom-links">
           <RouterLink to="/plan-site" class="footer-bottom-link">Plan du site</RouterLink>
-          <RouterLink to="/accessibilite" class="footer-bottom-link">Accessibilité</RouterLink>
         </div>
       </div>
     </div>
