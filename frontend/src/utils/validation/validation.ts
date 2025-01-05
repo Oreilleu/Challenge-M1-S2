@@ -113,8 +113,6 @@ export const categoryDescriptionValidation = z
 
 export const categoryParentValidation = z.string().optional()
 
-export const masterCategoryValidation = z.boolean().default(false)
-
 export const streetValidation = z
   .string({ required_error: 'La rue est obligatoire.' })
   .min(1, { message: 'La rue est obligatoire' })

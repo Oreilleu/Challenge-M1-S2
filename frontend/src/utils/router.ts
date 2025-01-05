@@ -3,10 +3,10 @@ import VerifyAccount from '@/views/VerifyAccount.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { isAuthenticated } from './isAuthenticatedUser'
 import AdminProducts from '@/views/backOffice/product/AdminProducts.vue'
-import AdminUsers from '@/views/AdminUsers.vue'
+import AdminUsers from '@/views/backOffice/User/AdminUsers.vue'
+import ProductsByCategory from '@/views/ProductsByCategory.vue'
 import { fetchIsAdminUser, fetchIsVerifiedUser } from './api/user'
 import Register from '@/views/Register.vue'
-import Home from '@/views/Home.vue'
 import Login from '@/views/Login.vue'
 import ForgotPassword from '@/views/ForgotPassword.vue'
 import ResetPassword from '@/views/ResetPassword.vue'
@@ -17,7 +17,7 @@ import TermsOfService from '@/views/TermsOfService.vue'
 // @ts-ignore
 import FAQ from '@/views/FAQ.vue'
 import Cart from '@/views/Cart.vue'
-import AdminOrders from '@/views/AdminOrders.vue'
+import AdminOrders from '@/views/backOffice/AdminOrders.vue'
 // @ts-ignore
 import MyAccount from '@/views/MyAccount.vue'
 import ProductDetails from '@/views/ProductDetails.vue'
@@ -32,7 +32,7 @@ import DataUsers from '@/views/DataUsers.vue'
 const redirectToHomeIfUserAuthenticated = async () => {
   const isAuthenticatedUser = await isAuthenticated()
   if (isAuthenticatedUser) {
-    return { name: 'Home' }
+    return { name: 'Product' }
   }
 }
 
@@ -40,7 +40,7 @@ const redirectToHomeIfUserVerified = async () => {
   const isVerifiedUser = await fetchIsVerifiedUser()
 
   if (isVerifiedUser.data) {
-    return { name: 'Home' }
+    return { name: 'Product' }
   }
 }
 
@@ -56,15 +56,15 @@ const isAdminPage = async () => {
   const isAdminUser = await fetchIsAdminUser()
 
   if (!isAdminUser) {
-    return { name: 'Home' }
+    return { name: 'Product' }
   }
 }
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    name: 'Product',
+    component: Product
   },
   {
     path: '/qui-sommes-nous',
@@ -127,9 +127,9 @@ const routes = [
     beforeEnter: redirectToLoginIfUserUnauthenticated
   },
   {
-    path: '/products',
-    name: 'Product',
-    component: Product
+    path: '/category/:id',
+    name: 'ProductByCategory',
+    component: ProductsByCategory
   },
   {
     path: '/product-details/:productId',
