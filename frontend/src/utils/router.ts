@@ -156,6 +156,12 @@ const routes = [
     name: 'AdminUsers',
     component: AdminUsers,
     beforeEnter: isAdminPage
+  },
+  {
+    path: '/admin/users-table',
+    name: 'AdminUsersTable',
+    component: AdminUsersTable,
+    beforeEnter: isAdminPage
   }
 ]
 
