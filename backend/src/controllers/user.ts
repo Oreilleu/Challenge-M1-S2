@@ -1,7 +1,5 @@
-import { BodyPaginateUser } from "./../types/body-paginate-user.interface";
 import { RequestHandler } from "express";
 import { AuthenticatedRequest } from "../types/authenticated-request.interface";
-import { ColumnUser } from "../types/column-user.interface";
 import UserModel from "../models/user.model";
 import DeliverAdressModel from "../models/delivery-address.model";
 import OrderModel from "../models/order.model";
@@ -30,7 +28,7 @@ export const getOne: RequestHandler = (req, res, next) => {
 
 export const getPaginatedUsers = async (req: Request, res: Response) => {
   try {
-    const users = await UserModel.find().lean();
+    const users = await UserModel.find().select('-password').lean();
     const result = paginateData(req, users);
 
     res.status(200).json({
