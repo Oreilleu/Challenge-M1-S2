@@ -63,11 +63,8 @@ const HandleChangeSizePage = (size: number) => {
 }
 
 const HandleSearch = (search: string, searchKey: string) => {
-  if(search === '') {
-    searchOption.value = 'status'
-  }
-  searchInput.value = search
   searchOption.value = searchKey
+  searchInput.value = search
   loadPaginatedOrders()
 }
 

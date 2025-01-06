@@ -44,7 +44,7 @@ const drawerStore = useDrawerStore()
 const currentPage = ref<number>(1)
 const pageSize = ref<number>(20)
 const searchInput = ref('')
-const searchOption = ref('email')
+const searchOption = ref('')
 
 const userToDelete = ref<User | null>(null)
 
@@ -68,14 +68,9 @@ const HandleChangeSizePage = (size: number) => {
 }
 
 const HandleSearch = (search: string, searchKey: string) => {
-  if (search === '') {
-    searchInput.value = 'email'
-    loadPaginatedUsers()
-  } else {
     searchInput.value = search
     searchOption.value = searchKey
     loadPaginatedUsers()
-  }
 }
 
 const openDrawerUpdate = (user: User) => {

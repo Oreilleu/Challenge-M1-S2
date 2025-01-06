@@ -64,9 +64,6 @@ const HandleChangeSizePage = (size: number) => {
 }
 
 const HandleSearch = (search: string, searchKey: string) => {
-  if (searchKey === '') {
-    searchOption.value = 'name'
-  }
   searchInput.value = search
   searchOption.value = searchKey
   loadPaginatedCategories()
