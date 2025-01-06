@@ -199,7 +199,10 @@ export const fetchPaginatedUsers = async (
 
     return json
   } catch (error) {
-    toastHandler('Une erreur est survenue lors de la récupération des utilisateurs.', ToastType.ERROR)
+    toastHandler(
+      'Une erreur est survenue lors de la récupération des utilisateurs.',
+      ToastType.ERROR
+    )
     return {
       data: [],
       success: false,
@@ -210,9 +213,42 @@ export const fetchPaginatedUsers = async (
   }
 }
 
-export const fetchDeleteUser = async () => {
-  const ok = "ok";
-  console.log("to do: fetchDeleteAccount");
-  return ok;
-}
+export const fetchDeleteUser = async (id: string | undefined) => {
+  if (!id) {
+    toastHandler(
+      "Une erreur est survenue lors de la suppression de l'utilisateur.",
+      ToastType.ERROR
+    )
+    return false
+  }
 
+  try {
+    const response: Response = await fetch(
+      `${import.meta.env.VITE_BASE_API_URL}/user/delete/${id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+        }
+      }
+    )
+    const json: ResponseApi<null> = await response.json()
+
+    if (!json.success) {
+      toastHandler(
+        "Une erreur est survenue lors de la suppression de l'utilisateur.",
+        ToastType.ERROR
+      )
+      return false
+    }
+
+    return true
+  } catch (error) {
+    toastHandler(
+      "Une erreur est survenue lors de la suppression de l'utilisateur.",
+      ToastType.ERROR
+    )
+    return false
+  }
+}

@@ -10,6 +10,7 @@ import {
   updateProfile,
   getPaginatedUsers,
   edit,
+  deleteUser,
 } from "../controllers/user";
 import checkAdmin from "../middleware/checkAdmin";
 
@@ -23,7 +24,8 @@ userRouter.post("/get-one", checkToken, getOne);
 userRouter.get("/paginated-users", checkToken, checkAdmin, getPaginatedUsers);
 // userRouter.get("/paginated-users", getPaginatedUsers);
 userRouter.post("/delete-admin", checkToken, checkAdmin, adminRemove);
-userRouter.delete("/delete", checkToken, remove);
+userRouter.delete("/delete", remove);
+userRouter.delete("/delete/:id", deleteUser);
 userRouter.put("/edit/:id", checkToken, edit);
 
 export default userRouter;

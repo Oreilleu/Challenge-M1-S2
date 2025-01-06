@@ -9,7 +9,7 @@ import { config } from "../config";
 import resetPasswordTemplate from "../utils/template-email/resetPasswordTemplate";
 import { sendEmail } from "../utils/senderMail";
 import { paginateData } from "../utils/paginate";
-import {Request, Response} from "express";
+import { Request, Response } from "express";
 
 export const getOne: RequestHandler = (req, res, next) => {
   const { user } = req as AuthenticatedRequest;
@@ -29,7 +29,7 @@ export const getOne: RequestHandler = (req, res, next) => {
 };
 
 export const getPaginatedUsers = async (req: Request, res: Response) => {
-  try{
+  try {
     const users = await UserModel.find().lean();
     const result = paginateData(req, users);
 
@@ -44,7 +44,7 @@ export const getPaginatedUsers = async (req: Request, res: Response) => {
       message: (error as Error).message,
     });
   }
-}
+};
 
 export const isVerified: RequestHandler = async (req, res, next) => {
   const { user } = req as AuthenticatedRequest;
@@ -199,6 +199,7 @@ export const remove: RequestHandler = async (req, res, next) => {
     const deletedUser = await UserModel.findByIdAndDelete(user._id);
 
     if (!deletedUser) {
+      console.log("Utilisateur non trouvé");
       res.status(400).json({
         success: false,
       });
@@ -291,6 +292,54 @@ export const edit: RequestHandler = async (req, res, next) => {
       return;
     }
     await user.save();
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: (error as Error).message,
+    });
+  }
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (!id) {
+    res.status(400).json({
+      success: false,
+      message: "L'identifiant de l'utilisateur est requis",
+    });
+    return;
+  }
+
+  try {
+    const user = await UserModel.findByIdAndDelete(id);
+
+    if (!user) {
+      res.status(400).json({
+        success: false,
+        message: "Utilisateur non trouvé",
+      });
+      return;
+    }
+
+    await DeliverAdressModel.deleteMany({
+      idUser: id,
+    });
+
+    await OrderModel.updateMany(
+      {
+        user: id,
+      },
+      {
+        user: null,
+        address: null,
+        billingAddress: null,
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
