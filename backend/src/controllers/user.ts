@@ -242,7 +242,7 @@ export const adminRemove: RequestHandler = async (req, res, next) => {
 };
 
 export const edit: RequestHandler = async (req, res, next) => {
-  const body: User = JSON.parse(req.body.user);
+  const body = JSON.parse(req.body.user);
   const { id } = req.params;
 
   if (!id) {
