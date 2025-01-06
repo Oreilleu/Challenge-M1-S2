@@ -64,6 +64,7 @@ type Props = {
   currentPage: number;
   pageSize: number;
   totalItems: number;
+  includedKeys?: string[];
 }
 
 
@@ -84,8 +85,9 @@ const handleSelectionChange = (selection: any[]) => {
 const filteredHeaderTable = computed(() => {
   if(!props.tableData || props.tableData.length === 0) return [];
   const excludedKeys = ['_id', '__v', 'createdAt', 'updatedAt', 'imageApi'];
-  const keys = Object.keys(props.tableData[0]);
-  return keys.filter(
+  const allKeys = Object.keys(props.tableData[0]);
+  const keysToCheck = props.includedKeys || allKeys;
+  return keysToCheck.filter(
     (key) =>
       !excludedKeys.includes(key) &&
       !props.tableData.some((row) => {
@@ -98,7 +100,6 @@ const filteredHeaderTable = computed(() => {
         );
       })
   );
-
 });
 
 watch(() => props.tableData, (newValue) => {
