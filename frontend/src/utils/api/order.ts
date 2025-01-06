@@ -80,8 +80,41 @@ export const fetchPaginatedOrders = async (
   }
 }
 
-export const fetchDeleteOrder = async () => {
-  const ok = "ok";
-  console.log('Todo: implement fetchDeleteOrder');
-  return ok; 
+export const fetchDeleteOrder = async (id: string | undefined) => {
+
+  if(!id) {
+    toastHandler(
+      'Une erreur est survenue lors de la suppression de la commande.',
+      ToastType.ERROR
+    )
+    return false
+  }
+  try {
+    const response: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/order/delete/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+      }
+    })
+
+    const json: ResponseApi<Order> = await response.json()
+
+    if (!json.success) {
+      toastHandler(
+        json.message || 'Une erreur est survenue lors de la suppression de la commande.',
+        ToastType.ERROR
+      )
+      return false
+    }
+
+    return true
+  } catch (error: any) {
+    toastHandler(
+      error.message || 'Une erreur est survenue lors de la suppression de la commande.',
+      ToastType.ERROR
+    )
+    return false
+  }
+  
 }

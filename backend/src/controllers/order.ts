@@ -259,3 +259,36 @@ export const remove = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const deleteOrder = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (!id) {
+    res.status(400).json({
+      success: false,
+      message: "L'identifiant de la commande est requis",
+    });
+    return;
+  }
+
+  try {
+    const order = await OrderModel.findByIdAndDelete(id);
+
+    if (!order) {
+      res.status(400).json({
+        success: false,
+        message: "Commande non trouvée",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: (error as Error).message,
+    });
+  }
+};

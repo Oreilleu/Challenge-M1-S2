@@ -17,7 +17,7 @@
     </Table>
     <Modal
         :model-value="!!orderToDelete"
-        :title="'Êtes-vous sur de vouloir supprimer la commande : ' + orderToDelete?.createdAt"
+        :title="'Êtes-vous sur de vouloir supprimer la commande  n°' + orderToDelete?._id"
         :displayFooter="true"
         @close="orderToDelete = null"
         @confirm="deleteOrder(orderToDelete?._id)"
@@ -84,7 +84,7 @@ const displayModalDelete = (order: Order) => {
 }
 
 const deleteOrder = async (orderId: string | undefined) => {
-  const isDeleted = await fetchDeleteOrder()
+  const isDeleted = await fetchDeleteOrder(orderId)
 
   if(isDeleted) {
     toastHandler('Commande supprimée avec succès', ToastType.SUCCESS)
@@ -96,14 +96,14 @@ const deleteOrder = async (orderId: string | undefined) => {
   orderToDelete.value = null
 }
 
-const deleteSelectedOrders = async (selectedOrders: Order[]) => {
-  const isDeleted = await fetchDeleteOrder()
-
-  if(isDeleted) {
-    toastHandler('Commandes supprimées avec succès', ToastType.SUCCESS)
-    loadPaginatedOrders()
-    return
+const deleteSelectedOrders = async (ids: string[]) => {
+  for(const id of ids) {
+    const isDeleted = await fetchDeleteOrder(id);
+    if(isDeleted) {
+      toastHandler('Commandes supprimées avec succès', ToastType.SUCCESS)
+    } 
   }
+  loadPaginatedOrders()
 }
 
 onMounted(() => {
