@@ -25,7 +25,7 @@ userRouter.get("/paginated-users", checkToken, checkAdmin, getPaginatedUsers);
 // userRouter.get("/paginated-users", getPaginatedUsers);
 userRouter.post("/delete-admin", checkToken, checkAdmin, adminRemove);
 userRouter.delete("/delete", remove);
-userRouter.delete("/delete/:id", deleteUser);
+userRouter.delete("/delete/:id", checkToken, checkAdmin, deleteUser);
 userRouter.put("/edit/:id", checkToken, edit);
 
 export default userRouter;
