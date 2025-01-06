@@ -32,15 +32,17 @@
       </div>
 
       <nav class="nav-menu">
-        <a
-          v-for="item in menuItems"
-          :key="item.id"
-          href="#"
-          @click.prevent="selectMenuItem(item)"
-          :class="['nav-item', { active: currentView === item.id }]"
-        >
-          {{ item.label }}
-        </a>
+        <ul>
+          <li
+            v-for="item in menuItems"
+            :key="item.id"
+            href="#"
+            @click.prevent="selectMenuItem(item)"
+            :class="['nav-item', { active: currentView === item.id }]"
+          >
+            {{ item.label }}
+          </li>
+        </ul>
       </nav>
     </aside>
 
@@ -163,6 +165,7 @@ if (userData) {
   color: #333;
   border-radius: 4px;
   transition: background-color 0.3s;
+  margin-bottom: 10px;
 }
 
 .nav-item:hover,

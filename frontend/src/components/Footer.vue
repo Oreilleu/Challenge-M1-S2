@@ -6,33 +6,34 @@
           <h4 class="footer-heading">À propos</h4>
           <ul class="footer-list">
             <li>
-              <a href="/qui-sommes-nous" class="footer-link">Qui sommes-nous</a>
+              <RouterLink to="/qui-sommes-nous" class="footer-link">Qui sommes-nous </RouterLink>
             </li>
             <li>
               <RouterLink to="/store" class="footer-link">Nos magasins</RouterLink>
             </li>
             <li>
-              <a href="/faq" class="footer-link">FAQ</a>
+              <RouterLink to="/faq" class="footer-link">FAQ</RouterLink>
             </li>
           </ul>
         </div>
-
 
         <!-- Informations Légales -->
         <div>
           <h4 class="footer-heading">Condition général</h4>
           <ul class="footer-list">
             <li>
-              <RouterLink to="/condition-users" class="footer-link">Conditions Générales d'Utilisation (CGU)
+              <RouterLink to="/condition-users" class="footer-link"
+                >Conditions Générales d'Utilisation (CGU)
               </RouterLink>
             </li>
             <li>
-              <RouterLink to="/condition-sale" class="footer-link">Conditions Générales de Vente (CGV)</RouterLink>
+              <RouterLink to="/condition-sale" class="footer-link"
+                >Conditions Générales de Vente (CGV)</RouterLink
+              >
             </li>
             <li>
               <RouterLink to="/data-register" class="footer-link">Registre des Données</RouterLink>
             </li>
-
           </ul>
         </div>
 
@@ -127,7 +128,7 @@ import {
   ShieldCheck,
   Truck
 } from 'lucide-vue-next'
-import { useRoute } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 const route = useRoute()
 </script>
 
