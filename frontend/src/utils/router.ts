@@ -3,8 +3,7 @@ import VerifyAccount from '@/views/VerifyAccount.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { isAuthenticated } from './isAuthenticatedUser'
 import AdminProducts from '@/views/backOffice/AdminProducts.vue'
-import AdminUsers from '@/views/backOffice/User/AdminUsers.vue'
-import AdminUsersTable from '@/views/backOffice/AdminUsersTable.vue'
+import AdminUsers from '@/views/backOffice/AdminUsers.vue'
 
 import ProductsByCategory from '@/views/ProductsByCategory.vue'
 import { fetchIsAdminUser, fetchIsVerifiedUser } from './api/user'
@@ -167,9 +166,9 @@ const routes = [
     beforeEnter: isAdminPage
   },*/
   {
-    path: '/admin/users-table',
-    name: 'AdminUsersTable',
-    component: AdminUsersTable,
+    path: '/admin/users',
+    name: 'AdminUsers',
+    component: AdminUsers,
     beforeEnter: isAdminPage
   },
 

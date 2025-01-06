@@ -7,7 +7,6 @@ export enum DrawerType {
   UPDATE_PRODUCT = 'update-product',
   UPDATE_CATEGORY = 'update-category',
   UPDATE_ORDER = 'update-order',
-  UPDATE_USER = 'update-user',
   CART = 'cart',
   NONE = ''
 }

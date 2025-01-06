@@ -46,9 +46,6 @@
         <el-menu-item>
           <RouterLink to="/admin/users">Liste des utilisateurs</RouterLink>
         </el-menu-item>
-        <el-menu-item>
-          <RouterLink to="/admin/users-table">Liste des utilisateurs table</RouterLink>
-        </el-menu-item>
         <el-menu-item @click="drawerStore.openDrawer(DrawerType.CREATE_USER)">
           Créer un utilisateurs
         </el-menu-item>
