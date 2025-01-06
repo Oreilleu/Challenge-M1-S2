@@ -21,6 +21,15 @@ import AdminOrders from '@/views/backOffice/AdminOrders.vue'
 // @ts-ignore
 import MyAccount from '@/views/MyAccount.vue'
 import ProductDetails from '@/views/ProductDetails.vue'
+import ConditionSale from '@/views/ConditionSale.vue'
+import ConditionUsers from '@/views/ConditionUsers.vue'
+import PrivacyPolicy from '@/views/PrivacyPolicy.vue'
+import DataRegister from '@/views/DataRegister.vue'
+import DataUsers from '@/views/DataUsers.vue'
+import PlanSite from '@/views/PlanSite.vue'
+import Store from '@/views/Store.vue'
+// import PlanSite from '@/views/PlanSite.vue'
+// import Store from '@/views/Store.vue'
 
 const redirectToHomeIfUserAuthenticated = async () => {
   const isAuthenticatedUser = await isAuthenticated()
@@ -154,6 +163,43 @@ const routes = [
     name: 'AdminUsers',
     component: AdminUsers,
     beforeEnter: isAdminPage
+  },
+
+  // routes footer
+  {
+    path: '/condition-sale', //CGV
+    name: 'ConditionSale',
+    component: ConditionSale
+  },
+  {
+    path: '/condition-users', // CGU
+    name: 'ConditionUsers',
+    component: ConditionUsers
+  },
+  {
+    path: '/data-register',
+    name: 'DataRegister',
+    component: DataRegister
+  },
+  {
+    path: '/data-users',
+    name: 'DataUsers',
+    component: DataUsers
+  },
+  {
+    path: '/privacy-policy',
+    name: 'PrivacyPolicy',
+    component: PrivacyPolicy
+  },
+  {
+    path: '/plan-site',
+    name: 'PlanSite',
+    component: PlanSite
+  },
+  {
+    path: '/store',
+    name: 'Store',
+    component: Store
   }
 ]
 
