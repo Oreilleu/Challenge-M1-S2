@@ -18,6 +18,7 @@ import FormUpdateCategory from './form/FormUpdateCategory.vue'
 import FormAddUser from './form/FormAddUser.vue'
 import CartDrawer from './CartDrawer.vue'
 import FormUpdateUser from './form/FormUpdateUser.vue'
+import FormUpdateOrder from './form/FormUpdateOrder.vue'
 type Props = {
   drawerContent: DrawerType
 }
@@ -46,7 +47,7 @@ const handlerForm = {
   [DrawerType.UPDATE_PRODUCT]: FormUpdateProduct,
   [DrawerType.UPDATE_CATEGORY]: FormUpdateCategory,
   [DrawerType.CREATE_ORDER]: null,
-  [DrawerType.UPDATE_ORDER]: null,
+  [DrawerType.UPDATE_ORDER]: FormUpdateOrder,
   [DrawerType.CART]: CartDrawer,
   [DrawerType.NONE]: null
 }

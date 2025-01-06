@@ -118,3 +118,67 @@ export const fetchDeleteOrder = async (id: string | undefined) => {
   }
   
 }
+
+export const fetchOrderById = async (id: string | null) => {
+  console.log('id', id)
+  if(!id){
+    toastHandler('Erreur lors de la récupération de la commande.', ToastType.ERROR)
+    return {} as Order
+  }
+
+  try {
+    const response: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/order/${id}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+      }
+    })
+
+    const json: ResponseApi<Order> = await response.json()
+
+    if (!json.success || !json.data) {
+      toastHandler('Erreur lors de la récupération de la commande.', ToastType.ERROR)
+      return {} as Order
+    }
+
+    return json.data
+  } catch (error: any) {
+    toastHandler('Erreur lors de la récupération de la commande.', ToastType.ERROR)
+    return {} as Order
+  }
+}
+
+export const fetchUpdateOrder = async (id: string | undefined, status: string | undefined) => {
+  if(!id){
+    toastHandler('Erreur lors de la récupération de la commande.', ToastType.ERROR)
+    return false
+  }
+
+  if(!status){
+    toastHandler('Erreur lors de la mise à jour de la commande.', ToastType.ERROR)
+    return false
+  }
+
+  try {
+    const response: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/order/update-status/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+      },
+      body: JSON.stringify({ status })
+    })
+
+    const json: ResponseApi<Order> = await response.json()
+
+    if (!json.success) {
+      toastHandler('Erreur lors de la mise à jour de la commande.', ToastType.ERROR)
+      return false
+    }
+
+    return true
+  } catch (error: any) {
+    toastHandler('Erreur lors de la mise à jour de la commande.', ToastType.ERROR)
+    return false
+  }
+}

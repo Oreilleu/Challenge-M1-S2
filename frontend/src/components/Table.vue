@@ -84,7 +84,7 @@ const handleSelectionChange = (selection: any[]) => {
 
 const filteredHeaderTable = computed(() => {
   if(!props.tableData || props.tableData.length === 0) return [];
-  const excludedKeys = ['_id', '__v', 'createdAt', 'updatedAt', 'imageApi'];
+  const excludedKeys = ['__v', 'createdAt', 'updatedAt', 'imageApi'];
   const allKeys = Object.keys(props.tableData[0]);
   const keysToCheck = props.includedKeys || allKeys;
   return keysToCheck.filter(
@@ -93,7 +93,7 @@ const filteredHeaderTable = computed(() => {
       !props.tableData.some((row) => {
         const value = row[key];
         return (
-          // typeof value === 'object' ||
+          typeof value === 'object' ||
           typeof value === 'boolean' ||
           // Array.isArray(value) ||
           props.tableData.every((row) => !row[key])

@@ -1,5 +1,5 @@
 <template>
-  <form v-if="category" @submit.prevent="onSubmit" class="form-product">
+  <form v-if="category" @submit.prevent="onSubmit" class="form-category">
     <FormInput
       id="name"
       name="name"
@@ -119,7 +119,8 @@ const onSubmit = handleSubmit(async () => {
   }
 
   if (category.value?.masterCategory) {
-    category.value.parent = ''
+    console.log('masterCategory')
+    category.value.parent = undefined
   }
 
   formData.append('category', JSON.stringify(category.value))
@@ -140,7 +141,7 @@ const onSubmit = handleSubmit(async () => {
 
     if (json.success) {
       drawerStore.closeDrawer()
-      categoryStore.loadPaginatedCategories(1, 20)
+      categoryStore.loadPaginatedCategories(1, 20,'', 'name'); 
       toastHandler('Catégorie modifiée avec succès', ToastType.SUCCESS)
     }
   } catch (error) {
@@ -181,16 +182,10 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.form-product {
+.form-category {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
-
-.form-product {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
 }
 
 .list-variation {

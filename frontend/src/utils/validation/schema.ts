@@ -23,7 +23,8 @@ import {
   cityValidation,
   postalCodeValidation,
   countryValidation,
-  suffixValidation
+  suffixValidation,
+  orderStatusValidation
 } from './validation'
 
 export const registerFormSchema = z
@@ -107,3 +108,8 @@ export const updateUserSchema = z.object({
   civility: civilityValidation,
   phone: phoneValidation
 })
+
+export const orderSchema = z.object({
+  status: orderStatusValidation
+})
+
