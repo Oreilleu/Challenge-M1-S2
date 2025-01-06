@@ -9,6 +9,7 @@ import { DeliveryAddress } from "../types/delivery-address.interface";
 import { sendEmail } from "../utils/senderMail";
 import { config } from "../config";
 import invoiceOrderTemplate from "../utils/template-email/invoinceOrderTemplate";
+import { paginateData } from "../utils/paginate";
 
 export const create = async (req: Request, res: Response) => {
   const { user } = req as AuthenticatedRequest;
@@ -120,6 +121,32 @@ export const getAll = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getPaginatedOrders = async (req: Request, res: Response) => {
+  const { user } = req as AuthenticatedRequest;
+
+  // if (!user?.isAdmin) {
+  //   res.status(403).send("Unauthorized");
+  //   return;
+  // }
+
+  try {
+    const orders = await OrderModel.find().populate("address").sort({ createdAt: -1 });
+
+    const result = paginateData(req, orders);
+
+    res.status(200).json({
+      success: true,
+      ...result,
+    });
+  } catch (error: any) {
+    console.error("Erreur pour récupérer les commandes paginées", error);
+    res.status(500).json({
+      success: false,
+      message: (error as Error).message,
+    });
+  }
+}
 
 export const getOne = async (req: Request, res: Response) => {
   const { user } = req as AuthenticatedRequest;

@@ -1,6 +1,7 @@
 import type { Civility } from '../civility.type'
 
 export interface User {
+  _id?: string
   email: string
   civility: Civility
   firstname: string

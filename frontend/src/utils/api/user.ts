@@ -4,6 +4,7 @@ import type { ResponseApi } from '../types/interfaces/response-api.interface'
 import type { UpdateUserProfile, User } from '../types/interfaces/user.interface'
 import { LocalStorageKeys } from '../types/local-storage-keys.enum'
 import { ToastType } from '../types/toast-type.enum'
+import type { PaginateResponse } from '../types/interfaces/paginate-response.interface'
 
 export const fetchIsVerifiedUser = async () => {
   const token = localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)
@@ -167,3 +168,51 @@ export const fetchSendEmailChangePassword = async () => {
     return false
   }
 }
+
+export const fetchPaginatedUsers = async (
+  page: number,
+  limit: number,
+  searchInput?: string,
+  searchKey?: string
+): Promise<PaginateResponse<User>> => {
+  try {
+    const response: Response = await fetch(
+      `${import.meta.env.VITE_BASE_API_URL}/user/paginated-users?page=${page}&limit=${limit}&search=${searchInput || ''}&searchKey=${searchKey || ''}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+        }
+      }
+    )
+    const json: PaginateResponse<User> = await response.json()
+
+    if (!json.success || !json.data) {
+      return {
+        data: [],
+        success: false,
+        page: 1,
+        limit: 10,
+        total: 0
+      }
+    }
+
+    return json
+  } catch (error) {
+    toastHandler('Une erreur est survenue lors de la récupération des utilisateurs.', ToastType.ERROR)
+    return {
+      data: [],
+      success: false,
+      page: 1,
+      limit: 10,
+      total: 0
+    }
+  }
+}
+
+export const fetchDeleteUser = async () => {
+  const ok = "ok";
+  console.log("to do: fetchDeleteAccount");
+  return ok;
+}
+

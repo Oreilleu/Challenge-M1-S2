@@ -8,6 +8,7 @@ import {
   remove,
   sendEmailChangePassword,
   updateProfile,
+  getPaginatedUsers,
   edit,
 } from "../controllers/user";
 import checkAdmin from "../middleware/checkAdmin";
@@ -19,6 +20,8 @@ userRouter.get("/is-admin", checkToken, isAdmin);
 userRouter.get("/change-my-password", checkToken, sendEmailChangePassword);
 userRouter.put("/update-profile", checkToken, updateProfile);
 userRouter.post("/get-one", checkToken, getOne);
+userRouter.get("/paginated-users", checkToken, checkAdmin, getPaginatedUsers);
+// userRouter.get("/paginated-users", getPaginatedUsers);
 userRouter.post("/delete-admin", checkToken, checkAdmin, adminRemove);
 userRouter.delete("/delete", checkToken, remove);
 userRouter.put("/edit/:id", checkToken, edit);

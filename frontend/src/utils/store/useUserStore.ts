@@ -1,30 +1,35 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import {defineStore} from 'pinia'
+import {onMounted, ref} from 'vue'
+import type {User} from '../types/interfaces/user.interface'
 import { fetchPaginatedUsers } from '../api/user'
-import type { PaginateUser } from '../types/interfaces/paginate-user.interface'
-import type { UserSearchOption } from '../types/interfaces/user-search-option.interface'
+import type {PaginateResponse} from '../types/interfaces/paginate-response.interface'
 
 const useUserStore = defineStore('user', () => {
-  const paginateUser = ref<PaginateUser | null>(null)
+    const users = ref<User[]>([])
+    
+    const paginatedUsers = ref<PaginateResponse<User>>({
+        success: false,
+        data: [],
+        page: 1,
+        limit: 10,
+        total: 0
+    })
 
-  const updatePaginateUsers = async (
-    page: number,
-    numberUserPerPage: number,
-    searchOption?: UserSearchOption
-  ) => {
-    const result = await fetchPaginatedUsers(page, numberUserPerPage, searchOption)
-    paginateUser.value = result
-  }
+    const updatePaginatedUsers = async (page: number, limit: number, searchInput?: string, searchKey?: string) => {
+        paginatedUsers.value = await fetchPaginatedUsers(page, limit, searchInput || '', searchKey || '')
+    }
 
-  const clearPaginate = () => {
-    paginateUser.value = null
-  }
+    onMounted(() => {
+        if (!users.value.length) {
+            updatePaginatedUsers(1, 10)
+        }
+    })
 
-  return {
-    paginateUser,
-    updatePaginateUsers,
-    clearPaginate
-  }
+    return {
+        users,
+        paginatedUsers,
+        updatePaginatedUsers
+    }
 })
 
 export default useUserStore
