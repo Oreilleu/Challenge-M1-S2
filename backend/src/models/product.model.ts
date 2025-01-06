@@ -1,4 +1,6 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, UpdateQuery } from "mongoose";
+import { Variation } from "../types/variation.interface";
+import { Product } from "../types/product.interface";
 
 const imageSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -16,7 +18,12 @@ const filterSchema = new mongoose.Schema({
   },
 });
 
-const variationSchema = new mongoose.Schema({
+export const variationSchema = new mongoose.Schema({
+  suffix: {
+    type: String,
+    required: [true, "Le suffixe de la variante est obligatoire."],
+    unique: true,
+  },
   imagesApi: { type: [imageSchema], required: true },
   price: {
     type: Number,
@@ -58,6 +65,30 @@ const productSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+productSchema.pre("findOneAndUpdate", function (next) {
+  const update = this.getUpdate() as UpdateQuery<Product>;
+  if (update && update.variations) {
+    const suffixes = update.variations.map(
+      (variation: Variation) => variation.suffix
+    );
+    const uniqueSuffixes = new Set(suffixes);
+    if (suffixes.length !== uniqueSuffixes.size) {
+      return next(new Error("Le suffixe de la variante doit être unique."));
+    }
+  }
+  next();
+});
+
+productSchema.pre("save", function (next) {
+  const product = this;
+  const suffixes = product.variations.map((variation) => variation.suffix);
+  const uniqueSuffixes = new Set(suffixes);
+  if (suffixes.length !== uniqueSuffixes.size) {
+    return next(new Error("Le suffixe de la variante doit être unique."));
+  }
+  next();
+});
 
 const ProductModel = mongoose.model("Product", productSchema);
 export default ProductModel;

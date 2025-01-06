@@ -4,6 +4,7 @@ import type { Category } from '../types/interfaces/category.interface'
 import type { ResponseApi } from '../types/interfaces/response-api.interface'
 import { LocalStorageKeys } from '../types/local-storage-keys.enum'
 import { ToastType } from '../types/toast-type.enum'
+import type { PaginateResponse } from '../types/interfaces/paginate-response.interface'
 
 export const fetchCategories = async () => {
   try {
@@ -22,6 +23,36 @@ export const fetchCategories = async () => {
     return []
   }
 }
+
+export const fetchPaginatedCategories = async (page: number, limit: number, searchInput?: string, searchKey?: string ):  Promise<PaginateResponse<Category>> => {
+  try {
+    const response: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/category/paginated-categories?page=${page}&limit=${limit}&search=${searchInput || ''}&searchKey=${searchKey || ''}`);
+    const json : PaginateResponse<Category> = await response.json();
+
+    if (!json.success || !json.data) {
+      return {
+        data: [],
+        success: false,
+        page: 1,
+        limit: 10,
+        total: 0
+      };
+    }
+
+    return json;
+  } catch (error) {
+    console.error(error)
+    toastHandler('Erreur lors de la récupération des catégories.', ToastType.ERROR)
+
+    return {
+      page: 1,
+      limit: 10,
+      total: 0,
+      data: [],
+      success: false
+    };
+  }
+};
 
 export const fetchSubCategories = async () => {
   try {
@@ -76,12 +107,15 @@ export const fetchDeleteCategory = async (id: string | undefined) => {
       }
     })
 
+    const json: ResponseApi<Category> = await res.json()
+
     if (!res.ok) {
-      toastHandler('Erreur lors de la suppression de la catégorie.', ToastType.ERROR)
+      toastHandler(
+        json.message || 'Erreur lors de la suppression de la catégorie.', 
+        ToastType.ERROR
+      )
       return false
     }
-
-    const json: ResponseApi<Category> = await res.json()
 
     if (!json.success) {
       toastHandler(
@@ -119,18 +153,18 @@ export const getCategoryById = async (id: string | null) => {
     const json: ResponseApi<Category> = await res.json()
 
     if (!json.success) {
-      toastHandler(json.message || 'Erreur lors de la récupération du produit', ToastType.ERROR)
+      toastHandler(json.message || 'Erreur lors de la récupération de la catégorie', ToastType.ERROR)
       return {} as Category
     }
 
     if (!json.data) {
-      toastHandler('Erreur lors de la récupération du produit', ToastType.ERROR)
+      toastHandler('Erreur lors de la récupération de la catégorie', ToastType.ERROR)
       return {} as Category
     }
 
     return json.data
   } catch (error) {
-    toastHandler('Erreur lors de la récupération du produit', ToastType.ERROR)
+    toastHandler('Erreur lors de la récupération de la catégorie', ToastType.ERROR)
     return {} as Category
   }
 }

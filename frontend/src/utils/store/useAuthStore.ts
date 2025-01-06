@@ -11,6 +11,7 @@ const useAuthStore = defineStore('auth', () => {
   const router = useRouter()
   const isAuthenticatedUser = ref(false)
   const isAdmin = ref(false)
+  const user = ref<User | null>(null)
 
   const checkAuthentication = async () => {
     isAuthenticatedUser.value = await isAuthenticated()
@@ -38,18 +39,26 @@ const useAuthStore = defineStore('auth', () => {
     router.push('/login')
   }
 
+  const updateUser = (newUser: User) => {
+    localStorageHandler().set(LocalStorageKeys.USER, newUser)
+    user.value = newUser
+  }
+
   onMounted(() => {
     checkAuthentication()
     checkIsAdmin()
+    user.value = localStorageHandler().get(LocalStorageKeys.USER)
   })
 
   return {
+    user,
     isAuthenticatedUser,
     isAdmin,
     checkAuthentication,
     checkIsAdmin,
     signIn,
-    logout
+    logout,
+    updateUser
   }
 })
 

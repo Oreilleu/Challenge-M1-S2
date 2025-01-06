@@ -3,7 +3,11 @@ import { RequestHandler } from "express";
 import { AuthenticatedRequest } from "../types/authenticated-request.interface";
 import { ColumnUser } from "../types/column-user.interface";
 import UserModel from "../models/user.model";
-import { User } from "../types/user.interface";
+import DeliverAdressModel from "../models/delivery-address.model";
+import OrderModel from "../models/order.model";
+import { config } from "../config";
+import resetPasswordTemplate from "../utils/template-email/resetPasswordTemplate";
+import { sendEmail } from "../utils/senderMail";
 
 export const getOne: RequestHandler = (req, res, next) => {
   const { user } = req as AuthenticatedRequest;
@@ -80,65 +84,159 @@ export const isAdmin: RequestHandler = async (req, res, next) => {
   });
 };
 
-export const getPaginate: RequestHandler = async (req, res, next) => {
-  const { page, limit, searchOption } = req.body as BodyPaginateUser;
-  if (!page || !limit) {
+export const sendEmailChangePassword: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  const { user } = req as AuthenticatedRequest;
+
+  if (!user) {
     res.status(400).json({
       success: false,
-      message: "La numéro de page et le nombre d'élément par page est requis",
     });
     return;
   }
 
-  const parsedPage = parseInt(page);
-  const parsedLimit = parseInt(limit);
-
-  const paginationOptions = {
-    skip: parsedPage === 1 ? 0 : parsedPage * parsedLimit - parsedLimit,
-    limit: parsedLimit,
-  };
-
-  const filterOptions =
-    searchOption && searchOption?.searchInput.length < 3
-      ? undefined
-      : searchOption;
-
-  const buildQuery = (filterOptions: any) => {
-    if (!filterOptions) {
-      return {};
-    }
-
-    const { column, searchInput } = filterOptions;
-    const regex = { $regex: searchInput, $options: "i" };
-
-    if (column === ColumnUser.ALL) {
-      return {
-        $or: [{ [ColumnUser.FIRSTNAME]: regex }, { [ColumnUser.EMAIL]: regex }],
-      };
-    }
-
-    if (column === ColumnUser.FIRSTNAME) {
-      return { [ColumnUser.FIRSTNAME]: regex };
-    }
-
-    return { [column]: regex };
-  };
-  const query = buildQuery(filterOptions);
   try {
-    const users = await UserModel.find(query, null, paginationOptions);
-    const total = await UserModel.countDocuments(query);
+    await sendEmail(
+      config.mailer.noreply,
+      user.email,
+      "Changement de votre mot de passe",
+      await resetPasswordTemplate(user.email)
+    );
 
     res.status(200).json({
       success: true,
-      data: {
-        users,
-        total,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateProfile: RequestHandler = async (req, res, next) => {
+  const { user } = req as AuthenticatedRequest;
+  const { civility, firstname, lastname, email, phone } = req.body;
+
+  if (!user) {
+    res.status(400).json({
+      success: false,
+    });
+    return;
+  }
+
+  if (!civility || !firstname || !lastname || !email || !phone) {
+    res.status(400).json({
+      success: false,
+    });
+    return;
+  }
+
+  try {
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      user._id,
+      { civility, firstname, lastname, email, phone },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      res.status(404).json({
+        success: false,
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour du profil :", error);
+    res.status(500).json({
+      success: false,
+    });
+  }
+};
+
+export const remove: RequestHandler = async (req, res, next) => {
+  const { user } = req as AuthenticatedRequest;
+
+  if (!user) {
+    res.status(400).json({
+      success: false,
+    });
+    return;
+  }
+
+  if (user.isAdmin) {
+    res.status(400).json({
+      success: false,
+    });
+    return;
+  }
+
+  try {
+    const deletedUser = await UserModel.findByIdAndDelete(user._id);
+
+    if (!deletedUser) {
+      res.status(400).json({
+        success: false,
+      });
+      return;
+    }
+
+    await DeliverAdressModel.deleteMany({
+      idUser: user._id,
+    });
+
+    await OrderModel.updateMany(
+      {
+        user: user._id,
       },
+      {
+        user: null,
+        address: null,
+        billingAddress: null,
+      }
+    );
+
+    res.status(200).json({
+      success: true,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: (error as Error).message,
+    });
+  }
+};
+
+export const adminRemove: RequestHandler = async (req, res, next) => {
+  const { ids } = req.body as { ids: string[] };
+  const { user } = req as AuthenticatedRequest;
+
+  if (!user || !user.isAdmin) {
+    res.status(400).json({
+      success: false,
+    });
+    return;
+  }
+
+  try {
+    const deletedUsers = await UserModel.deleteMany({ _id: { $in: ids } });
+
+    if (!deletedUsers) {
+      res.status(400).json({
+        success: false,
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
     });
   }
 };

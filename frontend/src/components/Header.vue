@@ -1,5 +1,5 @@
 <template>
-  <header v-if="!isAdminPage(route.fullPath)">
+  <header v-if="!isAdminPage(route.fullPath)" style="margin-bottom: 50px">
     <el-row :style="rowStyle">
       <el-col :span="breakpointStore.isMobile ? 24 : 'auto'" :style="colLogoStyle">
         <el-button @click="toggleMenu" :style="buttonMenuStyle">
@@ -7,9 +7,9 @@
             <Menu />
           </el-icon>
         </el-button>
-        <div class="container-logo">
+        <RouterLink to="/" class="container-logo">
           <el-image src="/logo.png" fit="cover" />
-        </div>
+        </RouterLink>
       </el-col>
 
       <el-col
@@ -61,10 +61,33 @@
       <div class="container">
         <ul class="nav-links">
           <li>
-            <RouterLink to="/products" class="nav-link">Tous les produits</RouterLink>
+            <RouterLink
+              v-if="!isProductPage()"
+              @click="selectCategory(null)"
+              to="/"
+              class="nav-link"
+            >
+              Tous les produits
+            </RouterLink>
+            <el-button v-else @click="selectCategory(null)" class="nav-link">
+              Tous les produits
+            </el-button>
           </li>
-          <li v-for="category in categoryStore.categories" :key="category._id">
-            <RouterLink :to="`/${category.name}`" class="nav-link">{{ category.name }}</RouterLink>
+          <li
+            v-for="category in categoryStore.formattedOptionsMasterCategories"
+            :key="category.value"
+          >
+            <RouterLink
+              v-if="!isProductPage()"
+              to="/"
+              @click="selectCategory(category)"
+              class="nav-link"
+            >
+              {{ category.label }}
+            </RouterLink>
+            <el-button v-else @click="selectCategory(category)" class="nav-link">
+              {{ category.label }}
+            </el-button>
           </li>
         </ul>
       </div>
@@ -73,10 +96,28 @@
     <div v-if="isMenuOpen" class="mobile-menu">
       <ul class="mobile-menu-links">
         <li>
-          <RouterLink to="/products" class="nav-link">Tous les produits</RouterLink>
+          <RouterLink v-if="!isProductPage()" @click="selectCategory(null)" to="/" class="nav-link">
+            Tous les produits
+          </RouterLink>
+          <el-button v-else @click="selectCategory(null)" class="nav-link">
+            Tous les produits
+          </el-button>
         </li>
-        <li v-for="category in categoryStore.categories" :key="category._id">
-          <RouterLink :to="`/${category.name}`" class="nav-link">{{ category.name }}</RouterLink>
+        <li
+          v-for="category in categoryStore.formattedOptionsMasterCategories"
+          :key="category.value"
+        >
+          <RouterLink
+            v-if="!isProductPage()"
+            to="/"
+            @click="selectCategory(category)"
+            class="nav-link"
+          >
+            {{ category.label }}
+          </RouterLink>
+          <el-button v-else @click="selectCategory(category)" class="nav-link">
+            {{ category.label }}
+          </el-button>
         </li>
       </ul>
     </div>
@@ -101,6 +142,9 @@ import useDrawerStore from '@/utils/store/useDrawerStore'
 import { DrawerType } from '@/utils/types/drawer-type.enum'
 import Drawer from './Drawer.vue'
 import useBreakpointStore from '@/utils/store/useBreakpointStore'
+import type { OptionCategory } from '@/utils/types/interfaces/option-category.interface'
+import useVariationStore from '@/utils/store/useVariationStore'
+import { VARIATION_PER_PAGE } from '@/utils/const'
 
 const isMenuOpen = ref(false)
 const route = useRoute()
@@ -110,6 +154,9 @@ const drawerStore = useDrawerStore()
 const authStore = useAuthStore()
 const categoryStore = useCategoryStore()
 const breakpointStore = useBreakpointStore()
+const variationStore = useVariationStore()
+
+const isProductPage = () => route.fullPath === '/'
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
@@ -125,6 +172,15 @@ const goToMyAccount = () => {
 
 const goToAdminPage = () => {
   router.push('/admin/products')
+}
+
+const selectCategory = (category: OptionCategory | null) => {
+  variationStore.selectedCategory = category
+
+  variationStore.updatePaginateVariations({
+    page: 1,
+    limit: VARIATION_PER_PAGE
+  })
 }
 
 const rowStyle = computed(() => {
@@ -164,10 +220,16 @@ const buttonMenuStyle = computed(() => {
   font-size: 14px;
   color: #4b5563;
   display: block;
+  border: none;
+  text-decoration: none;
+  height: 100%;
+  height: 35px;
 }
 
 .nav-link:hover {
   color: #2563eb;
+  background: #ebf5ff;
+  border-radius: 4px;
 }
 
 .mobile-menu {

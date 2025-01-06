@@ -44,46 +44,25 @@ export const create = async (req: Request, res: Response) => {
 };
 
 export const getAll = async (req: Request, res: Response) => {
-  try {
-    const deliveryAddresses = await DeliveryAddressModel.find();
+  const { user } = req as AuthenticatedRequest;
 
-    res.status(200).json({
-      success: true,
-      data: deliveryAddresses,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: (error as Error).message,
-    });
-  }
-};
-
-export const getOne = async (req: Request, res: Response) => {
-  const { id } = req.params;
-
-  if (!id) {
-    res.status(400).json({
-      success: false,
-      message: "Information manquante",
-    });
+  if (!user) {
+    res.status(404).send("Bad request");
     return;
   }
 
   try {
-    const deliveryAddress = await DeliveryAddressModel.findById(id);
+    let deliveryAddresses;
 
-    if (!deliveryAddress) {
-      res.status(404).json({
-        success: false,
-        message: "Adresse de livraison introuvable",
-      });
-      return;
+    if (user.isAdmin) {
+      deliveryAddresses = await DeliveryAddressModel.find();
+    } else {
+      deliveryAddresses = await DeliveryAddressModel.find({ idUser: user._id });
     }
 
     res.status(200).json({
       success: true,
-      data: deliveryAddress,
+      data: deliveryAddresses,
     });
   } catch (error) {
     res.status(500).json({

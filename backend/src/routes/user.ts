@@ -1,19 +1,26 @@
 import express from "express";
 import checkToken from "../middleware/auth";
 import {
+  adminRemove,
   getOne,
   isAdmin,
   isVerified,
-  getPaginate,
+  remove,
+  sendEmailChangePassword,
+  updateProfile,
   edit,
 } from "../controllers/user";
+import checkAdmin from "../middleware/checkAdmin";
 
 const userRouter = express.Router();
 
-userRouter.post("/get-one", checkToken, getOne);
 userRouter.get("/is-verified", checkToken, isVerified);
 userRouter.get("/is-admin", checkToken, isAdmin);
-userRouter.post("/get-paginate", checkToken, getPaginate);
+userRouter.get("/change-my-password", checkToken, sendEmailChangePassword);
+userRouter.put("/update-profile", checkToken, updateProfile);
+userRouter.post("/get-one", checkToken, getOne);
+userRouter.post("/delete-admin", checkToken, checkAdmin, adminRemove);
+userRouter.delete("/delete", checkToken, remove);
 userRouter.put("/edit/:id", checkToken, edit);
 
 export default userRouter;

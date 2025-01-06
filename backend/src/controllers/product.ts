@@ -15,30 +15,38 @@ export const getOne: RequestHandler = async (req, res, next) => {
       success: false,
       message: "Produit non trouvé",
     });
-  }
-
-  const product = await ProductModel.findById(id)
-    .populate("idCategory")
-    .lean<Product>();
-
-  if (product?.idCategory && typeof product.idCategory !== "string") {
-    product.category = product.idCategory;
-    delete product.idCategory;
-  }
-
-  if (!product) {
-    res.status(400).json({
-      success: false,
-      message: "Produit non trouvé",
-      data: [],
-    });
     return;
   }
 
-  res.status(200).json({
-    success: true,
-    data: product,
-  });
+  try {
+    const product = await ProductModel.findById(id)
+      .populate("idCategory")
+      .lean<Product>();
+
+    if (product?.idCategory && typeof product.idCategory !== "string") {
+      product.category = product.idCategory;
+      delete product.idCategory;
+    }
+
+    if (!product) {
+      res.status(400).json({
+        success: false,
+        message: "Produit non trouvé",
+        data: [],
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: product,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de la récupération du produit",
+    });
+  }
 };
 
 export const getPaginate: RequestHandler = async (req, res, next) => {
@@ -114,7 +122,7 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
       {
         $limit: paginationOptions.limit,
       },
-    ]);
+    ]).sort({ createdAt: -1 });
 
     const count = await ProductModel.aggregate([
       {
@@ -150,10 +158,19 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
 };
 
 export const create: RequestHandler = async (req, res, next) => {
-  const body: Product = JSON.parse(req.body.product);
+  const body: Product | undefined =
+    req.body.product && JSON.parse(req.body.product);
+
+  if (!body) {
+    res.status(400).json({
+      success: false,
+      message: "Les informations du produit sont requises",
+    });
+    return;
+  }
+
   const variations = body.variations;
   const imagesFiles = req.files as Express.Multer.File[];
-
   if (!body) {
     res.status(400).json({
       success: false,
@@ -219,7 +236,16 @@ export const create: RequestHandler = async (req, res, next) => {
 };
 
 export const edit: RequestHandler = async (req, res, next) => {
-  const body: Product = JSON.parse(req.body.product);
+  const body: Product | undefined =
+    req.body.product && JSON.parse(req.body.product);
+
+  if (!body) {
+    res.status(400).json({
+      success: false,
+      message: "Les informations du produit sont requises",
+    });
+    return;
+  }
   const { id } = req.params;
   const imagesFiles = req.files as Express.Multer.File[];
 
@@ -271,7 +297,10 @@ export const edit: RequestHandler = async (req, res, next) => {
   });
 
   try {
-    const product = await ProductModel.findByIdAndUpdate(id, body);
+    const product = await ProductModel.findByIdAndUpdate(id, body, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!product) {
       res.status(400).json({
@@ -306,12 +335,18 @@ export const edit: RequestHandler = async (req, res, next) => {
       success: true,
       message: "Produit modifié avec succès",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erreur pour modifier un produit", error);
-    res.status(500).json({
-      success: false,
-      message: "Erreur lors de la modification du produit",
-    });
+
+    if (error.code === 11000) {
+      res.status(400).json({
+        success: false,
+        message: "Un produit avec ce nom existe déja.",
+      });
+      return;
+    }
+
+    next(error);
   }
 };
 
@@ -348,7 +383,9 @@ export const remove: RequestHandler = async (req, res, next) => {
       message: "Produit supprimé avec succès",
     });
   } catch (error) {
-    console.error("Erreur pour supprimer un produit", error);
+    if (process.env.NODE_ENV !== "test") {
+      console.error("Erreur pour supprimer un produit", error);
+    }
     res.status(500).json({
       success: false,
       message: "Erreur lors de la suppression du produit",

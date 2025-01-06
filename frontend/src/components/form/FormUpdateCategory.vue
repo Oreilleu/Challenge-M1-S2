@@ -19,14 +19,8 @@
       v-model="category.description"
     />
 
-    <!--
-      Une catégorie principale ne peut pas avoir de catégorie parente. Gérer ce cas
-    -->
-    <div class="my-2">
-      <el-checkbox v-if="category.masterCategory" v-model="category.masterCategory" label="Catégorie principale"/>
-    </div>
-
-    <FormInputSelect v-if="!category.masterCategory"
+    <FormInputSelect
+      v-if="!category.masterCategory"
       id="parent"
       name="parent"
       label="Catégorie parente"
@@ -34,7 +28,7 @@
       v-model="category.parent"
       :default-selected-value="category.parent || 'Pas de catégorie parente'"
       :options="categoryStore.formattedOptionsMasterCategories"
-      :disabledDefaultOption=true
+      :disabledDefaultOption="true"
     />
 
     <el-image
@@ -124,7 +118,7 @@ const onSubmit = handleSubmit(async () => {
     delete category.value.image
   }
 
-  if(category.value?.masterCategory) {
+  if (category.value?.masterCategory) {
     category.value.parent = ''
   }
 
@@ -146,7 +140,7 @@ const onSubmit = handleSubmit(async () => {
 
     if (json.success) {
       drawerStore.closeDrawer()
-      categoryStore.loadCategories()
+      categoryStore.loadPaginatedCategories(1, 20)
       toastHandler('Catégorie modifiée avec succès', ToastType.SUCCESS)
     }
   } catch (error) {
