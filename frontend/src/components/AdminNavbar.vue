@@ -6,6 +6,9 @@
     <el-button @click="authStore.logout" type="primary"> Se déconnecter </el-button>
     <el-divider class="divider" />
     <el-menu class="menu">
+      <el-menu-item>
+        <RouterLink to="/admin/dashboard">Dashboard</RouterLink>
+      </el-menu-item>
       <el-sub-menu index="1">
         <template #title>
           <span>Produit</span>
