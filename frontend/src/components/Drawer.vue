@@ -31,6 +31,7 @@ const handlerTitle = {
   [DrawerType.CREATE_PRODUCT]: 'Ajouter un produit',
   [DrawerType.CREATE_CATEGORY]: 'Ajouter une catégorie',
   [DrawerType.CREATE_USER]: 'Ajouter un utilisateur',
+  [DrawerType.UPDATE_USER]: 'Modifier un utilisateur',
   [DrawerType.CREATE_ORDER]: 'Ajouter une commande',
   [DrawerType.UPDATE_PRODUCT]: `Modifier le produit`,
   [DrawerType.UPDATE_CATEGORY]: `Modifier la catégorie`,
