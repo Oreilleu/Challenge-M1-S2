@@ -28,8 +28,7 @@ import DataRegister from '@/views/DataRegister.vue'
 import DataUsers from '@/views/DataUsers.vue'
 import PlanSite from '@/views/PlanSite.vue'
 import Store from '@/views/Store.vue'
-// import PlanSite from '@/views/PlanSite.vue'
-// import Store from '@/views/Store.vue'
+import AdminDashboard from '@/views/backOffice/AdminDashboard.vue'
 
 const redirectToHomeIfUserAuthenticated = async () => {
   const isAuthenticatedUser = await isAuthenticated()
@@ -156,6 +155,12 @@ const routes = [
     path: '/admin/orders',
     name: 'AdminOrders',
     component: AdminOrders,
+    beforeEnter: isAdminPage
+  },
+  {
+    path: '/admin/dashboard',
+    name: 'AdminDashboard',
+    component: AdminDashboard,
     beforeEnter: isAdminPage
   },
   {
