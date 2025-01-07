@@ -1,7 +1,9 @@
 <template>
-  <h1>Verifie ton compte</h1>
+  <div class="verify-account">
+    <h1>Verifie ton compte</h1>
 
-  <el-button type="primary" @click="verifyAccount">Vérifier mon compte</el-button>
+    <el-button type="primary" @click="verifyAccount">Vérifier mon compte</el-button>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -64,4 +66,31 @@ onMounted(() => {
 })
 </script>
 
-<style></style>
+<style scoped>
+.verify-account {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #f5f5f5;
+  padding: 20px;
+  text-align: center;
+  margin-top: -50px;
+}
+
+.verify-account h1 {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+.verify-account p {
+  font-size: 1.2em;
+  margin-bottom: 20px;
+}
+
+.verify-account .el-button {
+  font-size: 1em;
+  padding: 10px 20px;
+}
+</style>

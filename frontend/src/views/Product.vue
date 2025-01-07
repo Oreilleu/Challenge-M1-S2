@@ -1,6 +1,11 @@
 <template>
   <div>
-    <el-row style="justify-content: space-between">
+    <el-row
+      :style="{
+        justifyContent: 'space-between',
+        padding: breakpointStore.isMobile || breakpointStore.isTablet ? '50px' : '0 80px 50px 80px'
+      }"
+    >
       <el-col :span="5">
         <el-card>
           <div v-for="(filters, name) in variationStore.paginateVariation?.filters" :key="name">
@@ -80,8 +85,14 @@ import { VARIATION_PER_PAGE } from '@/utils/const'
 import useVariationStore from '@/utils/store/useVariationStore'
 import type { Filter } from '@/utils/types/interfaces/filter.interface'
 import type { OptionCategory } from '@/utils/types/interfaces/option-category.interface'
+import useBreakpointStore from '@/utils/store/useBreakpointStore'
+import { useRoute, useRouter } from 'vue-router'
 
 const variationStore = useVariationStore()
+const breakpointStore = useBreakpointStore()
+
+const route = useRoute()
+const router = useRouter()
 
 const searchQuery = ref<string>('')
 const selectedFilters = ref<Filter[]>([])
@@ -112,7 +123,21 @@ const setCurrentPage = (newPage: number) => {
   variationStore.updatePaginateVariations(params)
 }
 
+const updateUrlQueryParams = () => {
+  const queryParams: any = { search: searchQuery.value || undefined }
+
+  selectedFilters.value.forEach(({ name, value }) => {
+    if (!queryParams[name]) {
+      queryParams[name] = []
+    }
+    queryParams[name].push(value)
+  })
+
+  router.push({ query: queryParams })
+}
+
 watch(selectedFilters, () => {
+  updateUrlQueryParams()
   const options = {
     filters: selectedFilters.value,
     searchInput: searchQuery.value
@@ -155,6 +180,7 @@ watch(selectedCategoriesFilters, () => {
 })
 
 watch(searchQuery, () => {
+  updateUrlQueryParams()
   if (
     searchQuery.value.length < 3 &&
     selectedFilters.value.length === 0 &&
@@ -187,12 +213,19 @@ watch(searchQuery, () => {
 })
 
 onMounted(async () => {
+  if (route.query.search) searchQuery.value = route.query.search as string
+
+  selectedFilters.value = Object.keys(route.query).flatMap((key) => {
+    if (key === 'search') return []
+    const values = Array.isArray(route.query[key]) ? route.query[key] : [route.query[key]]
+    return values.map((value) => ({ name: key, value: value as string }))
+  })
+
   variationStore.updatePaginateVariations({ page: paginationPage.value, limit: VARIATION_PER_PAGE })
 })
 </script>
 
 <style scoped>
-
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -201,7 +234,8 @@ onMounted(async () => {
 .listVariation {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  justify-content: space-between;
+  gap: 15px;
 }
 .product-info {
   padding: 10px;
