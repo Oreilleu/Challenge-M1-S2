@@ -7,6 +7,7 @@
       :currentPage="currentPage"
       :pageSize="pageSize"
       :totalItems="userStore.paginatedUsers.total"
+      :included-keys="['email', 'firstname', 'lastname', 'phone']"
       @openDrawerUpdate="openDrawerUpdate"
       @displayModalDelete="displayModalDelete"
       @deleteSelectedData="deleteSelectedUsers"
