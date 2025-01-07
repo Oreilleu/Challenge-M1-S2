@@ -14,9 +14,11 @@ export const create = async (req: Request, res: Response) => {
   }
 
   try {
-    const countDeliveryAddress = await DeliveryAddressModel.countDocuments();
+    const userIdDeliveryAddress = await DeliveryAddressModel.find({
+      idUser: user._id,
+    });
 
-    if (countDeliveryAddress >= 5) {
+    if (userIdDeliveryAddress.length >= 5) {
       res.status(400).json({
         success: false,
         message: "Vous ne pouvez pas ajouter plus de 5 adresses de livraison",
