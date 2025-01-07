@@ -22,7 +22,9 @@ import {
   streetValidation,
   cityValidation,
   postalCodeValidation,
-  countryValidation
+  countryValidation,
+  suffixValidation,
+  orderStatusValidation
 } from './validation'
 
 export const registerFormSchema = z
@@ -60,6 +62,7 @@ export const resetPasswordFormSchema = z
   })
 
 export const variationSchema = z.object({
+  suffix: suffixValidation,
   images: imagesValidation.optional(),
   price: variationPriceValidation,
   quantite: variationQuantiteValidation,
@@ -88,7 +91,7 @@ export const categorySchema = z.object({
   name: categoryNameValidation,
   description: categoryDescriptionValidation,
   image: imagesValidation.optional(),
-  parent: categoryParentValidation,
+  parent: categoryParentValidation
 })
 
 export const deliveryAddressSchema = z.object({
@@ -97,3 +100,16 @@ export const deliveryAddressSchema = z.object({
   postalCode: postalCodeValidation,
   country: countryValidation
 })
+
+export const updateUserSchema = z.object({
+  email: emailValidation,
+  firstname: firstnameValidation,
+  lastname: lastnameValidation,
+  civility: civilityValidation,
+  phone: phoneValidation
+})
+
+export const orderSchema = z.object({
+  status: orderStatusValidation
+})
+

@@ -1,4 +1,5 @@
 import { ColumnProduct } from './types/column-product.enum'
+import { ColumnUser } from './types/column-user.enum'
 
 export const REGEX_PASSWORD_VALIDATION =
   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
@@ -20,3 +21,11 @@ export const OPTION_PRODUCT_SEARCH_COLUMN = [
 ]
 
 export const VARIATION_PER_PAGE = 5
+
+export const NUMBER_ADMIN_USER_PER_PAGE = 10
+
+export const OPTION_USER_SEARCH_COLUMN = [
+  { label: 'Toutes les colonnes', value: ColumnUser.ALL },
+  { label: 'Email', value: ColumnUser.EMAIL },
+  { label: 'Prénom', value: ColumnUser.FIRSTNAME }
+]

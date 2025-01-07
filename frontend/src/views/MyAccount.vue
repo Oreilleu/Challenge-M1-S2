@@ -32,23 +32,25 @@
       </div>
 
       <nav class="nav-menu">
-        <a
-          v-for="item in menuItems"
-          :key="item.id"
-          href="#"
-          @click.prevent="selectMenuItem(item)"
-          :class="['nav-item', { active: currentView === item.id }]"
-        >
-          {{ item.label }}
-        </a>
+        <ul>
+          <li
+            v-for="item in menuItems"
+            :key="item.id"
+            href="#"
+            @click.prevent="selectMenuItem(item)"
+            :class="['nav-item', { active: currentView === item.id }]"
+          >
+            {{ item.label }}
+          </li>
+        </ul>
       </nav>
     </aside>
 
     <!-- Contenu dynamique -->
     <main class="main-content">
       <MyInformations v-if="currentView === 'my-account'" />
-      <MyOrders v-else-if="currentView === 'my-orders'" />
-      <MyAddresses v-else-if="currentView === 'my-adress'" />
+      <MyOrders v-if="currentView === 'my-orders'" />
+      <MyAddresses v-if="currentView === 'my-adress'" />
     </main>
   </div>
 </template>
@@ -163,6 +165,7 @@ if (userData) {
   color: #333;
   border-radius: 4px;
   transition: background-color 0.3s;
+  margin-bottom: 10px;
 }
 
 .nav-item:hover,

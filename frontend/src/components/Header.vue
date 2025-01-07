@@ -1,5 +1,5 @@
 <template>
-  <header v-if="!isAdminPage(route.fullPath)">
+  <header v-if="!isAdminPage(route.fullPath)" style="margin-bottom: 50px">
     <el-row :style="rowStyle">
       <el-col :span="breakpointStore.isMobile ? 24 : 'auto'" :style="colLogoStyle">
         <el-button @click="toggleMenu" :style="buttonMenuStyle">
@@ -12,12 +12,22 @@
         </RouterLink>
       </el-col>
 
-      <el-col :span="breakpointStore.isMobile ? (authStore.isAuthenticatedUser ? 14 : 16) : 'auto'"
-        style="display: flex; align-items: center; gap: 10px">
-        <RouterLink v-if="route.path !== '/register' && !authStore.isAuthenticatedUser" to="/register" class="link">
+      <el-col
+        :span="breakpointStore.isMobile ? (authStore.isAuthenticatedUser ? 14 : 16) : 'auto'"
+        style="display: flex; align-items: center; gap: 10px"
+      >
+        <RouterLink
+          v-if="route.path !== '/register' && !authStore.isAuthenticatedUser"
+          to="/register"
+          class="link"
+        >
           S'inscrire
         </RouterLink>
-        <RouterLink v-if="route.path !== '/login' && !authStore.isAuthenticatedUser" to="/login" class="link">
+        <RouterLink
+          v-if="route.path !== '/login' && !authStore.isAuthenticatedUser"
+          to="/login"
+          class="link"
+        >
           Se connecter
         </RouterLink>
 
@@ -26,10 +36,15 @@
         </el-button>
       </el-col>
 
-      <el-col :span="breakpointStore.isMobile ? (authStore.isAuthenticatedUser ? 10 : 8) : 'auto'"
-        style="text-align: right">
-        <el-button v-if="authStore.isAuthenticatedUser" @click="authStore.isAdmin ? goToAdminPage() : goToMyAccount()"
-          style="border: none; height: 100%">
+      <el-col
+        :span="breakpointStore.isMobile ? (authStore.isAuthenticatedUser ? 10 : 8) : 'auto'"
+        style="text-align: right"
+      >
+        <el-button
+          v-if="authStore.isAuthenticatedUser"
+          @click="authStore.isAdmin ? goToAdminPage() : goToMyAccount()"
+          style="border: none; height: 100%"
+        >
           <el-icon :size="20">
             <User />
           </el-icon>
@@ -46,13 +61,31 @@
       <div class="container">
         <ul class="nav-links">
           <li>
-            <el-button @click="selectCategory(null)" class="nav-link">Tous les produits</el-button>
+            <RouterLink
+              v-if="!isProductPage()"
+              @click="selectCategory(null)"
+              to="/"
+              class="nav-link"
+            >
+              Tous les produits
+            </RouterLink>
+            <el-button v-else @click="selectCategory(null)" class="nav-link">
+              Tous les produits
+            </el-button>
           </li>
           <li
             v-for="category in categoryStore.formattedOptionsMasterCategories"
             :key="category.value"
           >
-            <el-button @click="selectCategory(category)" class="nav-link">
+            <RouterLink
+              v-if="!isProductPage()"
+              to="/"
+              @click="selectCategory(category)"
+              class="nav-link"
+            >
+              {{ category.label }}
+            </RouterLink>
+            <el-button v-else @click="selectCategory(category)" class="nav-link">
               {{ category.label }}
             </el-button>
           </li>
@@ -63,21 +96,38 @@
     <div v-if="isMenuOpen" class="mobile-menu">
       <ul class="mobile-menu-links">
         <li>
-          <el-button @click="selectCategory(null)" class="nav-link">Tous les produits</el-button>
+          <RouterLink v-if="!isProductPage()" @click="selectCategory(null)" to="/" class="nav-link">
+            Tous les produits
+          </RouterLink>
+          <el-button v-else @click="selectCategory(null)" class="nav-link">
+            Tous les produits
+          </el-button>
         </li>
         <li
           v-for="category in categoryStore.formattedOptionsMasterCategories"
           :key="category.value"
         >
-          <el-button @click="selectCategory" class="nav-link">
+          <RouterLink
+            v-if="!isProductPage()"
+            to="/"
+            @click="selectCategory(category)"
+            class="nav-link"
+          >
+            {{ category.label }}
+          </RouterLink>
+          <el-button v-else @click="selectCategory(category)" class="nav-link">
             {{ category.label }}
           </el-button>
         </li>
       </ul>
     </div>
 
-    <Drawer :size="breakpointStore.isTablet || breakpointStore.isMobile ? '100%' : '50%'" v-model="drawerStore.isOpen"
-      direction="ltr" :drawerContent="drawerStore.opennedDrawer" />
+    <Drawer
+      :size="breakpointStore.isTablet || breakpointStore.isMobile ? '100%' : '50%'"
+      v-model="drawerStore.isOpen"
+      direction="ltr"
+      :drawerContent="drawerStore.opennedDrawer"
+    />
   </header>
 </template>
 
@@ -105,6 +155,8 @@ const authStore = useAuthStore()
 const categoryStore = useCategoryStore()
 const breakpointStore = useBreakpointStore()
 const variationStore = useVariationStore()
+
+const isProductPage = () => route.fullPath === '/'
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
@@ -169,10 +221,15 @@ const buttonMenuStyle = computed(() => {
   color: #4b5563;
   display: block;
   border: none;
+  text-decoration: none;
+  height: 100%;
+  height: 35px;
 }
 
 .nav-link:hover {
   color: #2563eb;
+  background: #ebf5ff;
+  border-radius: 4px;
 }
 
 .mobile-menu {

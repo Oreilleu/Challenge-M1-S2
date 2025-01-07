@@ -72,40 +72,6 @@ export const getAll = async (req: Request, res: Response) => {
   }
 };
 
-export const getOne = async (req: Request, res: Response) => {
-  const { id } = req.params;
-
-  if (!id) {
-    res.status(400).json({
-      success: false,
-      message: "Information manquante",
-    });
-    return;
-  }
-
-  try {
-    const deliveryAddress = await DeliveryAddressModel.findById(id);
-
-    if (!deliveryAddress) {
-      res.status(404).json({
-        success: false,
-        message: "Adresse de livraison introuvable",
-      });
-      return;
-    }
-
-    res.status(200).json({
-      success: true,
-      data: deliveryAddress,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: (error as Error).message,
-    });
-  }
-};
-
 export const update = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { body, user } = req as AuthenticatedRequest;

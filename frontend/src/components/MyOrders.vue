@@ -12,7 +12,7 @@
       </ul>
     </div>
 
-    <div v-if="filteredOrders.length === 0" class="no-orders">
+    <div v-if="!orderStore.orders.length" class="no-orders">
       <PackageIcon :size="48" class="icon-no-orders" />
       <p>Vous n'avez pas encore de commandes.</p>
     </div>
@@ -21,114 +21,25 @@
       <el-pagination
         v-model:current-page="currentPage"
         v-model:page-size="pageSize"
-        :total="totalOrders"
+        :hide-on-single-page="true"
+        :total="orderStore.orders.length"
         layout="prev, pager, next"
       />
     </div>
-
-    <!-- <div v-if="filteredOrders.length === 0" class="no-orders">
-      <PackageIcon :size="48" class="icon-no-orders" />
-      <p>Vous n'avez pas encore de commandes.</p>
-    </div> -->
-
-    <!-- <div class="orders-pagination">
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :total="totalOrders"
-        layout="prev, pager, next"
-      />
-    </div> -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { PackageIcon } from 'lucide-vue-next'
 import useOrderStore from '@/utils/store/useOrderStore'
 // @ts-ignore
 import OrderCard from './OrderCard.vue'
 
-const selectedStatus = ref('')
-const dateRange = ref(null)
 const currentPage = ref(1)
 const pageSize = ref(5)
 
 const orderStore = useOrderStore()
-
-const orders = ref([
-  {
-    id: '12345',
-    date: new Date('2024-02-15'),
-    status: 'in-progress',
-    total: 529.98,
-    items: [
-      {
-        productId: 'p1',
-        name: 'Casque Bluetooth Sony WH-1000XM5',
-        quantity: 1,
-        price: 399.99,
-        image: 'https://m.media-amazon.com/images/I/61D4Z3yKPAL._AC_SX425_.jpg'
-      },
-      {
-        productId: 'p2',
-        name: 'Montre connectée Samsung Galaxy Watch 6',
-        quantity: 1,
-        price: 129.99,
-        image:
-          'https://site.glotelho.cm/media/catalog/product/cache/3d5322e2293df1ca8e64a115bdb04917//s/a/samsung_galaxy_watch_6_-_40_mm_prix_cameroun_en_fcfa_-_g.jpg'
-      }
-    ]
-  }
-])
-
-const totalOrders = computed(() => orders.value.length)
-
-const filteredOrders = computed(() => {
-  return orders.value.filter((order) => {
-    const statusMatch = !selectedStatus.value || order.status === selectedStatus.value
-    const dateMatch = !dateRange.value || true
-    return statusMatch && dateMatch
-  })
-})
-
-const formatDate = (date: any) => {
-  return new Date(date).toLocaleDateString('fr-FR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  })
-}
-
-const formatPrice = (price: any) => {
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR'
-  }).format(price)
-}
-
-const getStatusLabel = (status: any) => {
-  const statusLabels = {
-    'in-progress': 'En cours',
-    delivered: 'Livrée',
-    cancelled: 'Annulée'
-  }
-  return status
-}
-
-const getStatusClass = (status: any) => {
-  return `status-${status}`
-}
-
-const viewOrderDetails = (orderId: any) => {
-  // Logique pour afficher les détails de la commande
-  console.log(`Voir détails commande ${orderId}`)
-}
-
-const cancelOrder = (orderId: any) => {
-  // Logique pour annuler une commande
-  console.log(`Annuler commande ${orderId}`)
-}
 </script>
 
 <style scoped>

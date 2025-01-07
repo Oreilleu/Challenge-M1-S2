@@ -17,7 +17,8 @@ import FormUpdateCategory from './form/FormUpdateCategory.vue'
 // @ts-ignore
 import FormAddUser from './form/FormAddUser.vue'
 import CartDrawer from './CartDrawer.vue'
-
+import FormUpdateUser from './form/FormUpdateUser.vue'
+import FormUpdateOrder from './form/FormUpdateOrder.vue'
 type Props = {
   drawerContent: DrawerType
 }
@@ -30,6 +31,7 @@ const handlerTitle = {
   [DrawerType.CREATE_PRODUCT]: 'Ajouter un produit',
   [DrawerType.CREATE_CATEGORY]: 'Ajouter une catégorie',
   [DrawerType.CREATE_USER]: 'Ajouter un utilisateur',
+  [DrawerType.UPDATE_USER]: 'Modifier un utilisateur',
   [DrawerType.CREATE_ORDER]: 'Ajouter une commande',
   [DrawerType.UPDATE_PRODUCT]: `Modifier le produit`,
   [DrawerType.UPDATE_CATEGORY]: `Modifier la catégorie`,
@@ -42,10 +44,11 @@ const handlerForm = {
   [DrawerType.CREATE_PRODUCT]: FormAddProduct,
   [DrawerType.CREATE_CATEGORY]: FormAddCategory,
   [DrawerType.CREATE_USER]: FormAddUser,
+  [DrawerType.UPDATE_USER]: FormUpdateUser,
   [DrawerType.UPDATE_PRODUCT]: FormUpdateProduct,
   [DrawerType.UPDATE_CATEGORY]: FormUpdateCategory,
   [DrawerType.CREATE_ORDER]: null,
-  [DrawerType.UPDATE_ORDER]: null,
+  [DrawerType.UPDATE_ORDER]: FormUpdateOrder,
   [DrawerType.CART]: CartDrawer,
   [DrawerType.NONE]: null
 }

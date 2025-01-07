@@ -4,6 +4,7 @@ import type { Category } from '../types/interfaces/category.interface'
 import type { ResponseApi } from '../types/interfaces/response-api.interface'
 import { LocalStorageKeys } from '../types/local-storage-keys.enum'
 import { ToastType } from '../types/toast-type.enum'
+import type { PaginateResponse } from '../types/interfaces/paginate-response.interface'
 
 export const fetchCategories = async () => {
   try {
@@ -22,6 +23,43 @@ export const fetchCategories = async () => {
     return []
   }
 }
+
+export const fetchPaginatedCategories = async (page: number, limit: number, searchInput?: string, searchKey?: string ):  Promise<PaginateResponse<Category>> => {
+  try {
+    const response: Response = await fetch(`${import.meta.env.VITE_BASE_API_URL}/category/paginated-categories?page=${page}&limit=${limit}&search=${searchInput || ''}&searchKey=${searchKey || ''}`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorageHandler().get(LocalStorageKeys.AUTH_TOKEN)}`
+      }
+    }
+    );
+    const json : PaginateResponse<Category> = await response.json();
+
+    if (!json.success || !json.data) {
+      return {
+        data: [],
+        success: false,
+        page: 1,
+        limit: 10,
+        total: 0
+      };
+    }
+
+    return json;
+  } catch (error) {
+    console.error(error)
+    toastHandler('Erreur lors de la récupération des catégories.', ToastType.ERROR)
+
+    return {
+      page: 1,
+      limit: 10,
+      total: 0,
+      data: [],
+      success: false
+    };
+  }
+};
 
 export const fetchSubCategories = async () => {
   try {
@@ -80,7 +118,7 @@ export const fetchDeleteCategory = async (id: string | undefined) => {
 
     if (!res.ok) {
       toastHandler(
-        json.message || 'Erreur lors de la suppression de la catégories.', 
+        json.message || 'Erreur lors de la suppression de la catégorie.', 
         ToastType.ERROR
       )
       return false

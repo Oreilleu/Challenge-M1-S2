@@ -4,6 +4,7 @@ import { Image } from "./image.interface";
 
 export interface Variation {
   _id: string;
+  suffix: string;
   price: number;
   quantite: number;
   nameImages: Array<string>;

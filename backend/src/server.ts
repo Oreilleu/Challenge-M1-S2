@@ -14,6 +14,7 @@ import checkToken from "./middleware/auth";
 import deliveryAddressRouter from "./routes/delivery-address";
 import sessionCheckoutRouter from "./routes/session-checkout";
 import orderRouter from "./routes/order";
+
 const app = express();
 
 connectDb();
@@ -43,8 +44,11 @@ app.use(errorHandler);
 
 // Start server
 const PORT = config.port || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
 
-module.exports = app;
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+export default app;

@@ -1,0 +1,37 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+  - develop
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  group: "Backend"
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "20.x"
+    displayName: "Install Node.js"
+
+  - script: |
+      cd backend
+      npm ci
+    displayName: "Install dependancies"
+
+  - script: |
+      cd backend
+      npm run build --if-present
+    displayName: "Build"
+
+  - script: |
+      cd backend
+      npm run test
+    displayName: "Run tests"
+    env:
+      STRIPE_SECRET_KEY: $(STRIPE_SECRET_KEY)
+      JWT_SECRET_KEY: $(JWT_SECRET_KEY)

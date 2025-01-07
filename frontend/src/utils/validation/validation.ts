@@ -6,7 +6,7 @@ import {
 } from '../const'
 
 export const emailValidation = z
-  .string()
+  .string({ required_error: "L'email est obligatoire." })
   .min(1, { message: "L'email est obligatoire." })
   .email({ message: "L'email doit être sous la forme : nom@domain.com" })
 
@@ -20,19 +20,21 @@ export const confirmPasswordValidation = z.string().min(1, {
 })
 
 export const firstnameValidation = z
-  .string()
+  .string({ required_error: 'Le prénom est obligatoire.' })
   .min(2, { message: 'Le prénom doit avoir au moins deux caractères.' })
   .max(250, { message: 'Le prénom doit avoir maximun 250 caractères' })
 export const lastnameValidation = z
-  .string()
+  .string({ required_error: 'Le nom est obligatoire.' })
   .min(2, { message: 'Le nom de famille doit avoir au moins deux caractères.' })
   .max(250, { message: 'Le nom de famille doit avoir maximun 250 caractères' })
 export const civilityValidation = z.enum(['man', 'woman'])
 
-export const phoneValidation = z.string().regex(REGEX_PHONE_VALIDATION, {
-  message:
-    'Le numéro de téléphone doit respecter le standard, exemple : 06 00 00 00 00 OU +33 6 00 00 00 00'
-})
+export const phoneValidation = z
+  .string({ required_error: 'Le numéro de téléphone est obligatoire.' })
+  .regex(REGEX_PHONE_VALIDATION, {
+    message:
+      'Le numéro de téléphone doit respecter le standard, exemple : 06 00 00 00 00 OU +33 6 00 00 00 00'
+  })
 
 export const nameProductValidation = z
   .string()
@@ -76,6 +78,8 @@ export const imagesValidation = z.object({
       message: 'Vous ne pouvez pas ajouter plus de 5 images'
     })
 })
+
+export const suffixValidation = z.string().min(1, { message: 'Le suffixe est requis' })
 
 export const variationPriceValidation = z
   .number({ message: 'Le prix est requis' })
@@ -133,3 +137,14 @@ export const countryValidation = z
   .string({ required_error: 'Le pays est obligatoire.' })
   .min(1, { message: 'Le pays est obligatoire' })
   .max(250, { message: 'Le pays doit avoir maximun 250 caractères' })
+
+
+// Order
+
+export const orderStatusValidation = z.enum([
+  'processing',
+  'paid',
+  'canceled',
+  'shipped',
+  'delivered'
+])
