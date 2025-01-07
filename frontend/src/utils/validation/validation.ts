@@ -137,3 +137,14 @@ export const countryValidation = z
   .string({ required_error: 'Le pays est obligatoire.' })
   .min(1, { message: 'Le pays est obligatoire' })
   .max(250, { message: 'Le pays doit avoir maximun 250 caractères' })
+
+
+// Order
+
+export const orderStatusValidation = z.enum([
+  'processing',
+  'paid',
+  'canceled',
+  'shipped',
+  'delivered'
+])

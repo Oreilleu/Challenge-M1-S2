@@ -123,15 +123,8 @@ export const getAll = async (req: Request, res: Response) => {
 };
 
 export const getPaginatedOrders = async (req: Request, res: Response) => {
-  const { user } = req as AuthenticatedRequest;
-
-  // if (!user?.isAdmin) {
-  //   res.status(403).send("Unauthorized");
-  //   return;
-  // }
-
   try {
-    const orders = await OrderModel.find().populate("address").sort({ createdAt: -1 });
+    const orders = await OrderModel.find().populate("address", "street city postalCode country").populate("user", "email").sort({ createdAt: -1 });
 
     const result = paginateData(req, orders);
 
@@ -182,6 +175,40 @@ export const getOne = async (req: Request, res: Response) => {
   }
 };
 
+export const getOrderById = async (req: Request, res: Response) => {
+  const id = req.params.id;
+
+  if (!id) {
+    res.status(400).json({
+      success: false,
+      message: "L'identifiant de la commande est requis",
+    });
+    return;
+  }
+
+  try {
+    const order = await OrderModel.findById(id).populate("address", "street city postalCode country").populate("user", "email").lean();
+
+    if (!order) {
+      res.status(400).json({
+        success: false,
+        message: "Commande non trouvée",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: order,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: (error as Error).message,
+    });
+  }
+};
+
 export const update = async (req: Request, res: Response) => {
   const { user } = req as AuthenticatedRequest;
   const { id } = req.params;
@@ -227,35 +254,78 @@ export const update = async (req: Request, res: Response) => {
   }
 };
 
-export const remove = async (req: Request, res: Response) => {
-  const { user } = req as AuthenticatedRequest;
+export const deleteOrder = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  if (!user || !id) {
-    res.status(404).send("Bad request");
+  if (!id) {
+    res.status(400).json({
+      success: false,
+      message: "L'identifiant de la commande est requis",
+    });
     return;
   }
 
   try {
-    const order = await OrderModel.findByIdAndDelete(req.params.id);
+    const order = await OrderModel.findByIdAndDelete(id);
 
     if (!order) {
-      res.status(404).send("Order not found");
-      return;
-    }
-
-    if (user._id !== order?.user._id.toString() && !user.isAdmin) {
-      res.status(403).send("Unauthorized");
+      res.status(400).json({
+        success: false,
+        message: "Commande non trouvée",
+      });
       return;
     }
 
     res.status(200).json({
       success: true,
     });
-  } catch (error: any) {
+  } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: (error as Error).message,
     });
   }
 };
+
+export const updateStatusById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!id) {
+    res.status(400).json({
+      success: false,
+      message: "L'identifiant de la commande est requis",
+    });
+    return;
+  }
+
+  if(!status) {
+    res.status(400).json({
+      success: false,
+      message: "Le statut de la commande est requis",
+    });
+    return;
+  }
+
+  try {
+    const order = await OrderModel.findByIdAndUpdate(id, { status }, { new: true });
+
+    if (!order) {
+      res.status(400).json({
+        success: false,
+        message: "Commande non trouvée",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: order,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: (error as Error).message,
+    });
+  }
+}

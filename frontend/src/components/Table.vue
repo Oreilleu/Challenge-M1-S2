@@ -8,12 +8,15 @@
     </template>
     <el-table-column align="right">
       <template #header>
-        <el-input
-          v-model="searchInput"
-          placeholder="Rechercher"
-          style="margin-bottom: 5px; width: 200px"
-          @input="handleSearch"
-        />
+        <el-tooltip content="Veuilez selectionner une colonne pour effectuer une recherche" placement="top" effect="dark" :disabled="!isSearchDisabled">
+          <el-input
+            v-model="searchInput"
+            placeholder="Rechercher"
+            style="margin-bottom: 5px; width: 200px"
+            @input="handleSearch"
+            :disabled="!searchColumn"
+          />
+        </el-tooltip>
         <el-select v-model="searchColumn" placeholder="Sélectionner une colonne" style="width: 200px">
           <el-option
             v-for="item in filteredHeaderTable"
@@ -61,6 +64,7 @@ type Props = {
   currentPage: number;
   pageSize: number;
   totalItems: number;
+  includedKeys?: string[];
 }
 
 
@@ -68,6 +72,8 @@ const props = defineProps<Props>();
 const selectedRows = ref<string[]>([]);
 const searchInput = ref('');
 const searchColumn = ref('');
+
+const isSearchDisabled = computed(() => !searchColumn.value);
 
 const emit = defineEmits(['openDrawerUpdate','displayModalDelete', 'deleteSelectedData', 'changePage', 'changeSizePage', 'search']);
 
@@ -78,9 +84,10 @@ const handleSelectionChange = (selection: any[]) => {
 
 const filteredHeaderTable = computed(() => {
   if(!props.tableData || props.tableData.length === 0) return [];
-  const excludedKeys = ['_id', '__v'];
-  const keys = Object.keys(props.tableData[0]);
-  return keys.filter(
+  const excludedKeys = ['__v', 'createdAt', 'updatedAt', 'imageApi'];
+  const allKeys = Object.keys(props.tableData[0]);
+  const keysToCheck = props.includedKeys || allKeys;
+  return keysToCheck.filter(
     (key) =>
       !excludedKeys.includes(key) &&
       !props.tableData.some((row) => {
@@ -88,12 +95,11 @@ const filteredHeaderTable = computed(() => {
         return (
           typeof value === 'object' ||
           typeof value === 'boolean' ||
-          Array.isArray(value) ||
+          // Array.isArray(value) ||
           props.tableData.every((row) => !row[key])
         );
       })
   );
-
 });
 
 watch(() => props.tableData, (newValue) => {
