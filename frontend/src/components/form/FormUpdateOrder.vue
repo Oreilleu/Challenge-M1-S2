@@ -9,11 +9,11 @@
             v-model="order.status"
             :default-selected-value="order.status || 'Pas de status'"
             :options="[
-                { value: 'processing', label: 'En attente' },
-                { value: 'paid', label: 'Payée' },
-                { value: 'canceled', label: 'Annulée' },
-                { value: 'shipped', label: 'Expediée' },
-                { value: 'delivered', label: 'Livrée' },
+                { value: StatusOrder.PROCESSING, label: 'En cours de traitement' },
+                { value: StatusOrder.PAID, label: 'Payée' },
+                { value: StatusOrder.PROCESSING, label: 'Annulée' },
+                { value: StatusOrder.SHIPPED, label: 'Expediée' },
+                { value: StatusOrder.DELIVERED, label: 'Livrée' },
             ]"
             :disabledDefaultOption="true"
         />
@@ -51,6 +51,8 @@ import { ToastType } from '@/utils/types/toast-type.enum';
 
 import { fetchOrderById} from '@/utils/api/order';
 
+import { StatusOrder } from '@/utils/types/status-order.enum';
+
 
 const drawerStore = useDrawerStore()
 
@@ -64,7 +66,7 @@ const schema = toTypedSchema(orderSchema)
 const { handleSubmit, errors } = useForm({
     validationSchema: schema,
     initialValues: {
-        status: order.value?.status as 'processing' | 'paid' | 'canceled' | 'shipped' | 'delivered'
+        status: order.value?.status as StatusOrder
     }
 })
 
