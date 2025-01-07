@@ -155,7 +155,7 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
       }
     }
 
-    return {};
+    return query;
   };
 
   const query = buildQuery(formattedFilters);

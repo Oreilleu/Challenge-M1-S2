@@ -11,7 +11,7 @@ export const AVAILABLE_FILE_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg
 
 export const MAX_IMAGES_PRODUCT = 5
 
-export const NUMBER_ADMIN_PRODUCT_PER_PAGE = 3
+export const NUMBER_ADMIN_PRODUCT_PER_PAGE = 20
 
 export const OPTION_PRODUCT_SEARCH_COLUMN = [
   { label: 'Toutes les colonnes', value: ColumnProduct.ALL },
@@ -20,7 +20,7 @@ export const OPTION_PRODUCT_SEARCH_COLUMN = [
   { label: 'Catégorie', value: ColumnProduct.CATEGORY }
 ]
 
-export const VARIATION_PER_PAGE = 5
+export const VARIATION_PER_PAGE = 15
 
 export const NUMBER_ADMIN_USER_PER_PAGE = 10
 

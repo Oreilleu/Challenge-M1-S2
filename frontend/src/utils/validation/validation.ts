@@ -142,9 +142,9 @@ export const countryValidation = z
 // Order
 
 export const orderStatusValidation = z.enum([
-  'processing',
-  'paid',
-  'canceled',
-  'shipped',
-  'delivered'
+  'Payée',
+  'En cours de traitement',
+  'Expédiée',
+  'Livrée',
+  'Annulée'
 ])

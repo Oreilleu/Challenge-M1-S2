@@ -108,7 +108,7 @@ const onSubmit = handleSubmit(async (values) => {
 
     if (json.success) {
       drawerStore.closeDrawer()
-      categoryStore.loadPaginatedCategories(1, 20)
+      categoryStore.loadPaginatedCategories(1, 20, '', 'name')
       toastHandler('Catégorie ajoutée avec succès', ToastType.SUCCESS)
     } else {
       toastHandler(json.message || "Erreur lors de l'ajout de la catégorie", ToastType.ERROR)
