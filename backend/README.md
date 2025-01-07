@@ -1,4 +1,4 @@
-# Frontend
+# Backend
 
 ## Prérequis
 
@@ -13,13 +13,21 @@ npm install
 ### Build le projet avec la commande:
 
 ```sh
-npm run build
+npm run Build
 ```
 
 ## Démarrage
 
-### Déployer le frontend avec la commande:
+### Démarrer le serveur avec la commande:
 
 ```sh
-npm run dev
+npm run start
+```
+
+## Les tests
+
+### Démarrer les tests avec la commande:
+
+```sh
+npm run test
 ```
