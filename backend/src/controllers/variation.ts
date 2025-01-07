@@ -180,7 +180,7 @@ export const getPaginate: RequestHandler = async (req, res, next) => {
       },
       { $skip: paginationOptions.skip },
       { $limit: paginationOptions.limit },
-    ]).sort({ createdAt: -1 });
+    ]).sort({ quantite: -1 });
 
     const count = await ProductModel.aggregate([
       { $unwind: "$variations" },

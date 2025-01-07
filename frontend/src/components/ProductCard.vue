@@ -11,16 +11,10 @@
     <span>{{ formattedNameProduct(product) }}</span>
     <p><strong>Price:</strong> ${{ product.variations.price }}</p>
     <p><strong>Quantity:</strong> {{ product.variations.quantite }}</p>
-    <p v-if="product.variations.quantite > 0" style="color: green">
-      <strong>Disponibilité:</strong> Disponible
-    </p>
-    <p v-else style="color: red">
-      <strong>Disponibilité:</strong> Indisponible
-      <el-button type="primary" disabled>Ajouter au panier</el-button>
-    </p>
+
     <div class="button-container">
       <el-link type="info" @click="goToDetails"> Voir les détails </el-link>
-      <el-button @click="addToCart" type="primary">Add to cart</el-button>
+      <el-button @click="addToCart" type="primary">Ajouter au panier</el-button>
     </div>
   </el-card>
 </template>
