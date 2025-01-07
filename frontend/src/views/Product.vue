@@ -218,7 +218,7 @@ onMounted(async () => {
   selectedFilters.value = Object.keys(route.query).flatMap((key) => {
     if (key === 'search') return []
     const values = Array.isArray(route.query[key]) ? route.query[key] : [route.query[key]]
-    return values.map((value) => ({ name: key, value: value as string }))
+    return (values as string[]).map((value: string) => ({ name: key, value }))
   })
 
   variationStore.updatePaginateVariations({ page: paginationPage.value, limit: VARIATION_PER_PAGE })
