@@ -65,12 +65,6 @@ Le projet contient deux dossiers principaux :
      npm run start
      ```
 4. Le serveur sera accessible par défaut sur `http://localhost:3000`.
-
-### Variables d'environnement
-
-Chaque dossier (`frontend` et `backend`) contient un fichier `.env.example` qui fournit un modèle pour les variables d'environnement nécessaires. Copiez ce fichier en `.env` et modifiez les valeurs en fonction de votre configuration locale.
-
-```bash
 # Exemple pour copier le fichier dans chaque dossier
 cp .env.example .env
 ```
