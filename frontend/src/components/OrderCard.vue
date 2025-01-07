@@ -51,26 +51,27 @@
       :span="24"
       style="border-bottom: 1px solid #e0e0e0; padding-bottom: 10px; margin-bottom: 10px"
     >
-      <ul
-        v-for="(cartItem, index) in order.cart"
-        style="display: flex; flex-direction: column"
-        :key="index + 'CART'"
-      >
-        <li class="item-content">
-          <el-image
-            :src="formatImageUrl((cartItem.product.variations.imagesApi || [])[0].path || '')"
-            fit="cover"
-            style="width: 60px; height: 60px; border-radius: 4px"
-          />
-          <div class="item-details">
-            <el-text as="span" style="width: 100%; font-weight: bold; color: black; display: block">
-              {{ cartItem.product.name }} - {{ cartItem.product.variations.suffix }}
+      <ul style="display: flex; flex-direction: column; gap: 10px">
+        <li v-for="(cartItem, index) in order.cart" :key="index + 'CART'">
+          <RouterLink :to="'/product-details/' + cartItem.product._id" class="item-content">
+            <el-image
+              :src="formatImageUrl((cartItem.product.variations.imagesApi || [])[0].path || '')"
+              fit="cover"
+              style="width: 60px; height: 60px; border-radius: 4px"
+            />
+            <div class="item-details">
+              <el-text
+                as="span"
+                style="width: 100%; font-weight: bold; color: black; display: block"
+              >
+                {{ cartItem.product.name }} - {{ cartItem.product.variations.suffix }}
+              </el-text>
+              <el-text as="span" style="width: 100%">Quantité : {{ cartItem.quantite }}</el-text>
+            </div>
+            <el-text as="span" style="flex: 2; text-align: end; font-weight: bold; color: black">
+              {{ cartItem.product.variations.price }} €
             </el-text>
-            <el-text as="span" style="width: 100%">Quantité : {{ cartItem.quantite }}</el-text>
-          </div>
-          <el-text as="span" style="flex: 2; text-align: end; font-weight: bold; color: black">
-            {{ cartItem.product.variations.price }} €
-          </el-text>
+          </RouterLink>
         </li>
       </ul>
     </el-col>
@@ -99,6 +100,7 @@ import { formatImageUrl } from '@/utils/formatImageUrl'
 import type { Order } from '@/utils/types/interfaces/order.interface'
 import { StatusOrder } from '@/utils/types/status-order.enum'
 import { CalendarIcon } from 'lucide-vue-next'
+import { RouterLink } from 'vue-router'
 
 type Props = {
   order: Order
@@ -121,5 +123,10 @@ const backgroundStatus: { [key in StatusOrder]: any } = {
   align-items: center;
   text-align: 'start';
   gap: 15px;
+}
+
+.item-content:hover {
+  background-color: #f5f5f5;
+  border-radius: 4px;
 }
 </style>

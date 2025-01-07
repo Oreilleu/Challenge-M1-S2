@@ -22,10 +22,8 @@ userRouter.get("/change-my-password", checkToken, sendEmailChangePassword);
 userRouter.put("/update-profile", checkToken, updateProfile);
 userRouter.post("/get-one", checkToken, getOne);
 userRouter.get("/paginated-users", checkToken, checkAdmin, getPaginatedUsers);
-// userRouter.get("/paginated-users", getPaginatedUsers);
-userRouter.post("/delete-admin", checkToken, checkAdmin, adminRemove);
-userRouter.delete("/delete", remove);
+userRouter.delete("/delete", checkToken, remove);
 userRouter.delete("/delete/:id", checkToken, checkAdmin, deleteUser);
-userRouter.put("/edit/:id", checkToken, edit);
+userRouter.put("/edit/:id", checkToken, checkAdmin, edit); 
 
 export default userRouter;
