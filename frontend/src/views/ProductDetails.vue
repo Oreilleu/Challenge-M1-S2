@@ -21,7 +21,7 @@
           <ul>
             <li><strong>Marque :</strong> {{ product.brand }}</li>
             <li><strong>Modèle :</strong> {{ product.model }}</li>
-            <li><strong>Catégorie :</strong> {{ product.idCategory }}</li>
+            <li><strong>Catégorie :</strong> {{ product.category?.name }}</li>
           </ul>
 
           <!-- Variations -->
@@ -57,7 +57,6 @@
           <div class="price-and-actions">
             <p><strong>Prix :</strong> ${{ activeVariation?.price }}</p>
             <p>
-              <strong>Quantité :</strong>
               <span :style="{ color: (activeVariation?.quantite ?? 0) > 0 ? 'green' : 'red' }">
                 {{ (activeVariation?.quantite ?? 0) > 0 ? 'Disponible' : 'Indisponible' }}
               </span>
