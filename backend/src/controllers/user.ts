@@ -26,24 +26,6 @@ export const getOne: RequestHandler = (req, res, next) => {
   });
 };
 
-export const getPaginatedUsers = async (req: Request, res: Response) => {
-  try {
-    const users = await UserModel.find().select('-password').lean();
-    const result = paginateData(req, users);
-
-    res.status(200).json({
-      success: true,
-      ...result,
-    });
-  } catch (error) {
-    console.error("Erreur lors de la récupération des utilisateurs :", error);
-    res.status(500).json({
-      success: false,
-      message: (error as Error).message,
-    });
-  }
-};
-
 export const isVerified: RequestHandler = async (req, res, next) => {
   const { user } = req as AuthenticatedRequest;
 
@@ -229,75 +211,6 @@ export const remove: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const adminRemove: RequestHandler = async (req, res, next) => {
-  const { ids } = req.body as { ids: string[] };
-  const { user } = req as AuthenticatedRequest;
-
-  if (!user || !user.isAdmin) {
-    res.status(400).json({
-      success: false,
-    });
-    return;
-  }
-
-  try {
-    const deletedUsers = await UserModel.deleteMany({ _id: { $in: ids } });
-
-    if (!deletedUsers) {
-      res.status(400).json({
-        success: false,
-      });
-      return;
-    }
-
-    res.status(200).json({
-      success: true,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-    });
-  }
-};
-
-export const edit: RequestHandler = async (req, res, next) => {
-  const body = JSON.parse(req.body.user);
-  const { id } = req.params;
-
-  if (!id) {
-    res.status(400).json({
-      success: false,
-      message: "L'identifiant de l'utilisateur est requis",
-    });
-    return;
-  }
-
-  if (!body) {
-    res.status(400).json({
-      success: false,
-      message: "Les données de l'utilisateur sont requises",
-    });
-    return;
-  }
-  try {
-    const user = await UserModel.findByIdAndUpdate(id, body);
-
-    if (!user) {
-      res.status(400).json({
-        success: false,
-        message: "Utilisateur non trouvé",
-      });
-      return;
-    }
-    await user.save();
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: (error as Error).message,
-    });
-  }
-};
-
 export const deleteUser = async (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -339,6 +252,24 @@ export const deleteUser = async (req: Request, res: Response) => {
       success: true,
     });
   } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: (error as Error).message,
+    });
+  }
+};
+
+export const getPaginatedUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await UserModel.find().select('-password').lean();
+    const result = paginateData(req, users);
+
+    res.status(200).json({
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des utilisateurs :", error);
     res.status(500).json({
       success: false,
       message: (error as Error).message,
