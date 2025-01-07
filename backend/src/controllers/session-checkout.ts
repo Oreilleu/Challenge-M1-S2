@@ -36,7 +36,6 @@ export const createSession = async (req: Request, res: Response) => {
         automatic_tax: { enabled: true },
       });
 
-    console.log("session", session);
     res
       .status(200)
       .json({ success: true, clientSecret: session.client_secret });
@@ -52,15 +51,11 @@ export const getSessionStatus = async (req: Request, res: Response) => {
       req.query.session_id
     );
 
-    console.log("session status all", session);
-    console.log("session status ", session.status);
-
     res.status(200).json({
       status: session.status,
       customer_email: session.customer_details.email,
     });
   } catch (error: any) {
-    console.log("Error getSessionStatus", error);
     res.status(500).json({ success: false, error: error.message });
   }
 };

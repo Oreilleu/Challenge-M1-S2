@@ -22,7 +22,6 @@ export const variationSchema = new mongoose.Schema({
   suffix: {
     type: String,
     required: [true, "Le suffixe de la variante est obligatoire."],
-    unique: true,
   },
   imagesApi: { type: [imageSchema], required: true },
   price: {

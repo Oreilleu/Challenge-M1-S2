@@ -64,7 +64,7 @@
                 as="span"
                 style="width: 100%; font-weight: bold; color: black; display: block"
               >
-                {{ cartItem.product.name }}
+                {{ cartItem.product.name }} - {{ cartItem.product.variations.suffix }}
               </el-text>
               <el-text as="span" style="width: 100%">Quantité : {{ cartItem.quantite }}</el-text>
             </div>
